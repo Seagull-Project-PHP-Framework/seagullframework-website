@@ -1,0 +1,848 @@
+
+
+Index: modules/publisher/addons/ArticleSearch.php
+===================================================================
+--- modules/publisher/addons/ArticleSearch.php	(revision 0)
++++ modules/publisher/addons/ArticleSearch.php	(revision 0)
+@@ -0,0 +1,214 @@
++<?php
++/* Reminder: always indent with 4 spaces (no tabs). */
++// +---------------------------------------------------------------------------+
++// | Copyright (c) 2005, Demian Turner                                         |
++// | All rights reserved.                                                      |
++// |                                                                           |
++// | Redistribution and use in source and binary forms, with or without        |
++// | modification, are permitted provided that the following conditions        |
++// | are met:                                                                  |
++// |                                                                           |
++// | o Redistributions of source code must retain the above copyright          |
++// |   notice, this list of conditions and the following disclaimer.           |
++// | o Redistributions in binary form must reproduce the above copyright       |
++// |   notice, this list of conditions and the following disclaimer in the     |
++// |   documentation and/or other materials provided with the distribution.    |
++// | o The names of the authors may not be used to endorse or promote          |
++// |   products derived from this software without specific prior written      |
++// |   permission.                                                             |
++// |                                                                           |
++// | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
++// | "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT         |
++// | LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR     |
++// | A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT      |
++// | OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,     |
++// | SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT          |
++// | LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,     |
++// | DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY     |
++// | THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT       |
++// | (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE     |
++// | OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.      |
++// |                                                                           |
++// +---------------------------------------------------------------------------+
++// | Seagull 0.5                                                               |
++// +---------------------------------------------------------------------------+
++// | ArticleSarch.php                                                               |
++// +---------------------------------------------------------------------------+
++// | Author: Rares Benea <rbenea@bluestardesign.ro>                            |
++// +---------------------------------------------------------------------------+
++require_once SGL_CORE_DIR . '/Category.php';
++require_once SGL_CORE_DIR . '/Item.php';
++
++/**
++ * Search for articles.
++ *
++ * @package block
++ */
++class Publisher_Addon_ArticleSerach
++{
++
++    function init($searchParameters)
++    {
++        SGL::logMessage(null, PEAR_LOG_DEBUG);
++        
++        $this->dbh = & SGL_DB::singleton();
++        $c = &SGL_Config::singleton();
++        $this->conf = $c->getAll();
++        
++        return $this->globalSearch($searchParameters);
++    }
++
++    function globalSearch($searchParameters) {
++        SGL::logMessage(null, PEAR_LOG_DEBUG);
++
++        $resultsProperties = array(
++                'module' => 'publisher',
++                'manager' => 'articleView',
++                'totalItems' => 0
++            );
++        $resultsList = array();
++        
++        if(isset($searchParameters['bPublished']) && 
++                 $searchParameters['bPublished']) {
++            $bPublished = true;
++        } else {
++            $bPublished = false;
++        }
++        
++        if(isset($searchParameters['catID']) && 
++                 $searchParameters['catID'] > 0) {
++            $queryRange = '';
++        } else {
++            $queryRange = 'all';
++        }
++        
++        if(isset($searchParameters['dataTypeID']) && 
++                 $searchParameters['dataTypeID'] > 0) {
++            $dataTypeID = $searchParameters['dataTypeID'];
++        } else {
++            $dataTypeID = 1;
++        }
++        
++        if(isset($searchParameters['roleID']) && 
++                 $searchParameters['roleID'] > 0) {
++            $roleId = $searchParameters['roleID'];
++        } else {
++            $roleId = SGL_Session::get('rid');
++        }
++        
++        $likeClause = '';
++        if(!empty($searchParameters['keywords'])) {
++            $likeClause = "AND ia.addition LIKE('%" . 
++                $searchParameters['keywords'] . "%') ";
++        }
++        
++        if(isset($searchParameters['from']) && isset($searchParameters['limit'])) {
++            $disableLimit = false;
++        }  elseif(isset($searchParameters['limit'])) {
++            $disableLimit = true;
++        }
++
++        
++        // CODE taken from SGL/Item.php and modified
++        //  if published flag set, only return published articles
++        $isPublishedClause = ($bPublished)?
++            ' AND i.status  = ' . SGL_STATUS_PUBLISHED :
++            ' AND i.status  > ' . SGL_STATUS_DELETED ;
++
++        //  if user only wants contents from current category, add where clause
++        $rangeWhereClause   = ($queryRange == 'all')?'' : " AND i.category_id = $catID";
++
++        //  dataTypeID 1 = all template types, otherwise only a specific one
++        $typeWhereClause = ($dataTypeID > '1') ? " AND it.item_type_id = $dataTypeID" : '';
++        $orderBy = 'last_updated';
++        $query = "
++            SELECT  i.item_id,
++                    i.category_id,
++                    ia.trans_id,
++                    u.username,
++                    i.date_created,
++                    i.start_date,
++                    i.expiry_date,
++                    i.status
++            FROM    {$this->conf['table']['item']} i,
++                    {$this->conf['table']['item_addition']} ia,
++                    {$this->conf['table']['item_type']} it,
++                    {$this->conf['table']['item_type_mapping']} itm,
++                    {$this->conf['table']['user']} u,
++                    {$this->conf['table']['category']} c
++            WHERE   ia.item_type_mapping_id = itm.item_type_mapping_id
++            AND     i.updated_by_id = u.usr_id
++            AND     it.item_type_id  = itm.item_type_id
++            AND     i.item_id = ia.item_id
++            AND     i.item_type_id = it.item_type_id" .         /*  match item addition type, 'title'    */
++            $typeWhereClause .                          //  match datatype
++            $rangeWhereClause .
++            $isPublishedClause . "
++            AND     i.category_id = c.category_id
++            AND     $roleId NOT IN (COALESCE(c.perms, '-1')) " . 
++            $likeClause . "
++            GROUP BY i.item_id
++            ORDER BY i.$orderBy DESC ";
++        
++        //  be smart and try to guess the total number of records
++        if ($countQuery = SGL_DB::rewriteCountQuery($query)) {
++            $totalItems = $this->dbh->getOne($countQuery);
++            if (PEAR::isError($totalItems)) {
++                $results = array(
++                    'properties' => $resultsProperties, 
++                    'resultsList' => $resultsList
++                );
++                return $results;
++            }
++        } else {
++            $res = $this->dbh->query($query);
++            if (PEAR::isError($res)) {
++                $results = array(
++                    'properties' => $resultsProperties, 
++                    'resultsList' => $resultsList
++                );
++                return $results;
++            }
++            $totalItems = (int)$res->numRows();
++            $res->free();
++        }
++        $resultsProperties['totalItems'] = $totalItems;
++            
++        $result = ($disableLimit)
++            ? $this->dbh->limitQuery($query, 0, $totalItems)
++            : $this->dbh->limitQuery($query, $searchParameters['from'], 
++                    $searchParameters['limit']);
++            
++        if(is_a($result,'PEAR_Error')) {
++            $results = array(
++                'properties' => $resultsProperties, 
++                'resultsList' => $resultsList
++            );
++            return $results;
++        }
++       
++        $cat = & new SGL_Category();
++      
++        // for every article_id generate result data
++        while($row = $result->fetchRow(DB_FETCHMODE_ASSOC)) {
++               $resultItem = array();
++               $itemData = SGL_Item::getItemDetail($row['item_id']);
++               $resultItem['title'] = $itemData['title'];
++               $resultItem['type']  = $itemData['type'];
++               $resultItem['link']  = SGL_Output::makeUrl('view','articleview',
++                'publisher',array(),'frmArticleID|'.$row['item_id']);
++               $resultItem['path']  = $cat->getBreadCrumbs($itemData['category_id'], true, 'linkCrumbsAlt1');  
++               $resultItem['description'] = 
++                substr(strip_tags(substr($itemData['bodyHtml'],0,330)),0,250) . '...';
++
++               $resultsList[] = $resultItem;
++        }
++
++        $results = array(
++                    'properties' => $resultsProperties, 
++                    'resultsList' => $resultsList
++                    );
++        return $results;
++    }
++}
++?>
+\ No newline at end of file
+Index: modules/publisher/addons/DocumentSearch.php
+===================================================================
+--- modules/publisher/addons/DocumentSearch.php	(revision 0)
++++ modules/publisher/addons/DocumentSearch.php	(revision 0)
+@@ -0,0 +1,190 @@
++<?php
++/* Reminder: always indent with 4 spaces (no tabs). */
++// +---------------------------------------------------------------------------+
++// | Copyright (c) 2005, Demian Turner                                         |
++// | All rights reserved.                                                      |
++// |                                                                           |
++// | Redistribution and use in source and binary forms, with or without        |
++// | modification, are permitted provided that the following conditions        |
++// | are met:                                                                  |
++// |                                                                           |
++// | o Redistributions of source code must retain the above copyright          |
++// |   notice, this list of conditions and the following disclaimer.           |
++// | o Redistributions in binary form must reproduce the above copyright       |
++// |   notice, this list of conditions and the following disclaimer in the     |
++// |   documentation and/or other materials provided with the distribution.    |
++// | o The names of the authors may not be used to endorse or promote          |
++// |   products derived from this software without specific prior written      |
++// |   permission.                                                             |
++// |                                                                           |
++// | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
++// | "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT         |
++// | LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR     |
++// | A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT      |
++// | OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,     |
++// | SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT          |
++// | LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,     |
++// | DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY     |
++// | THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT       |
++// | (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE     |
++// | OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.      |
++// |                                                                           |
++// +---------------------------------------------------------------------------+
++// | Seagull 0.5                                                               |
++// +---------------------------------------------------------------------------+
++// | DocumentsSarch.php                                                               |
++// +---------------------------------------------------------------------------+
++// | Author: Rares Benea <rbenea@bluestardesign.ro>                            |
++// +---------------------------------------------------------------------------+
++require_once SGL_CORE_DIR . '/Category.php';
++require_once SGL_CORE_DIR . '/Item.php';
++
++/**
++ * Search for articles.
++ *
++ * @package block
++ */
++class Publisher_Addon_DocumentSerach
++{
++
++    function init($searchParameters)
++    {
++        SGL::logMessage(null, PEAR_LOG_DEBUG);
++        
++        $this->dbh = & SGL_DB::singleton();
++        $c = &SGL_Config::singleton();
++        $this->conf = $c->getAll();
++        
++        return $this->globalSearch($searchParameters);
++    }
++
++    function globalSearch($searchParameters) {
++        SGL::logMessage(null, PEAR_LOG_DEBUG);
++
++        $resultsProperties = array(
++                'module' => 'publisher',
++                'manager' => 'documentView',
++                'totalItems' => 0
++            );
++        $resultsList = array();
++        
++        if(isset($searchParameters['catID']) && 
++                 $searchParameters['catID'] > 0) {
++            $queryRange = '';
++        } else {
++            $queryRange = 'all';
++        }
++        
++        if(isset($searchParameters['roleID']) && 
++                 $searchParameters['roleID'] > 0) {
++            $roleId = $searchParameters['roleID'];
++        } else {
++            $roleId = SGL_Session::get('rid');
++        }
++        
++        if(isset($searchParameters['dataTypeID']) && 
++                 $searchParameters['dataTypeID'] > 0) {
++            $dataTypeID = $searchParameters['dataTypeID'];
++        } else {
++            $dataTypeID = 1;
++        }
++        
++        if(isset($searchParameters['from']) && isset($searchParameters['limit'])) {
++            $disableLimit = false;
++        }  elseif(isset($searchParameters['limit'])) {
++            $disableLimit = true;
++        }
++        
++        $likeClause = '';
++        if(!empty($searchParameters['keywords'])) {
++            #$likeClause = "AND CONCAT(d.title,' ',d.description) LIKE('%" .
++            $likeClause = "AND d.description LIKE('%" . 
++                $searchParameters['keywords'] . "%') ";
++        }
++
++        //  if user only wants contents from current category, add where clause
++        $rangeWhereClause   = ($queryRange == 'all')?'' : " AND d.category_id = $catID";
++
++        //  dataTypeID 1 = all template types, otherwise only a specific one
++        $typeWhereClause = ($dataTypeID > '1') ? " AND d.document_type_id = $dataTypeID" : '';
++        $orderBy = 'date_created';
++        $query = "
++            SELECT  d.*,
++                    dt.name as document_type_name,
++                    u.username
++            FROM    {$this->conf['table']['document']} d,
++                    {$this->conf['table']['document_type']} dt,
++                    {$this->conf['table']['user']} u,
++                    {$this->conf['table']['category']} c
++            WHERE   dt.document_type_id = dt.document_type_id
++            AND     d.added_by = u.usr_id" .         /*  match item addition type, 'title'    */
++            $typeWhereClause .                          //  match datatype
++            $rangeWhereClause . "
++            AND     d.category_id = c.category_id
++            AND     $roleId NOT IN (COALESCE(c.perms, '-1')) " . 
++            $likeClause . "
++            GROUP BY d.document_id
++            ORDER BY d.$orderBy DESC ";
++            
++        //  be smart and try to guess the total number of records
++        if ($countQuery = SGL_DB::rewriteCountQuery($query)) {
++            $totalItems = $this->dbh->getOne($countQuery);
++            if (PEAR::isError($totalItems)) {
++                $results = array(
++                    'properties' => $resultsProperties, 
++                    'resultsList' => $resultsList
++                );
++                return $results;
++            }
++        } else {
++            $res = $this->dbh->query($query);
++            if (PEAR::isError($res)) {
++                $results = array(
++                    'properties' => $resultsProperties, 
++                    'resultsList' => $resultsList
++                );
++                return $results;
++            }
++            $totalItems = (int)$res->numRows();
++            $res->free();
++        }
++        $resultsProperties['totalItems'] = $totalItems;
++            
++        $result = ($disableLimit)
++            ? $this->dbh->limitQuery($query, 0, $totalItems)
++            : $this->dbh->limitQuery($query, $searchParameters['from'], 
++                    $searchParameters['limit']);
++            
++        if(is_a($result,'PEAR_Error')) {
++            $results = array(
++                'properties' => $resultsProperties, 
++                'resultsList' => $resultsList
++            );
++            return $results;
++        }
++        
++        $cat = & new SGL_Category();
++      
++        // for every article_id generate result data
++        while($row = $result->fetchRow(DB_FETCHMODE_ASSOC)) {
++               $resultItem = array();
++              #$resultItem['title'] = $row['title'];
++               $resultItem['title'] = $row['name'];              
++               $resultItem['type']  = $row['document_type_name'];
++               $resultItem['type_id'] = $row['document_type_id'];
++               $resultItem['file_size'] = $row['file_size'];
++               $resultItem['link']  = SGL_Output::makeUrl('download','file',
++                'publisher',array(),'frmAssetID|'.$row['document_id']);
++               $resultItem['path']  = $cat->getBreadCrumbs($row['category_id'], true, 'linkCrumbsAlt1');  
++               $resultItem['description'] = substr($row['description'],0,250) . '...';
++               $resultsList[] = $resultItem;
++        }
++
++        $results = array(
++                    'properties' => $resultsProperties, 
++                    'resultsList' => $resultsList
++                    );
++        return $results;
++    }
++}
++?>
+\ No newline at end of file
+Index: modules/search/classes/Output.php
+===================================================================
+--- modules/search/classes/Output.php	(revision 0)
++++ modules/search/classes/Output.php	(revision 0)
+@@ -0,0 +1,93 @@
++<?php
++/* Reminder: always indent with 4 spaces (no tabs). */
++// +---------------------------------------------------------------------------+
++// | Copyright (c) 2005, Demian Turner                                         |
++// | All rights reserved.                                                      |
++// |                                                                           |
++// | Redistribution and use in source and binary forms, with or without        |
++// | modification, are permitted provided that the following conditions        |
++// | are met:                                                                  |
++// |                                                                           |
++// | o Redistributions of source code must retain the above copyright          |
++// |   notice, this list of conditions and the following disclaimer.           |
++// | o Redistributions in binary form must reproduce the above copyright       |
++// |   notice, this list of conditions and the following disclaimer in the     |
++// |   documentation and/or other materials provided with the distribution.    |
++// | o The names of the authors may not be used to endorse or promote          |
++// |   products derived from this software without specific prior written      |
++// |   permission.                                                             |
++// |                                                                           |
++// | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
++// | "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT         |
++// | LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR     |
++// | A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT      |
++// | OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,     |
++// | SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT          |
++// | LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,     |
++// | DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY     |
++// | THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT       |
++// | (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE     |
++// | OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.      |
++// |                                                                           |
++// +---------------------------------------------------------------------------+
++// | Seagull 0.4                                                               |
++// +---------------------------------------------------------------------------+
++// | Output.php                                                                |
++// +---------------------------------------------------------------------------+
++// | Author: Demian Turner <demian@phpkitchen.com>                             |
++// +---------------------------------------------------------------------------+
++// $Id: Output.php,v 1.9 2005/01/27 12:33:45 demian Exp $
++
++class SearchOutput 
++{	
++
++    /**
++     * Takes doc type ID from DB and converts to corresponding icon.
++     *
++     * @access  public
++     * @param   int     $documentID doc type
++     * @return  string  $iconString
++     */
++    function id2AssetIcon($documentID)
++    {
++        $theme = $_SESSION['aPrefs']['theme'];
++        switch ($documentID) {
++        case 1: $iconString = '<img src="' . SGL_BASE_URL . '/themes/' . $theme . '/images/docIcons/word.gif">';break;
++        case 2: $iconString = '<img src="' . SGL_BASE_URL . '/themes/' . $theme . '/images/docIcons/excel.gif">';break;
++        case 3: $iconString = '<img src="' . SGL_BASE_URL . '/themes/' . $theme . '/images/docIcons/ppt.gif">';break;
++        case 4: $iconString = '<img src="' . SGL_BASE_URL . '/themes/' . $theme . '/images/docIcons/url.gif">';break;
++        case 5: $iconString = '<img src="' . SGL_BASE_URL . '/themes/' . $theme . '/images/docIcons/image.gif">';break;
++        case 6: $iconString = '<img src="' . SGL_BASE_URL . '/themes/' . $theme . '/images/docIcons/pdf.gif">';break;
++        case 7: $iconString = '<img src="' . SGL_BASE_URL . '/themes/' . $theme . '/images/docIcons/unknown.gif">';break;
++        default: $iconString = '&nbsp';
++        }
++        return $iconString;
++    }
++
++    /**
++     * Maps icon HTML to corresponding position in a grid.
++     *
++     * the idea is to allow for filtering views by doc type
++     *
++     * @access  public
++     * @param   int     $documentID doc type
++     * @return  string  $tdString
++     * @see     id2AssetIcon()
++     */
++    function outputIcon($documentID)
++    {
++        $iconString = $this->id2AssetIcon($documentID);
++        if ($documentID == 7) {
++            $pos = 1;
++        } else {
++            $pos = $documentID;
++        }
++        $tdString = '';
++        for ($i = 1; $i <= 6; $i++) {
++            $icon = ($i == $pos) ? $iconString : '&nbsp;';
++            $tdString .= "<td align=\"center\">". $icon ."</td>\n";
++        }
++        return $tdString;
++    }
++}
++?>
+Index: modules/search/classes/SearchMgr.php
+===================================================================
+--- modules/search/classes/SearchMgr.php	(revision 0)
++++ modules/search/classes/SearchMgr.php	(revision 0)
+@@ -0,0 +1,187 @@
++<?php
++/* Reminder: always indent with 4 spaces (no tabs). */
++// +---------------------------------------------------------------------------+
++// | Copyright (c) 2006, Demian Turner                                         |
++// | All rights reserved.                                                      |
++// |                                                                           |
++// | Redistribution and use in source and binary forms, with or without        |
++// | modification, are permitted provided that the following conditions        |
++// | are met:                                                                  |
++// |                                                                           |
++// | o Redistributions of source code must retain the above copyright          |
++// |   notice, this list of conditions and the following disclaimer.           |
++// | o Redistributions in binary form must reproduce the above copyright       |
++// |   notice, this list of conditions and the following disclaimer in the     |
++// |   documentation and/or other materials provided with the distribution.    |
++// | o The names of the authors may not be used to endorse or promote          |
++// |   products derived from this software without specific prior written      |
++// |   permission.                                                             |
++// |                                                                           |
++// | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
++// | "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT         |
++// | LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR     |
++// | A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT      |
++// | OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,     |
++// | SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT          |
++// | LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,     |
++// | DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY     |
++// | THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT       |
++// | (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE     |
++// | OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.      |
++// |                                                                           |
++// +---------------------------------------------------------------------------+
++// | Seagull 0.6                                                               |
++// +---------------------------------------------------------------------------+
++// | SearchMgr.php                                                    |
++// +---------------------------------------------------------------------------+
++// | Author: Rares Benea        <rbenea@bluestardesign.ro>                     |
++// | Author: Florentin Mocuta   <fmocuta@bluestardesign.ro>                    |
++// +---------------------------------------------------------------------------+
++// $Id: ManagerTemplate.html,v 1.2 2005/04/17 02:15:02 demian Exp $
++
++
++/**
++ * Global search module
++ *
++ * @package search
++ * @author  Rares Benea         <rbenea@bluestardesign.ro>
++ * @author  Florentin Mocuta    <fmocuta@bluestardesign.ro>
++ */
++class SearchMgr extends SGL_Manager
++{
++    function SearchMgr()
++    {
++        SGL::logMessage(null, PEAR_LOG_DEBUG);
++        parent::SGL_Manager();
++
++        $this->pageTitle    = 'Search Manager';
++        $this->template     = 'searchList.html';
++
++        $this->_aActionsMapping =  array(
++            'search'      => array('search'),
++            'details'      => array('details'),
++        );
++    }
++
++    function validate($req, &$input)
++    {
++        SGL::logMessage(null, PEAR_LOG_DEBUG);
++        $this->validated    = true;
++        $input->error       = array();
++        $input->pageTitle   = $this->pageTitle;
++        $input->masterTemplate = $this->masterTemplate;
++        $input->template    = $this->template;
++        $input->action      = ($req->get('action')) ? $req->get('action') : 'search';
++        $input->aDelete     = $req->get('frmDelete');
++        $input->submitted   = $req->get('submitted');
++        $input->keywords    = $req->get('keywords');
++        $input->totalItems  = $req->get('totalItems');
++        $input->pageID      = ($req->get('pageID')) ? $req->get('pageID') : 1;
++        $input->searchIn    = ($req->get('searchIn')) ? $req->get('searchIn') : 'Articles';
++        
++        $input->searchParameters = array();
++
++        if($input->submitted) {
++            if(empty($input->keywords)) {
++                $aErrors['keywords'] = 'Please enter at least a keyword';
++            } else {
++                $input->searchParameters['keywords'] = $input->keywords;
++            }
++        }
++
++        //  if errors have occured
++        if (isset($aErrors) && count($aErrors)) {
++            SGL::raiseMsg('Please fill in the indicated fields');
++            $input->error = $aErrors;
++            $this->validated = false;
++        }
++    }
++
++
++    function _cmd_details(&$input, &$output)
++    {
++        SGL::logMessage(null, PEAR_LOG_DEBUG);
++        $output->template = 'searchDetails.html';
++
++        $limit = 5;
++        $input->searchParameters['limit'] = $limit;
++        $input->searchParameters['from'] = ($input->pageID-1) * $input->searchParameters['limit'];
++        
++        if($input->searchIn == 'Documents') {
++            require_once SGL_MOD_DIR . '/publisher/addons/DocumentSearch.php';
++            $articleSearch = & new Publisher_Addon_DocumentSerach();
++            $results = $articleSearch->init($input->searchParameters);
++        } else {
++            require_once SGL_MOD_DIR . '/publisher/addons/ArticleSearch.php';
++            $articleSearch = & new Publisher_Addon_ArticleSerach();
++            $results = $articleSearch->init($input->searchParameters);
++        }
++         
++        // To get Seagull URL Style working for Pager
++        require_once 'Pager/Pager.php';
++        $pager_options = array(
++            'mode'      => 'Sliding',
++            'delta'     => 3,
++            'perPage'   => $limit,
++            'totalItems'=> $results['properties']['totalItems'],
++            'currentPage' => $input->pageID,
++        );
++
++        $pager_options['append']   = isset($pager_options['append'])   ? 
++                                    $pager_options['append']   : false;
++        $pager_options['fileName'] = isset($pager_options['fileName']) ? 
++                                    $pager_options['fileName'] : '/pageID/%d/';
++        $pager = Pager::factory($pager_options);
++
++        $page = array();
++        $page['data'] = $results['resultsList'];
++        $page['totalItems'] = $pager_options['totalItems'];
++        $page['links'] = str_replace("/pageID/".$pager->getCurrentPageID()."/", "/", $pager->links);
++        $page['page_numbers'] = array(
++            'current' => $pager->getCurrentPageID(),
++            'total'   => $pager->numPages()
++        );
++        list($page['from'], $page['to']) = $pager->getOffsetByPageId();
++        
++        $aPagedData = $page;
++        if (is_array($aPagedData['data']) && count($aPagedData['data'])) {
++            $output->pager = ($aPagedData['totalItems'] <= $limit) ? false : true;
++            $output->totalItems = $aPagedData['totalItems'];
++        }
++        $output->aPagedData = $aPagedData;
++             
++    }
++    
++    
++    function _cmd_search(&$input, &$output)
++    {
++        SGL::logMessage(null, PEAR_LOG_DEBUG);
++        
++        if(!$input->submitted) {
++            return;
++        }
++        
++        $input->searchParameters['from'] = 0;
++        $input->searchParameters['limit'] = 5;
++        
++        require_once SGL_MOD_DIR . '/publisher/addons/ArticleSearch.php';
++        $articleSearch = & new Publisher_Addon_ArticleSerach();
++        $articleResults = $articleSearch->init($input->searchParameters);
++        
++        $output->articleResultsList = $articleResults['resultsList'];
++        $output->articleNumResults = $articleResults['properties']['totalItems'];
++        $output->articleDisplay = 1;
++        
++        require_once SGL_MOD_DIR . '/publisher/addons/DocumentSearch.php';
++        $documentSearch = & new Publisher_Addon_DocumentSerach();
++        $documentResults = $documentSearch->init($input->searchParameters);
++
++        $output->documentResultsList = $documentResults['resultsList'];
++        $output->documentNumResults = $documentResults['properties']['totalItems'];
++        $output->documentDisplay = 1;
++                
++    }
++
++
++}
++?>
+\ No newline at end of file
+Index: modules/search/conf.ini
+===================================================================
+--- modules/search/conf.ini	(revision 0)
++++ modules/search/conf.ini	(revision 0)
+@@ -0,0 +1,2 @@
++[SearchMgr]
++requiresAuth    = false
+\ No newline at end of file
+Index: modules/search/data/data.default.my.sql
+===================================================================
+--- modules/search/data/data.default.my.sql	(revision 0)
++++ modules/search/data/data.default.my.sql	(revision 0)
+@@ -0,0 +1,16 @@
++INSERT INTO module VALUES ({SGL_NEXT_ID}, 1, 'search', 'Search', 'Use the ''Search'' to find topics based on keywords.', 'search/search', 'default.png', '', NULL, NULL, NULL);
++
++SELECT @moduleId := MAX(module_id) FROM module;
++
++INSERT INTO permission VALUES ({SGL_NEXT_ID}, 'Searchmgr', '', @moduleId);
++INSERT INTO permission VALUES ({SGL_NEXT_ID}, 'Searchmgr_cmd_search', '', @moduleId);
++INSERT INTO permission VALUES ({SGL_NEXT_ID}, 'Searchmgr_cmd_details', '', @moduleId);
++
++#guest role perms
++SELECT @permissionId := permission_id FROM permission WHERE name = 'search';
++INSERT INTO role_permission VALUES ({SGL_NEXT_ID}, 0, @permissionId);
++
++
++#member role perms
++SELECT @permissionId := permission_id FROM permission WHERE name = 'search';
++INSERT INTO role_permission VALUES ({SGL_NEXT_ID}, 2, @permissionId);
+Index: modules/search/lang/english-iso-8859-15.php
+===================================================================
+--- modules/search/lang/english-iso-8859-15.php	(revision 0)
++++ modules/search/lang/english-iso-8859-15.php	(revision 0)
+@@ -0,0 +1,11 @@
++<?php
++$words['Search'] = 'Search';
++$words['results found for'] = 'results found for';
++$words['Articles'] = 'Articles';
++$words['Documents'] = 'Documents';
++$words['Please enter at least a keyword'] = 'Please enter at least a keyword';
++$words['Path'] = 'Path';
++$words['displaying'] = 'displaying';
++$words['Next items from articles'] = 'Next items from articles';
++$words['Next items from documents'] = 'Next items from documents';
++?>
+Index: modules/search/lang/romanian-iso-8859-1.php
+===================================================================
+--- modules/search/lang/romanian-iso-8859-1.php	(revision 0)
++++ modules/search/lang/romanian-iso-8859-1.php	(revision 0)
+@@ -0,0 +1,11 @@
++<?php
++$words['Search'] = 'Cauta';
++$words['results found for'] = 'rezultatele cautarii dupa';
++$words['Articles'] = 'Articole';
++$words['Documents'] = 'Documente';
++$words['Please enter at least a keyword'] = 'Va rog introduceti cel putin un cuvant cheie';
++$words['Path'] = 'Cale';
++$words['displaying'] = 'displaying';
++$words['Next items from articles'] = 'Urmatoarele rezultate in articole';
++$words['Next items from documents'] = 'Urmatoarele rezultate in documente';
++?>
+\ No newline at end of file
+Index: modules/search/templates/searchDetails.html
+===================================================================
+--- modules/search/templates/searchDetails.html	(revision 0)
++++ modules/search/templates/searchDetails.html	(revision 0)
+@@ -0,0 +1,21 @@
++<form action="{makeUrl(#details#,#search#,#search#)}" method="post" flexy:ignore>
++    <div class="error" flexy:if="error[keywords]">
++        {translate(error[keywords])} <br />
++    </div>
++    <input type="text" name="keywords" value="{keywords}" />
++    <input type="submit" name="submitted" value="{translate(#Search#)}" />
++    <input type="hidden" name="searchIn" value="{searchIn}" />
++</form>
++
++    <strong>{translate(searchIn)}:</strong> {totalItems} 
++    {translate(#results found for#)}: {keywords}, 
++    {translate(#displaying#)} {aPagedData[from]}-{aPagedData[to]}<br />
++    <hr width="100%" />
++    <div flexy:foreach="aPagedData[data],key,aValue">
++        <strong><a href="{aValue[link]}">{aValue[title]}</a></strong><br />
++        {aValue[description]}<br />
++        <strong>{translate(#Path#)}:</strong> {aValue[path]:h}<br />
++        <br />
++    </div>
++
++{if:pager}<flexy:include src="pager.html" />{end:}
+\ No newline at end of file
+Index: modules/search/templates/searchList.html
+===================================================================
+--- modules/search/templates/searchList.html	(revision 0)
++++ modules/search/templates/searchList.html	(revision 0)
+@@ -0,0 +1,44 @@
++<form  method="post" flexy:ignore>
++    <div class="error" flexy:if="error[keywords]">
++        {translate(error[keywords])} <br />
++    </div>
++    <input type="text" name="keywords" value="{keywords}" />
++    <input type="submit" name="submitted" value="{translate(#Search#)}" />
++</form>
++
++{if:articleDisplay}
++    <strong>{translate(#Articles#)}:</strong> {articleNumResults} 
++    {translate(#results found for#)}: {keywords}, {translate(#displaying#)} <br />
++    <hr width="100%" />
++    {if:articleNumResults}
++    <div flexy:foreach="articleResultsList,key,aValue">
++        <strong><a href="{aValue[link]}">{aValue[title]}</a></strong><br />
++        {aValue[description]}<br />
++        <strong>{translate(#Path#)}:</strong> {aValue[path]:h}<br />
++        <br />
++    </div>
++    {end:}
++    {if:articleNumResults}<a href="{makeUrl(#details#,#search#,#search#,##,#searchIn|Articles||keywords|keywords#)}">{translate(#Next items from articles#)} ...</a>{end:}
++<br />
++<br />
++{end:}
++{if:documentDisplay}
++    <strong>{translate(#Documents#)}:</strong> {documentNumResults} {translate(#results found for#)}: {keywords}<br />
++    <hr width="100%" />
++    {if:documentNumResults}
++    <div flexy:foreach="documentResultsList,key,aValue">
++        {this.plugin(#id2AssetIcon#,aValue[type_id]):h} 
++        <strong><a href="{aValue[link]}">{aValue[title]}</a></strong>
++        ( {formatBytes(aValue[file_size])} ) 
++        <br />
++        {aValue[description]}<br />
++        <strong>{translate(#Path#)}:</strong> {aValue[path]:h}<br />
++        <br />
++    </div>    
++    {end:}
++    {if:documentNumResults}<a href="{makeUrl(#details#,#search#,#search#,##,#searchIn|Documents||keywords|keywords#)}">{translate(#Next items from documents#)} ...</a>{end:}
++<br />
++<br />    
++{end:}
++
++{if:pager}<flexy:include src="pager.html" />{end:}
+\ No newline at end of file

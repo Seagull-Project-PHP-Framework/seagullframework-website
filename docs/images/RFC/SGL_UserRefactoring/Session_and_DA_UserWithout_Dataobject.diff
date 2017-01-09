@@ -1,0 +1,212 @@
+Index: lib/SGL/Session.php
+===================================================================
+--- lib/SGL/Session.php	(revision 2595)
++++ lib/SGL/Session.php	(working copy)
+@@ -143,9 +143,8 @@
+ 
+         //  if user id is passed in constructor, ie, during login, init user
+         if ($uid > 0) {
+-            require_once 'DB/DataObject.php';
+-            $sessUser = DB_DataObject::factory($conf['table']['user']);
+-            $sessUser->get($uid);
++            require_once SGL_MOD_DIR . '/user/classes/DA_User.php';
++            $sessUser = new User($uid);
+             $this->_init($sessUser);
+ 
+         //  if session doesn't exist, initialise
+Index: modules/user/classes/DA_User.php
+===================================================================
+--- modules/user/classes/DA_User.php	(revision 2595)
++++ modules/user/classes/DA_User.php	(working copy)
+@@ -38,8 +38,6 @@
+ // +---------------------------------------------------------------------------+
+ // $Id: DA_User.php,v 1.14 2005/06/21 23:26:24 demian Exp $
+ 
+-require_once 'DB/DataObject.php';
+-
+ //  role sync constants
+ define('SGL_ROLESYNC_ADD',              1);
+ define('SGL_ROLESYNC_REMOVE',           2);
+@@ -102,7 +100,7 @@
+         $ok = $oUser->insert();
+ 
+         if (!$ok) {
+-            return PEAR::raiseError('Problem inserting user DataObject');
++            return PEAR::raiseError('Problem inserting user');
+         }
+         //  assign permissions associated with role user belongs to
+         //  first get all perms associated with user's role
+@@ -214,11 +212,11 @@
+      * @param integer   $id optional user id
+      * @return object   A DataObjects user object
+      */
+-    function getUserById($id = null)
+-    {
+-        $oUser = DB_DataObject::factory($this->conf['table']['user']);
++    function getUserById($id = null) {
+         if (!is_null($id)) {
+-            $oUser->get($id);
++            $oUser = new User($id);
++        } else {
++            $oUser = new User();
+         }
+         return $oUser;
+     }
+@@ -1107,11 +1105,9 @@
+     function isUniqueUsername($username)
+     {
+         if (isset($username)) {
+-            $oUser = DB_DataObject::factory($this->conf['table']['user']);
+-            $oUser->whereAdd("username = '$username'");
+-            $numRows = $oUser->find();
+-
+-            //  return false if any rows found
++            $numRows = $this->dbh->getOne("SELECT COUNT(usr_id) 
++                FROM {$this->conf['table']['usr']} 
++                WHERE username = '$username'");
+             return (boolean)$numRows == 0;
+         }
+     }
+@@ -1126,13 +1122,11 @@
+     function isUniqueEmail($email)
+     {
+         if (isset($email)) {
+-            $oUser = DB_DataObject::factory($this->conf['table']['user']);
+-            $oUser->whereAdd("email = '$email'");
+-            $numRows = $oUser->find();
+-
+-            //  return false if any rows found
++            $numRows = $this->dbh->getOne("SELECT COUNT(usr_id) 
++                FROM {$this->conf['table']['usr']} 
++                WHERE email = '$email'");
+             return (boolean)$numRows == 0;
+-        }
++        } else {return false;}
+     }
+ 
+     /**
+@@ -1158,4 +1152,124 @@
+ 
+     //OrgPreferenceMgr::_updateAll
+ }
++
++class User {
++    var $usr_id           = 0;
++    var $organisation_id  = 0;
++    var $role_id          = 0;  
++    var $username         = '';
++    var $passwd           = '';
++    var $first_name       = '';
++    var $last_name        = '';
++    var $teleph           = '';
++    var $mobile           = '';
++    var $email            = '';
++    var $addr_1           = '';
++    var $addr_2           = '';
++    var $addr_3           = '';
++    var $city             = '';
++    var $region           = '';
++    var $country          = '';
++    var $post_code        = '';
++    var $is_email_public  = 0;
++    var $is_acct_active   = 0;
++    var $security_questio = '';
++    var $security_answer  = '';
++    var $date_created     = '0000-00-00';
++    var $created_by       = 0;
++    var $last_updated     = '0000-00-00';
++    var $updated_by      = '';
++    
++    function User($id = false) {
++        $this->dbh = & SGL_DB::singleton();
++        $c = &SGL_Config::singleton();
++        $this->conf = $c->getAll();
++        
++        if($id) {
++            $aDbobject = $this->dbh->getAssoc("SELECT * FROM {$this->conf['table']['user']} WHERE usr_id = $id");
++            foreach (get_object_vars($aDbobject[$id]) as $prop => $val) {
++                $this->$prop = $val;
++            }
++            unset($dbobject);
++        }
++    }
++    
++    function setFrom($obj) {
++        foreach (get_object_vars($obj) as $prop => $val) {
++            $this->$prop = $val;
++        }
++    }
++    
++    function update() {
++        $ok = $this->dbh->query("
++            UPDATE {$this->conf['table']['user']}
++            SET
++            organisation_id  = $this->organisation_id,
++            role_id          = $this->role_id,
++            username         = '$this->username',
++            passwd           = '$this->passwd',
++            first_name       = '$this->first_name',
++            last_name        = '$this->last_name',
++            telephone        = '$this->teleph',
++            mobile           = '$this->mobile',
++            email            = '$this->email',
++            addr_1           = '$this->addr_1',
++            addr_2           = '$this->addr_2',
++            addr_3           = '$this->addr_3',
++            city             = '$this->city',
++            region           = '$this->region',
++            country          = '$this->country',
++            post_code        = '$this->post_code',
++            is_email_public  = '$this->is_email_public',
++            is_acct_active   = '$this->is_acct_active',
++            security_question= '$this->security_question',
++            security_answer  = '$this->security_answer',
++            date_created     = '$this->date_created',
++            created_by       = '$this->created_by',
++            last_updated     = '$this->last_updated',
++            updated_by       = '$this->updated_by'
++            WHERE 
++                usr_id   =   $this->usr_id
++                
++        ");
++    }
++    function insert() {
++        $ok = $this->dbh->query("
++            INSERT INTO {$this->conf['table']['user']}
++            VALUES (
++                $this->usr_id           ,
++                $this->organisation_id  ,
++                $this->role_id          ,
++                '$this->username     ,
++                '$this->passwd',
++                '$this->first_name',
++                '$this->last_name',
++                '$this->telephone',
++                '$this->mobile',
++                '$this->email',
++                '$this->addr_1',
++                '$this->addr_2',
++                '$this->addr_3',
++                '$this->city',
++                '$this->region',
++                '$this->country',
++                '$this->post_code',
++                '$this->is_email_public',
++                '$this->is_acct_active',
++                '$this->security_question',
++                '$this->security_answer',
++                '$this->date_created',
++                '$this->created_by',
++                '$this->last_updated',
++                '$this->updated_by'
++                
++            );
++        ");
++        if(PEAR::isError($ok)) {
++            return false;
++        } else {
++            return true;
++        }
++    }
++}
+ ?>

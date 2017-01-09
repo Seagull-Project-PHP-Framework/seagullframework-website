@@ -1,0 +1,108 @@
+--- www/themes/default_admin/css/core.php	2006-02-26 15:27:26.000000000 +0100
++++ ../foo/www/themes/default_admin/css/core.php	2006-02-26 18:02:35.000000000 +0100
+@@ -19,7 +19,7 @@
+     margin: 0;
+     padding: 0;
+     color: <?php echo $primaryText ?>;
+-    background-color: <?php echo $tertiaryDark ?>;
++    background-color: <?php echo $tertiary ?>;
+     text-align: center;
+ }
+ ul {
+@@ -116,7 +116,7 @@
+     clear: both;
+     padding: 10px 0 10px;
+     border-top: 1px solid <?php echo $borderLight ?>;
+-    border-bottom: 1px solid <?php echo $borderDark ?>;
++  /*  border-bottom: 1px solid <?php echo $borderDark ?>;*/
+ }
+ #container {
+ 
+@@ -139,14 +139,14 @@
+ #content {
+     clear: both;
+     padding: 5px 8px 0;
+-    background: <?php echo $tertiaryLight ?>; /* FIXME tertiaryLight? */
++    background: <?php echo $tertiaryLighter ?>;
+     -moz-border-radius: 0 0 0.4em 0.4em;
+     border-top: 1px solid <?php echo $borderLight ?>;
+     padding-bottom: 40px; /* TO REMOVE */
+ }
+ #footer {
+     text-align: center;
+-    border-top: 1px solid <?php echo $borderLight ?>;
++    /*border-top: 1px solid <?php echo $borderLight ?>;*/
+     background: <?php echo $tertiary ?>;
+ }
+ 
+@@ -187,7 +187,7 @@
+     color: #000;
+ }
+ #header-right {
+-    background-color: <?php echo $tertiary ?>;
++    background-color: <?php echo $tertiaryLight ?>;
+     border-top: 1px solid <?php echo $borderLight ?>;
+     border-bottom: 1px solid <?php echo $borderDark ?>;
+     text-align: right;
+@@ -207,8 +207,9 @@
+     min-height: 300px;
+     margin: 0 5px;
+     padding-bottom: 3em;
+-    background-color: <?php echo $tertiary ?>;
+-    background-image: url('<?php echo $baseUrl ?>/images/backgrounds/bg_leftcol.jpg');
++    background-color: <?php echo $tertiaryLighter ?>;
++   /* bg_leftcol.jpg should be a gradient from tertiaryLighter to whatever it is now */
++   /* background-image: url('<?php echo $baseUrl ?>/images/backgrounds/bg_leftcol.jpg');*/
+     background-position: top left;
+     background-repeat: repeat-x;
+     border: 1px solid <?php echo $borderDark ?>;
+@@ -218,11 +219,11 @@
+     margin: 0;
+     height: 30px;
+     line-height: 30px;
+-    background: <?php echo $tertiaryLight ?>;
++    background: <?php echo $tertiaryDark ?>;
+     font-weight: bold;
+     font-size: 1.1em;
+     text-align: center;
+-    color: buttonshadow;
++    color: <?php echo $tertiaryDarkest ?>;
+     border-bottom: 1px solid <?php echo $borderDark ?>;
+     -moz-border-radius: 0.4em 0.4em 0 0;
+ }
+@@ -235,7 +236,7 @@
+ #manager-infos {
+     float: left;
+     width: 100%;
+-    background: <?php echo $tertiaryLighter ?>;
++    background: <?php echo $tertiaryDark ?>;
+     border-bottom: 1px solid <?php echo $borderDark ?>;
+     -moz-border-radius: 0.4em 0.4em 0 0;
+ }
+@@ -277,7 +278,7 @@
+     width: 100%;
+     height: 32px;
+     padding: 1px 0;
+-    background: <?php echo $tertiary ?>;
++    background: <?php echo $tertiaryLighter ?>;
+     border-top: 1px solid <?php echo $borderLight ?>;
+     border-bottom: 1px solid <?php echo $borderDark ?>;
+ }
+@@ -422,7 +423,7 @@
+     border-collapse: collapse;
+     border-width: 1px;
+     border-style: solid;
+-    border-color: <?php echo $tertiaryLightest ?> <?php echo $tertiaryDarker ?> <?php echo $tertiaryDarker ?> <?php echo $tertiaryLightest ?>;
++    border-color: <?php echo $tertiaryDarker ?>;
+     font-family: helvetica;
+ }
+ html>body #container table {
+@@ -453,7 +454,7 @@
+     color: <?php echo $tertiaryLightest ?>;
+ }
+ thead tr.infos, tfoot tr.infos {
+-    background: <?php echo $tertiaryDark ?>;
++    background: <?php echo $tertiaryLighter ?>;
+     font-size: 10px;
+     color: <?php echo $primary; ?>;
+ }

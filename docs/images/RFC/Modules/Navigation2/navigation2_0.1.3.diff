@@ -1,0 +1,3043 @@
+Index: lib/SGL/UrlParser/Navigation2Strategy.php
+===================================================================
+--- lib/SGL/UrlParser/Navigation2Strategy.php	(revision 0)
++++ lib/SGL/UrlParser/Navigation2Strategy.php	(revision 0)
+@@ -0,0 +1,77 @@
++<?php
++/**
++ * Strategy for handling URL aliases.
++ *
++ * @package SGL
++ * @author  Matti Tahvonen
++ */
++
++/**
++ * Concrete alias url parser strategy for navigation2
++ *
++ */
++class SGL_UrlParser_Navigation2Strategy extends SGL_UrlParser_SimpleStrategy
++{
++    function SGL_UrlParser_Navigation2Strategy() {
++         // constants needed
++        require_once(SGL_MOD_DIR .'/navigation2/classes/Navitree.php');
++        $this->dbh = & SGL_DB::singleton();
++    }
++    /**
++     * Analyzes querystring content and parses it into module/manager/action and params.
++     *
++     * @param SGL_Url $url
++     * @return array        An array to be assigned to SGL_Url::aQueryData
++     * @todo frontScriptName is already dealt with in SGL_Url constructor, remove from here
++     */
++    function parseQueryString(/*SGL_Url*/$url, $conf)
++    {
++        $aUriParts = SGL_Url::toPartialArray($url->url, $conf['site']['frontScriptName']);
++
++        //    The alias will always be the second uri part in the array
++        //    FIXME: needs to be more flexible
++        $countUriParts = (empty($conf['site']['frontScriptName'])) ? 0 : 1;
++        $ret = array();
++        if (count($aUriParts) > $countUriParts) {
++            $alias = array_shift($aUriParts);
++            if ($countUriParts) {
++                $alias = implode('/',$aUriParts);
++            }
++            
++            // optimizations for this query propably exist, gotta rethink this
++            $result = $this->dbh->getRow("
++                SELECT 
++                    navinode.*, 
++                    LENGTH(navinode.cleanuri) AS urilength,
++                    MAX(LENGTH(navinode.cleanuri)) AS maxurilength
++                FROM navinode 
++                WHERE 
++                    POSITION(navinode.cleanuri IN '$alias') = 1
++                GROUP BY navinode.navinode_id
++                HAVING
++                    urilength = maxurilength
++            ");
++            if(isset($result->navinode_id)) {
++                $tmp = new stdClass();
++                switch($result->type) {
++                    case SGL_NAV2_NODETYPE_URI:
++                        $tmp->url = $result->value . substr($alias,$result->urilength);
++                        break;
++                    case SGL_NAV2_NODETYPE_EXTURI:
++                        header('Location: ' . $result->value);
++                        exit;
++                    case SGL_NAV2_NODETYPE_LINK:
++                        //value has navinode_id to use as an alias
++                        // TODO get linked node and use its value
++                        break;            
++                    case SGL_NAV2_NODETYPE_EMPTY:
++                    default:
++                    break;
++                }
++                $ret = parent::parseQueryString($tmp, $conf);
++            }
++        }
++        return $ret;
++    }
++}
++?>
+\ No newline at end of file
+
+Property changes on: lib/SGL/UrlParser/Navigation2Strategy.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: lib/SGL/FrontController.php
+===================================================================
+--- lib/SGL/FrontController.php	(revision 2606)
++++ lib/SGL/FrontController.php	(working copy)
+@@ -91,14 +91,13 @@
+                 new SGL_Task_SetSystemAlert(
+                 new SGL_Task_BuildView(
+                 new SGL_Task_SetupBlocks(
+-                new SGL_Task_SetupNavigation(
+                 new SGL_Task_SetupGui(
+                 new SGL_Task_SetupWysiwyg(
+                 new SGL_Task_BuildOutputData(
+ 
+                 //  target
+                 new SGL_MainProcess()
+-                ))))))))))))))))));
++                )))))))))))))))));
+             $process->process($input, $output);
+ 
+         } else {
+Index: lib/SGL/Task/Process.php
+===================================================================
+--- lib/SGL/Task/Process.php	(revision 2606)
++++ lib/SGL/Task/Process.php	(working copy)
+@@ -232,7 +232,8 @@
+                 }
+             }
+             //  prepare headers during setup, can be overridden later
+-            header('Last-Modified: ' . gmdate("D, d M Y H:i:s") . ' GMT');
++            // next line commented out by mats to be compatible with ab 
++//            header('Last-Modified: ' . gmdate("D, d M Y H:i:s") . ' GMT');
+             header('Content-Type: text/html; charset=' . $GLOBALS['_SGL']['CHARSET']);
+             header('X-Powered-By: Seagull http://seagullproject.org');
+         }
+@@ -761,49 +762,6 @@
+ }
+ 
+ /**
+- * Builds navigation menus.
+- *
+- * @package Task
+- * @author  Demian Turner <demian@phpkitchen.com>
+- */
+-class SGL_Task_SetupNavigation extends SGL_DecorateProcess
+-{
+-    function process(&$input, &$output)
+-    {
+-        SGL::logMessage(null, PEAR_LOG_DEBUG);
+-
+-        $this->processRequest->process($input, $output);
+-
+-        if ($this->conf['navigation']['enabled'] && !SGL::runningFromCli()) {
+-
+-            //  prepare navigation driver
+-            $navDriver    = $this->conf['navigation']['driver'];
+-            $navDrvFile   = SGL_MOD_DIR . '/navigation/classes/' . $navDriver . '.php';
+-            if (is_file($navDrvFile)) {
+-                require_once $navDrvFile;
+-            } else {
+-                SGL::raiseError('specified navigation driver does not exist',
+-                    SGL_ERROR_NOFILE);
+-            }
+-            if (!class_exists($navDriver)) {
+-                SGL::raiseError('problem with navigation driver object', SGL_ERROR_NOCLASS);
+-            }
+-            $nav = & new $navDriver($output);
+-
+-            //  render navigation menu
+-            $navRenderer = $this->conf['navigation']['renderer'];
+-            $aRes        = $nav->render($navRenderer);
+-            if (!PEAR::isError($aRes)) {
+-                list($sectionId, $html)  = $aRes;
+-                $output->sectionId  = $sectionId;
+-                $output->navigation = $html;
+-                $output->currentSectionName = $nav->getCurrentSectionName();
+-            }
+-        }
+-    }
+-}
+-
+-/**
+  * Setup which Graphical User Interface to use.
+  *
+  * @package Task
+Index: lib/SGL/Request.php
+===================================================================
+--- lib/SGL/Request.php	(revision 2606)
++++ lib/SGL/Request.php	(working copy)
+@@ -106,12 +106,13 @@
+             SGL::logMessage('URI from cache', PEAR_LOG_DEBUG);
+         } else {
+             require_once SGL_CORE_DIR . '/UrlParser/SimpleStrategy.php';
+-            require_once SGL_CORE_DIR . '/UrlParser/AliasStrategy.php';
++            require_once SGL_CORE_DIR . '/UrlParser/Navigation2Strategy.php';
+             require_once SGL_CORE_DIR . '/UrlParser/ClassicStrategy.php';
++            
+ 
+             $aStrats = array(
+                 new SGL_UrlParser_ClassicStrategy(),
+-                new SGL_UrlParser_AliasStrategy(),
++                new SGL_UrlParser_Navigation2Strategy(),
+                 new SGL_UrlParser_SefStrategy(),
+                 );
+             $url = new SGL_URL($_SERVER['PHP_SELF'], true, $aStrats);
+Index: modules/navigation2/lang/brazilian_portuguese-iso-8859-1.php
+===================================================================
+--- modules/navigation2/lang/brazilian_portuguese-iso-8859-1.php	(revision 0)
++++ modules/navigation2/lang/brazilian_portuguese-iso-8859-1.php	(revision 0)
+@@ -0,0 +1,114 @@
++<?php
++$words['Access Key'] = 'Tecla de acesso';
++$words['Target'] = 'Alvo';
++$words['Alias'] = 'Apelido';
++$words['alias'] = 'apelido';
++$words['external URI'] = 'URI externa';
++$words['alias URI'] = 'apelido URI';
++$words['external page URI'] = 'página externa para URI';
++$words['Choose URI from Aliases'] = 'Escolha uma URI dos apelidos';
++$words['Role Name'] = 'Nome do papel';
++$words['Additional navigation aids for better accessibility. Use values like "home", "prev" or "next".'] = 'Ajuda para melhorar a acessibilidade da navegação. Use valores como: "início", "próximo", "anterior"';
++$words['Rel Marker'] = 'Marcador de ponto';
++$words['Any number, which can be pressed with the ALT-key to load the page.'] = 'Qualquer número, que pode ser precionado em conjunto com a tecla ALT para carregar a página';
++$words['Note'] = 'Nota';
++$words['return to category manager'] = 'retornar ao gerenciador de categorias';
++$words['Permissions are set by default to allow all users into all catgories. If you would like to deny a certain group access to a category, choose "no" in response to "has permissions" for the given group.'] = 'Permisões são definidas por padrão para permitir todos usuários em todas as categorias. Se você quiser proibir certo grupo a acessar uma categoria, escolha "não" na resposta "tem permissões" para um dado grupo.';
++$words['With selected section(s)'] = 'Com a(s) seção(ões) selecionada(s)';
++$words['separate with slashes (/)'] = 'separe com barra (/)';
++$words['Browse'] = 'Navegar';
++$words['current style, previewed above'] = 'estilo atual, pré-visualizado acima';
++$words['preview'] = 'pré-visualização';
++$words['return to navigation manager'] = 'retornar ao gerenciador de navegação';
++$words['Last modified'] = 'Última modificação';
++$words['Style Name'] = 'Nome do estilo';
++$words['Navigation menu preview as displayed to the following role'] = 'Menu de navegação pré-visualizado para o seguinte papel';
++$words['Please choose a category from the left to edit'] = 'Por favor escolha uma categoria à esquerda para editar';
++$words['Reorder Categories'] = 'Reordenar categorias';
++$words['Categories reordered successfully'] = 'Categorias reordenada com sucesso';
++$words['Label'] = 'Rótulo';
++$words['Category details successfully updated'] = 'Detalhes da categoria alterados com sucesso';
++$words['Category details updated, no data changed'] = 'Detalhes da categoria atualizado, nenhum dado alterado';
++$words['Pages'] = 'Páginas';
++$words['Page Manager :: Add'] = 'Gerenciar páginas :: Adicionar';
++$words['Page Manager :: Edit'] = 'Gerenciar páginas :: Editar';
++$words['Section ID'] = 'ID da seção';
++$words['Page Title'] = 'Título da página';
++$words['Parent Page'] = 'Página pai';
++$words['static articles'] = 'artigo estático';
++$words['dynamic pages'] = 'páginas dinâmicas';
++$words['Additional params'] = 'Paramêtros adicionais';
++$words['do not add the ?'] = 'não adicione o ?';
++$words['Anchor'] = 'Âncora';
++$words['just the anchor name'] = 'apenas o nome da âncora';
++$words['Status'] = 'Estado';
++$words['check to activate'] = 'selecione para ativar';
++$words['Can view'] = 'Pode ver';
++$words['intro text 1'] = 'texto introdutório 1';
++$words['intro text 2'] = 'texto introdutório 2';
++$words['Categories'] = 'Categorias';
++$words['Category Manager'] = 'Gerenciar Categorias';
++$words['Category ID'] = 'ID da categoria';
++$words['Current Category Name'] = 'Nome da Categoria Atual';
++$words['New Category Name'] = 'Nome da nova categoria';
++$words['Category will be Added Under'] = 'A categoria será adicionada sob';
++$words['Target Parent Category'] = 'Apontar como categoria principal';
++$words['Add Category'] = 'Adicionar categoria';
++$words['Add Root Category'] = 'Adicionar categoria raiz';
++$words['Edit Category'] = 'Editar categoria';
++$words['Move Category'] = 'Mover categoria';
++$words['Delete Category'] = 'Remover categoria';
++$words['You are here'] = 'Você está aqui';
++$words['category'] = 'categoria';
++$words['Category'] = 'Categoria';
++$words['Please select a new parent category'] = 'Por favor selecione uma nova categoria pai';
++$words['Please enter a value in the field before submitting'] = 'Por favor digite um valor no campo antes de submeter';
++$words['The category has successfully been updated'] = 'Categoria atualizada';
++$words['The category has successfully been moved'] = 'Categoria movida';
++$words['The category has successfully been added'] = 'Categoria adicionada';
++$words['The category has successfully been deleted'] = 'Categoria removida';
++$words['Root'] = 'Raiz';
++$words['Editing a Category'] = 'Editar a categoria';
++$words['Adding a New Category'] = 'Adicionar a nova categoria';
++$words['Moving a Category'] = 'Mover a categoria';
++$words['Deleting a Category'] = 'Remover a categoria';
++$words['Category to Delete'] = 'Categoria a ser removida';
++$words['do not delete root category'] = 'não remova a categoria raiz';
++$words['Welcome to Category Manager'] = 'Bem-vindo a Administração de categoria';
++$words['Permissions Mgr'] = 'Gerenciar Permissões';
++$words['Current Category'] = 'Categoria Atual';
++$words['Current'] = 'Atual';
++$words['Group Name'] = 'Nome do Grupo';
++$words['Has Permissions'] = 'Tem permissões';
++$words['Yes'] = 'Sim';
++$words['No'] = 'Não';
++$words['perms successfully updated'] = 'permissões atualizada com sucesso';
++$words['Page Manager'] = 'Gerenciador de páginas';
++$words['new section'] = 'Nova página';
++$words['Reorder sections'] = 'Reordenar seções';
++$words['Resource URI'] = 'URI de recurso';
++$words['Parent ID'] = 'ID do pai';
++$words['Order'] = 'Ordenar';
++$words['Move/Edit'] = 'Mover/Editar';
++$words['Delete selected section(s)'] = 'Remover a(s) seçõe(s) elecionada(s)';
++$words['Modify nav bar appearance'] = 'Modificar a aparencia da barra de navegação';
++$words['Navigation Style Manager'] = 'Gerenciador de estilo de navegação';
++$words['new style'] = 'novo estilo';
++$words['edit navigation template'] = 'editar tema de navegação';
++$words['Sections reordered successfully'] = 'Seções reordenadas com sucesso';
++$words['Section successfully added'] = 'Seção adicionada com sucesso';
++$words['The selected section(s) have successfully been deleted'] = 'A(s)seção(oes) selecionada(s) foi(ram) atualizada(s) com sucesso';
++$words['Section details successfully updated'] = 'Detalhe da seção atualizado com sucesso';
++$words['A section may not be a parent to itself and therefore was not moved.'] = 'Uma seção nao pode ser filha de sí mesma, portanto nao houve alteração';
++$words['The default style may not be modified'] = 'O estilo padrao nao pode ser alterado';
++$words['The selected style has been deleted successfully'] = 'O estilo selecionado foi removido com suceso';
++$words['Current style successfully changed'] = 'Estilo atual atualizado com sucesso';
++$words['Style values successfully saved'] = 'Valores de estilo salvos com sucesso';
++$words['Section details updated, no data changed'] = 'Detalhes da seção atualizado, nenhum dado alterado';
++$words['static article title'] = 'título do artigo estático';
++$words['Add an alias?'] = 'Adicionar um apelido';
++$words['wiki page URL'] = 'URL da página do wiki';
++$words['manager'] = 'gerente';
++$words['module'] = 'modulo';
++$words['none'] = 'nenhuma';
++?>
+\ No newline at end of file
+
+Property changes on: modules/navigation2/lang/brazilian_portuguese-iso-8859-1.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/czech-iso-8859-2.php
+===================================================================
+--- modules/navigation2/lang/czech-iso-8859-2.php	(revision 0)
++++ modules/navigation2/lang/czech-iso-8859-2.php	(revision 0)
+@@ -0,0 +1,28 @@
++<?php
++    $words = array(
++/*  SECTION MANAGER */
++        'Page Manager' => 'Administrace stránek',
++        'new section' => 'Nová stránka',
++        'Reorder sections' => 'Pøeøadit kategorie',
++        'Resource URI' => 'URL zdroje',
++        'Parent ID' => 'Parent ID',
++        'Order' => 'Seøadit',
++        'Move/Edit' => 'Posunout/Editovat',
++        'Delete selected section(s)' => 'Smazat vybrané sekce',
++        'Modify nav bar appearance' => 'Upravit vlastnosti navigaèního menu',
++        'Navigation Style Manager' => 'Administrace navigaèního menu',
++        'new style' => 'nový styl',
++        'edit navigation template' => 'editovat navigaèní pøedlohu',
++
++/*  MESSAGES    */
++        'Sections reordered successfully' => 'Kategorie byly pøeøazeny',
++        'Section successfully added' => 'Kategorie byla pøidána',
++        'The selected section(s) have successfully been deleted' => 'Vybrané kategorie byly smazány',
++        'Section details successfully updated' => 'Detaily kategorie byly aktualizovány',
++        'A section may not be a parent to itself and therefore was not moved.' => 'Kategorie nemù¾e být rodièem sama sobì a proto nebyla pøesunuta.',
++        'The default style may not be modified' => 'Vychozí styl nemù¾e být upraven',
++        'The selected style has been deleted successfully' => 'Vybraný styl byl smazán',
++        'Current style successfully changed' => 'Stávající styl byl zmìnìn',
++        'Style values successfully saved' => 'Nastavení stylu bylo ulo¾eno'
++    );
++?>
+\ No newline at end of file
+
+Property changes on: modules/navigation2/lang/czech-iso-8859-2.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/polish-iso-8859-2.php
+===================================================================
+--- modules/navigation2/lang/polish-iso-8859-2.php	(revision 0)
++++ modules/navigation2/lang/polish-iso-8859-2.php	(revision 0)
+@@ -0,0 +1,107 @@
++<?php
++/*
++  Language-file polish-iso-8859-2.php
++  Author: Tomasz Osmialowski <ichtis@gmail.com>
++*/
++    $words = array(
++/*  SECTION MANAGER */
++        'Section Manager' => 'Menad¿er Sekcji',
++        'New section' => 'Nowa sekcja',
++        'Reorder sections' => 'Zmieñ kolejno¶æ sekcji',
++        'Resource URI' => '¬ród³o URI',
++        'Parent ID' => 'ID rodzica',
++        'Order' => 'Kolejno¶æ',
++        'Navigation Style Manager' => 'Menad¿er Stylu Nawigacji',
++        'Access Key' => 'Skrót klawiszowy',
++        'Rel Marker' => 'Marker',
++        'Any number, which can be pressed with the ALT-key to load the page.' => 'Jakakolwiek liczba, która mo¿e byæ po naci¶niêciu z klawiszem ALT ³adowaæ stronê.',
++        'Additional navigation aids for better accessibility. Use values like "home", "prev" or "next".' => 'Dodatkowa pomoc w nawigacji dla lepszej dostêpno¶ci. U¿yj warto¶ci np: "g³ówna", "poprzedni" lub "nastêpny".',
++
++/* Add / Edit template */
++        'Add section' => 'Dodaj sekcjê',
++        'Edit section' => 'Edytuj sekcjê',
++        'Section Title' => 'Nazwa sekcji',
++        'Parent Section' => 'Nazwa sekcji rodzica',
++        'Top level (no parent)' => 'Poziom g³ówny (brak rodzica)',
++        'Target' => 'Typ',
++        'Publish' => 'Publikuj',
++        'Select a content' => 'Zaznacz artyku³', // 'Select an article',
++        'pre-existing static content' => 'wybrany artyku³',
++        'output from specified module' => 'rezultat modu³u',
++        'select where your content is coming from' => 'zaznacz sk±d pochodzi zawarto¶æ',
++        'Alias' => 'Alias',
++        'Add an alias' => 'Dodaj alias',
++        'Automatic alias' => 'Automatyczne alisy',
++        'external URI' => 'zewnêtrzy URI',
++        'alias URI' => 'alias URI',
++        'link to section' => 'link do sekcji',
++        'addon' => 'dodatek',
++        'empty link' => 'pusty link',
++        'External section URI' => 'Adres URI zewnêtrznej sekcji',
++        'Choose section' => 'Wybierz sekcjê',
++        'Addon class name' => 'Dodatkowa nazwa klasy',
++        'Choose class name' => 'Wybierz nazwê klasy',
++        'Addon description' => 'Dodatkowy opis',
++        'Additional params' => 'Dodatkowe parametry',
++        'Anchor' => 'Odsy³acz',
++        'just the anchor name' => 'w³a¶ciwa nazwa odsy³acza',
++        'specify the section under which yours will be placed' => 'okre¶l sekcjê, pod któr± zostanie umieszczony',
++        'Can view' => 'Widoczny',
++        'All roles' => 'Wszystkie role',
++        'Please fill in a title' => 'Proszê podaæ tytu³',
++        'You cannot activate unless you first activate.' => 'Nie mo¿esz aktywowaæ "%1", je¿eli nie uaktywnisz "%2"',
++        'To access this section, a user must have access to the parent section.' => 'Aby mieæ dostêp, u¿ytkownik musi mieæ dostêp do nadrzêdnej sekcji. Jedna lub wiêcej wybranych ról nie ma dostêpu do "%s".',
++        'You must select a valid article' => 'Musisz zaznaczyæ wa¿ny artyku³. Je¿eli brak na li¶cie, proszê najpierw stworzyæ statyczny artyku³, do którego mo¿na podaæ link', // You must select a valid article. If none in the list, please first create a static article to link to',
++
++
++/*  MESSAGES    */
++        'Sections reordered successfully' => 'Zmieniono kolejno¶æ sekcji',
++        'Section successfully added' => 'Dodano sekcjê',
++        'Section successfully added but alias creation failed as there can be no duplicates' => 'Dodano sekcjê, ale alias nie mo¿e byæ utworzony, aby unikn±æ powielenia',
++        'The selected section(s) have successfully been deleted' => 'Zaznaczone sekcje zosta³y usuniête',
++        'Section details successfully updated' => 'Szczegó³y sekcji zosta³y zmienione',
++        'Current style successfully changed' => 'Wybrany styl zosta³ pomy¶lnie zmieniony',
++        'Section details updated, no data changed' => 'Szczegó³y sekcji zosta³y zmienione, bez zmiany danych',
++
++/*  CATEGORY MGR    */
++        'Category Manager' => 'Menad¿er Kategorii',
++        'Current Category Name' => 'Nazwa wybranej kategorii',
++        'Target Parent Category' => 'Docelowy rodzic kategorii',
++        'Add Category' => 'Dodaj kategoriê',
++        'Add Root Category' => 'Dodaj g³ówn± kategoriê',
++        'category' => 'kategoria',
++        'The category has successfully been deleted' => 'Kategoria zosta³a poprawnie usuniêta',
++        'do not delete root category' => 'Obecnie nie mo¿esz usun±æ g³ównej kategorii, spróbuj zamiast tego zmieniæ nazwê', // Currently you cannot delete the root category, trying renaming it instead',
++        'Please choose a category from the left to edit' => 'Proszê wybraæ kategoriê do edycji',
++        'Reorder Categories' => 'Kolejno¶æ Kategorii',
++        'Categories reordered successfully' => 'Kolejno¶æ kategorii zosta³a zmieniona',
++        'Label' => 'Etykieta',
++        'Category details successfully updated' => 'Szczegó³y kategorii zosta³y zmienione',
++
++
++/*  PERMISSIONS */
++        'Has Permissions' => 'Uprawnienia',
++        'Yes' => 'Tak',
++        'No' => 'Nie',
++        'Browse' => 'Przegl±daj',
++        'current style, previewed above' => 'obecny styl, prezentowany powy¿ej',
++        'preview' => 'podgl±d',
++        'return to navigation manager' => 'powrót do menad¿era',
++        'Last modified' => 'Ostatnio modyfikowany',
++        'Style Name' => 'Nazwa Stylu',
++        'separate with slashes (/)' => 'oddzielone uko¶nikami (/)',
++        'Navigation menu preview as displayed to the following role' => 'Nawigacja menu prezentuje do wy¶wietlenia do kolejnych ról',
++        'Permissions are set by default to allow all users into all catgories. If you would like to deny a certain group access to a category, choose "no" in response to "has permissions" for the given group.' => 'Standardowo wszystkie uprawnienia s± udostêpnione dla wszystkich u¿ytkowników we wszystkich kategoriach. Je¿eli chcesz ograniczyæ dostêp dla ustalonej grupy do kategorii, wybierz "nie" w opcji "uprawnienia" dla okre¶lonej grupy.',
++        'static article title' => 'nazwa statycznego artyku³u',
++        'Manager' => 'Menad¿er',
++        'Module' => 'Modu³',
++        'none' => 'brak',
++        'Section info' => 'Zawarto¶æ',
++        'Accessibility' => 'Opcje dodatkowe',
++        'Select roles to which you want to grant access' => 'Wybierz role, którym chcesz daæ dostêp',
++        'Section Manager :: Add' => 'Menad¿er Sekcji :: Dodaj',
++        'Editing options' => 'Dostêpno¶æ',
++        'Section details successfully updated but alias creation failed as there can be no duplicates' => 'Szczegó³y sekcji zosta³y zmienione, ale stworzony alias nie mo¿e byæ zduplikowany',
++        'Categories successfully reordered' => 'Kolejno¶æ kategorii zosta³a zmieniona',
++ );
++?>
+
+Property changes on: modules/navigation2/lang/polish-iso-8859-2.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/russian-windows-1251.php
+===================================================================
+--- modules/navigation2/lang/russian-windows-1251.php	(revision 0)
++++ modules/navigation2/lang/russian-windows-1251.php	(revision 0)
+@@ -0,0 +1,139 @@
++<?php
++
++$words = array(
++
++/* SectionMgr */
++
++    // page titles
++    'Section Manager'        => 'Óïðàâëåíèå ðàçäåëàìè',
++    'Section Manager :: Add' => 'Óïðàâëåíèå ðàçäåëàìè :: Äîáàâëåíèå',
++
++    // actions
++    'New section'      => 'Íîâûé ðàçäåë',
++    'Reorder sections' => 'Ïîðÿäîê ðàçäåëîâ',
++    'Add section'      => 'Äîáàâëåíèå ðàçäåëà',
++    'Edit section'     => 'Ðåäàêòèðîâàíèå ðàçäåëà',
++    'Browse'           => 'Ïðîñìîòð',
++
++    // list
++    'Resource URI' => 'URI ðåñóðñà',
++    'Order'        => 'Ïîðÿäîê',
++    'Parent ID'    => 'ID ðîäèòåëÿ',
++    'Alias'        => 'Alias', // åñòü èäåè?
++
++    // add / edit - section tab
++    'Section info'                                         => 'Îïèñàíèå',
++    'Section Title'                                        => 'Çàãîëîâîê',
++    'Parent Section'                                       => 'Ðîäèòåëüñêèé ðàçäåë',
++    'Top level (no parent)'                                => 'Êîðíåâîé óðîâåíü (íåò ðîäèòåëÿ)',
++    'specify the section under which yours will be placed' => 'óêàæèòå ðàçäåë, ïîä êîòîðûì áóäåò ðàñïîëîæåí Âàø ðàçäåë',
++    'Target'                                               => 'Íàçíà÷åíèå',
++    'select where your content is coming from'             => 'óêàæèòå òèï ñîäåðæàíèÿ',
++    'pre-existing static content'                          => 'ñóùåñòâóþùèé ñòàòè÷íûé êîíòåíò',
++    'output from specified module'                         => 'âûâîä óêàçàííîãî ìîäóëÿ',
++    'external URI'                                         => 'âíåøíèé URI',
++    'link to section'                                      => 'ññûëêà íà ðàçäåë',
++    'addon'                                                => 'äîáàâëåíèå (add-on)',
++    'empty link'                                           => 'ïóñòàÿ ññûëêà',
++    'static article title'                                 => 'çàãëàâèå ñòàòè÷íîé ñòàòüè',
++    'Module'                                               => 'Ìîäóëü',
++    'Manager'                                              => 'Ìanager-êëàññ',
++    'none'                                                 => 'íå óêàçàíî',
++    'Additional params'                                    => 'Äîïîëíèòåëüíûå ïàðàìåòðû',
++    'separate with slashes (/)'                            => 'ðàçäåëÿéòå ïàðàìåòðû çíàêîì /',
++    'Anchor'                                               => 'ßêîðü (anchor)',
++    'just the anchor name'                                 => 'òîëüêî èìÿ ÿêîðÿ',
++    'Add an alias'                                         => 'Äîáàâèòü alias',
++    'Automatic alias'                                      => 'Àâòîìàòè÷åñêèé alias',
++    'alias URI'                                            => 'alias URI',
++    'an alias is just a search-engine-friendly URL'        => 'alias - ýòî äðóæåëþáíûé äëÿ ïîèñêîâîé ñèñòåìû URL, íàïðèìåð my-article-name âìåñòî /article/view/frmArticleId/23/',
++    'Choose section'                                       => 'Óêàæèòå ðàçäåë',
++    'Addon class name'                                     => 'Èìÿ êëàññà äîáàâëåíèÿ',
++    'Choose class name'                                    => 'Óêàæèòå èìÿ êëàññà',
++    'Addon description'                                    => 'Îïèñàíèå äîáàâëåíèÿ',
++    'External section URI'                                 => 'URI âíåøíåãî ðàçäåëà',
++
++    'Select a content'                                     => 'Âûáåðèòå ñòàòüþ',
++    'You must select a valid article'                      => 'Âûáåðèòå ñóùåñòâóþùóþ ñòàòüþ. Åñëè òàêîâîé íåò â ñïèñêå, ïîæàëóéñòà, ñíà÷àëà ñîçäàéòå ñòàòè÷íóþ ñòàòüþ',
++
++    // editing tab
++    'Editing options' => 'Äîñòóï',
++    'Publish'         => 'Ïîêàçûâàòü',
++    'Can view'        => 'Äîñòóï',
++    'All roles'       => 'Âñå ðîëè',
++    'Select roles to which you want to grant access' => 'Óêàæèòå ðîëè, êîòîðûå áóäóò èìåòü äîñòóï ê äàííîìó ðàçäåë',
++
++    // accessibility tab
++    'Accessibility' => 'Äîñòóïíîñòü',
++    'Access Key'    => 'Access key',
++    'Rel Marker'    => 'Rel marker',
++    'Any number, which can be pressed with the ALT-key to load the page.'                            => 'Ëþáîé ñèìâîë, êîòîðûé ìîæåò áûòü íàæàò êîìáèíàöèåé êëàâèø ALT+ñèìâîë äëÿ çàãðóçêè ñòðàíèöû',
++    'Additional navigation aids for better accessibility. Use values like "home", "prev" or "next".' => 'Âñïîìîãàòåëüíîå ñðåäñòâî äëÿ ëó÷øåãî äîñòóïà. Èñïîëüçóéòå òàêèå çíà÷åíèÿ, êàê "home", "prev" èëè "next"',
++
++    // validate
++    'Please fill in a title'                                                 => 'Ïîæàëóéñòà, óêàæèòå çàãîëîâîê',
++    'You cannot activate unless you first activate.'                         => 'Âû íå ìîæåòå àêòèâèðîâàòü ðàçäåë "%1" ïîêà íå àêòèâèðîâàí ðàçäåë "%2"',
++    'To access this section, a user must have access to the parent section.' => 'Äëÿ äîñòóïà ê ýòîìó ðàçäåëó ïîëüçîâàòåëü äîëæåí èìåòü äîñòóï ê ðîäèòåëüñêîìó ðàçäåëó. Èëè îäíà èëè íåñêîëüêî èç âûáðàííûõ Âàìè ðîëåé íå èìååò äîñòóïà ê ðàçäåëó "%s"',
++
++    // messages
++    'Sections reordered successfully'                                     => 'Ðàçäåëû óñïåøíî óïîðÿäî÷åíû',
++    'Section successfully added'                                          => 'Ðàçäåë óñïåøíî äîáàâëåí',
++    'Section details successfully updated'                                => 'Ðàçäåë óñïåøíî îòðåäàêòèðîâàí',
++    'Section details updated, no data changed'                            => 'Ðàçäåë óñïåøíî îòðåäàêòèðîâàí, äàííûå íå èçìåíåíû',
++    'The selected section(s) have successfully been deleted'              => 'Âûáðàííûå ðàçäåëû óñïåøíî óäàëåíû',
++    'Section successfully added but alias creation failed as there can '.
++    'be no duplicates'                                                    => 'Ðàçäåë óñïåøíî äîáàâëåí, íî URL alias íå áûë ñîçäàí, ò.ê. alias ñ óêàçàííûì íàçâàíèåì óæå ñóùåñòâóåò',
++    'Section details successfully updated but alias creation failed as '.
++    'there can be no duplicates'                                          => 'Ðàçäåë óñïåøíî îòðåäàêòèðîâàí, íî URL alias íå áûë ñîçäàí, ò.ê. alias ñ óêàçàííûì íàçâàíèåì óæå ñóùåñòâóåò',
++
++
++/* NavStyleMgr */
++
++    // title
++    'Navigation Style Manager'  => 'Óïðàâëåíèå ñòèëåì íàâèãàöèè',
++
++    // list
++    'current style, previewed above'                             => 'òåêóùèé ñòèëü, ïîêàçàííûé âûøå, â ðàìêå ïðåäâàðèòåëüíûé ïðîñìîòð',
++    'preview'                                                    => 'ïðåäâàðèòåëüíûé ïðîñìîòð',
++    'Navigation menu preview as displayed to the following role' => 'Ïðåäâàðèòåëüíûé ïðîñìîòð ìåíþ íàâèãàöèè ïîêàçàí äëÿ ñëåäóþùåé ðîëè',
++    'Style Name'                                                 => 'Íàçâàíèå ñòèëÿ',
++    'Last modified'                                              => 'Ïîñëåäíèå èçìåíåíèÿ',
++    'return to navigation manager'                               => 'âåðíóòüñÿ ê óïðàâëåíèþ íàâèãàöèåé',
++
++    // messages
++    'Current style successfully changed' => 'Òåêóùèé ñòèëü óñïåøíî èçìåíåí',
++
++
++/* CategoryMgr */
++
++    // titles
++    'Category Manager' => 'Óïðàâëåíèå êàòåãîðèÿìè',
++
++    // list
++    'Add Category'                                           => 'Äîáàâèòü êàòåãîðèþ',
++    'Add Root Category'                                      => 'Äîáàâèòü êîðíåâóþ êàòåãîðèþ',
++    'category'                                               => 'êàòåãîðèÿ',
++    'Please choose a category from the left to edit'         => 'Ïîæàëóéñòà, âûáåðèòå êàòåãîðèþ ñëåâà äëÿ ðåäàêòèðîâàíèÿ',
++    'Target Parent Category'                                 => 'Ðîäèòåëüñêàÿ êàòåãîðèÿ',
++    'Current Category Name'                                  => 'Èìÿ òåêóùåé êàòåãîðèè',
++    'Has Permissions'                                        => 'Èìååò äîñòóï',
++    'Yes'                                                    => 'Äà',
++    'No'                                                     => 'Íåò',
++    'Permissions are set by default to allow all users into '.
++    'all catgories. If you would like to deny a certain '.
++    'group access to a category, choose "no" in response '.
++    'to "has permissions" for the given group.'              => 'Ïî óìîë÷àíèþ âñå ïîëüçîâàòåëè èìåþò äîñòóï êî âñåì êàòåãîðèÿì. Â ñëó÷àå, åñëè Âû õîòèòå îãðàíè÷èòü äîñòóï ãðóïïå ïîëüçîâàòåëåé ê âûáðàííîé êàòåãîðèè, òî âûáèðèòå îïöèþ "íåò" ó ñîîòâåòñòâóþùåé ãðóïïû',
++
++    // reorder
++    'Reorder Categories' => 'Óïîðÿäî÷èòü êàòåãîðèè',
++    'Label'              => 'Íàçâàíèå',
++
++    // Messages
++    'Category details successfully updated'      => 'Êàòåãîðèÿ óñïåøíî îòðåäàêòèðîâàíà',
++    'The category has successfully been deleted' => 'Êàòåãîðèÿ óñïåøíî óäàëåíà',
++    'Categories successfully reordered'          => 'Êàòåãîðèè óñïåøíî óïîðÿäî÷åíû',
++    'Categories reordered successfully'          => 'Êàòåãîðèè óñïåøíî óïîðÿäî÷åíû',
++    'do not delete root category'                => 'Íà äàííûé ìîìåíò íåâîçìîæíî óäàëèòü êîðíåâóþ êàòåãîðèþ, ïîïðîáóéòå âìåñòî ýòîãî åå ïåðåèìåíîâàòü',
++);
++
++?>
+\ No newline at end of file
+
+Property changes on: modules/navigation2/lang/russian-windows-1251.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/chinese-big5.php
+===================================================================
+--- modules/navigation2/lang/chinese-big5.php	(revision 0)
++++ modules/navigation2/lang/chinese-big5.php	(revision 0)
+@@ -0,0 +1,108 @@
++<?php
++$words['Choose URI from Aliases'] = '±q§O¦W¤¤¿ï¾Üºô§}';
++$words['Additional navigation aids for better accessibility. Use values like "home", "prev" or "next".'] = '¨ä¥L¾ÉÄý¥\ ¯à¥i¥HÅýºô¯¸§ó¨ã¿Ë©M¤O¡A¨Ï¥Î¹³¬O "­º­¶"¡B"¤W¤@­¶"©Î"¤U¤@­¶"µ¥¶µ¥Ø¡C';
++$words['Please choose a category from the left to edit'] = '½Ð±q¥ªÃä¿ï¾Ü¤@­ÓÃþ§O¨Ó½s¿è';
++$words['Reorder Categories'] = '­«·s±Æ§ÇÃþ§O';
++$words['Categories reordered successfully'] = 'Ãþ§O­«·s±Æ§Ç¦¨¥\ ';
++$words['Label'] = '¼ÐÅÒ';
++$words['Category details successfully updated'] = 'Ãþ§O²Ó¸`¦¨¥\ §ó·s';
++$words['Category details updated, no data changed'] = 'Ãþ§O²Ó¸`§ó·s¤F¡A¦ý¬O¨S¦³¸ê®Æ²§°Ê';
++$words['Role Name'] = '¨¤¦â¦WºÙ';
++$words['Browse'] = 'ÂsÄý';
++$words['current style, previewed above'] = '¥Ø«e­·®æ¡A±q¤W­±¹wÄý';
++$words['preview'] = '¹wÄý';
++$words['return to navigation manager'] = '¦^¨ì¾ÉÄý­º­¶';
++$words['Last modified'] = '³Ì«á§ó·s';
++$words['Style Name'] = '­·®æ¦WºÙ';
++$words['With selected section(s)'] = '¿ï¾Üªº°Ï°ì';
++$words['separate with slashes (/)'] = '¥H±×½u(/)°Ï¹j';
++$words['Navigation menu preview as displayed to the following role'] = '¤U­±¨¤¦â¨Ï¥Îªº¾ÉÄý¿ï³æ¹wÄý';
++$words['Note'] = '³Æµù';
++$words['Permissions are set by default to allow all users into all catgories. If you would like to deny a certain group access to a category, choose "no" in response to "has permissions" for the given group.'] = '¹w³]Åv­­·|¤¹³\©Ò¦³¨Ï¥ÎªÌ¬Ý¨ì©Ò¦³Ãþ§O¡A¦pªG±z§Æ±æ¦b¬Y¨Ç¸s²Õ¤¤°±¥Î¥i¥H¿ï¾Ü \\\\\"no\\\\\" ¨Ó¨ú¥N \\\\\"has permissions\\\\\"¡C';
++$words['return to category manager'] = '¦^¨ìÃþ§OºÞ²z';
++$words['Access Key'] = '§Ö³tÁä';
++$words['Rel Marker'] = 'Rel Marker';
++$words['Any number, which can be pressed with the ALT-key to load the page.'] = '¥ô·N¼Æ¦r¡A¥i¥H¥Î¨Ó·f°t ALT ÁäÅª¨ú­¶­±¡C';
++$words['Target'] = '¥Ø¼Ð';
++$words['alias'] = 'Âà§}';
++$words['Alias'] = '¥NºÙ';
++$words['external URI'] = '¥~³¡ºô§}';
++$words['alias URI'] = 'Âà´«ºô§}';
++$words['external page URI'] = '¥~³¡­¶­±ºô§}';
++$words['Pages'] = '¿ï³æ';
++$words['Page Manager'] = '¿ï³æºÞ²z';
++$words['Page Manager :: Add'] = '¿ï³æºÞ²z :: ·s¼W';
++$words['Page Manager :: Edit'] = '¿ï³æºÞ²z :: ½s¿è';
++$words['Section ID'] = '½s¸¹';
++$words['Page Title'] = '¼ÐÃD';
++$words['Parent Page'] = '¤÷¶¥';
++$words['static articles'] = 'ÀRºA¤å³¹';
++$words['dynamic pages'] = '°ÊºAºô­¶';
++$words['Additional params'] = '°Ñ¼Æ';
++$words['do not add the ?'] = '¤£­n¥[?²Å¸¹';
++$words['Anchor'] = 'Áã';
++$words['just the anchor name'] = 'Áã¦WºÙ';
++$words['check to activate'] = '±Ò¥Î';
++$words['Can view'] = '¤¹³\ÂsÄý';
++$words['intro text 1'] = '¤¶²Ð1';
++$words['intro text 2'] = '¤¶²Ð2';
++$words['Section details updated, no data changed'] = '°Ï°ì²Ó¸`§ó·s¡A¸ê®Æ¨S¦³§ïÅÜ';
++$words['Categories'] = '¤ÀÃþ';
++$words['Category Manager'] = '¤ÀÃþºÞ²z';
++$words['Category ID'] = '¤ÀÃþ½s¸¹';
++$words['Current Category Name'] = '¥Ø«e¤ÀÃþ¦WºÙ';
++$words['New Category Name'] = '·s¤ÀÃþ¦WºÙ';
++$words['Category will be Added Under'] = '¤ÀÃþ±N·s¼W¦Ü';
++$words['Target Parent Category'] = '¤÷¤ÀÃþ';
++$words['Add Category'] = '·s¼W¤ÀÃþ';
++$words['Add Root Category'] = '·s¼W®Ú¤ÀÃþ';
++$words['Edit Category'] = '½s¿è¤ÀÃþ';
++$words['Move Category'] = '²¾°Ê¤ÀÃþ';
++$words['Delete Category'] = '§R°£¤ÀÃþ';
++$words['You are here'] = '±z¦b¦¹';
++$words['category'] = '¤ÀÃþ';
++$words['Category'] = '¤ÀÃþ';
++$words['Please select a new parent category'] = '½Ð¿ï¾Ü¤@­Ó·sªº¤÷¤ÀÃþ';
++$words['Please enter a value in the field before submitting'] = '½Ð¦b°e¥X«e¶ñ¼g¸ê®Æ';
++$words['The category has successfully been updated'] = '¤ÀÃþ§ó·s§¹¦¨';
++$words['The category has successfully been moved'] = '¤ÀÃþ²¾°Ê§¹¦¨';
++$words['The category has successfully been added'] = '¤ÀÃþ·s¼W§¹¦¨';
++$words['The category has successfully been deleted'] = '¤ÀÃþ§R°£§¹¦¨';
++$words['Root'] = '®Ú';
++$words['Editing a Category'] = '½s¿è¤ÀÃþ';
++$words['Adding a New Category'] = '·s¼W·s¤ÀÃþ';
++$words['Moving a Category'] = '²¾°Ê¤ÀÃþ';
++$words['Deleting a Category'] = '·Ç³Æ§R±¼ªº¤ÀÃþ';
++$words['Category to Delete'] = '­n§Rªº¤ÀÃþ';
++$words['do not delete root category'] = '¤£­n§R±¼®Ú¤ÀÃþ';
++$words['Welcome to Category Manager'] = 'Åwªï¥úÁ{¤ÀÃþºÞ²z';
++$words['Permissions Mgr'] = 'Åv­­ºÞ²z';
++$words['Current Category'] = '¥Ø«e¤ÀÃþ';
++$words['Current'] = '¥Ø«e';
++$words['Group Name'] = '¸s²Õ¦W';
++$words['Has Permissions'] = '¦³Åv­­';
++$words['Yes'] = '¬O';
++$words['No'] = '§_';
++$words['perms successfully updated'] = 'Åv­­¤w§ó·s';
++$words['new section'] = '·s¼W¿ï³æ';
++$words['Reorder sections'] = '­«±Æ¶¶§Ç';
++$words['Resource URI'] = 'ºô§}';
++$words['Status'] = 'ª¬ºA';
++$words['Parent ID'] = '¤÷­¶';
++$words['Order'] = '¶¶§Ç';
++$words['Move/Edit'] = '²¾°Ê/½s¿è';
++$words['Delete selected section(s)'] = '§R°£¿ï¾Üªº°Ï¬q';
++$words['Modify nav bar appearance'] = '­×§ï¿ï³æ¥~Æ[';
++$words['Navigation Style Manager'] = '¿ï³æ­·®æºÞ²z';
++$words['new style'] = '·s¼W­·®æ';
++$words['edit navigation template'] = '½s¿è¿ï³æ¼ÒªO';
++$words['Sections reordered successfully'] = '§¹¦¨°Ï¬q¶¶§Ç­«±Æ';
++$words['Section successfully added'] = '§¹¦¨°Ï¬q·s¼W';
++$words['The selected section(s) have successfully been deleted'] = '¿ï¾Üªº°Ï¬q¤w¸g§R°£';
++$words['Section details successfully updated'] = '§¹¦¨°Ï¬q¤º®e§ó·s';
++$words['A section may not be a parent to itself and therefore was not moved.'] = '°Ï¬q¤£¥i¬°¦Û¤vªº¤÷½ú¦]¦¹¨S¦³²¾°Ê.';
++$words['The default style may not be modified'] = '¤º©w­·®æ¤£¥i­×§ï';
++$words['The selected style has been deleted successfully'] = '¿ï¾Üªº­·®æ¤w¸g§R°£';
++$words['Current style successfully changed'] = '¥Ø«e­·®æ¤w¸g§ïÅÜ';
++$words['Style values successfully saved'] = '§¹¦¨­·®æ¤º®eÀx¦s';
++?>
+\ No newline at end of file
+
+Property changes on: modules/navigation2/lang/chinese-big5.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/portuguese-iso-8859-1.php
+===================================================================
+--- modules/navigation2/lang/portuguese-iso-8859-1.php	(revision 0)
++++ modules/navigation2/lang/portuguese-iso-8859-1.php	(revision 0)
+@@ -0,0 +1,29 @@
++<?php
++    $words = array(
++/*  SECTION MANAGER */
++        'Page Manager' => 'Gestor de Paginas',
++        'new section' => 'Nova pagina',
++        'Reorder sections' => 'Reordenar secções',
++        'Resource URI' => 'URI do recurso',
++        'Parent ID' => 'ID Pai',
++        'Order' => 'Ordem',
++        'Move/Edit' => 'Movee/Editar',
++        'Delete selected section(s)' => 'Remover secção seleccionada(s)',
++        'Modify nav bar appearance' => 'Modificar aspecto da nav bar',
++        'Navigation Style Manager' => 'Navigation Style Manager',
++        'new style' => 'novo estilo',
++        'edit navigation template' => 'editar template da navegação',
++
++/*  MESSAGES    */
++        'Sections reordered successfully' => 'Secções reordenas com sucesso',
++        'Section successfully added' => 'Secção adicionada com sucesso',
++        'The selected section(s) have successfully been deleted' => 'As secções selecionadas foram removidas com sucesso',
++        'Section details successfully updated' => 'Dados das secções actualizados com sucesso',
++        'A section may not be a parent to itself and therefore was not moved.' => 'Uma secção não pode ser pai de si própria como tal não foi movida.',
++        'The default style may not be modified' => 'O estilo por defeito não pode ser modificado',
++        'The selected style has been deleted successfully' => 'O estilo selecionado foi removido com sucesso',
++        'Current style successfully changed' => 'O estilo actual foi alterado com sucesso',
++        'Style values successfully saved' => 'Os valores do estilo foram gravados com sucesso',
++        'Section details updated, no data changed' => 'Os detalhes da secção foram actualizados, sem alteração de dados',
++    );
++?>
+\ No newline at end of file
+
+Property changes on: modules/navigation2/lang/portuguese-iso-8859-1.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/spanish-utf-8.php
+===================================================================
+--- modules/navigation2/lang/spanish-utf-8.php	(revision 0)
++++ modules/navigation2/lang/spanish-utf-8.php	(revision 0)
+@@ -0,0 +1,123 @@
++<?php
++    $words = array(
++        /*  SECTION MANAGER */
++        'Pages'  => 'PÃ¡ginas',
++        'Page Manager' => 'Gestor de pÃ¡ginas',
++        'new section' => 'Nueva pÃ¡gina',
++        'Reorder sections' => 'Reordenar secciones',
++        'Resource URI' => 'URI recurso',
++        'Parent ID' => 'ID padre',
++        'Order' => 'Ordenar',
++        'Move/Edit' => 'Mover/Editar',
++        'Delete selected section(s)' => 'Borrar secciones seleccionadas',
++        'Modify nav bar appearance' => 'Modificar la apariencia de la barra de navegaciÃ³n',
++        'Navigation Style Manager' => 'Gestor estilos navegaciÃ³n',
++        'new style' => 'nuevo estilo',
++        'edit navigation template' => 'editar plantilla navegaciÃ³n',
++        'Access Key' => 'Clave acceso',
++        'Rel Marker' => 'Marcador relativo',
++        'Any number, which can be pressed with the ALT-key to load the page.' => 'Cualquier numero, que pueda ser pulsado con la tecla ALT-key para cargar la pÃ¡gina.',
++        'Additional navigation aids for better accessibility. Use values like "home", "prev" or "next".' => 'Ayudas a la navegaciÃ³n para una mejor accesibilidad. Usa valores como "inicio", "anterior" o "siguiente".',
++
++        /* Add / Edit template */
++
++        'Page Manager :: Add' => 'Gestor pÃ¡ginas :: AÃ±adir',
++        'Page Manager :: Edit' => 'Gestor pÃ¡ginas :: Borrar',
++        'Section ID' => 'ID secciÃ³n',
++        'Page Title' => 'TÃ­tulo pÃ¡gina',
++        'Parent Page' => 'PÃ¡gina padre',
++        'Target' => 'Target',
++        'static articles' => 'artÃ­culos estÃ¡ticos',
++        'dynamic pages' => 'pÃ¡ginas dinamicas',
++        'alias' => 'alias',
++        'Alias' => 'Alias',
++        'external URI' => 'URI externa',
++        'alias URI' => 'URI alias',
++        'external page URI' => 'URI pÃ¡gina externa',
++        'Choose URI from Aliases' => 'Elegir URI desde los Aliases',
++        'Additional params' => 'Parametros adicionales',
++        'do not add the ?' => 'no aÃ±adir el ?',
++        'Anchor' => 'Anchura',
++        'just the anchor name' => 'solo el nombre de anchura',
++        'Status' => 'Estado',
++        'check to activate' => 'seleccionar para activar',
++        'Can view' => 'Pueder verlo',
++        'intro text 1' => 'En esta secciÃ³n puedes crear navegaciÃ³n que referencie a 2 tipos de contenidos en el sistema, estÃ¡ticos o dinÃ¡micos. Contenido estÃ¡tico es una pÃ¡gina HTML estÃ¡tica introduida a traves del mÃ³dulo "Editor", usando el tipo de artÃ­culo "ArtÃ­culo Html estÃ¡tico".',
++        'intro text 2' => 'Para referenciar a un contenido dinÃ¡mico, debes seleccionar uno de los mÃ³dulos del sistema, especificar una clase gestora, y una acciÃ³n. Por ejemplo para crear un enlace a una pantalla que liste todos los archivos subidos al sistema  tienes que poner "tipo de pÃ¡gina" a "pÃ¡gina dinÃ¡mica", entonces seleccionar el mÃ³dulo "editor", entonces el gestor "DocumentMgr", y finalmente la acciÃ³n "list".',
++
++
++        /*  MESSAGES    */
++        'Sections reordered successfully' => 'Secciones Sections reordered successfully',
++        'Section successfully added' => 'Section successfully added',
++        'The selected section(s) have successfully been deleted' => 'The selected section(s) have successfully been deleted',
++        'Section details successfully updated' => 'Section details successfully updated',
++        'A section may not be a parent to itself and therefore was not moved.' => 'A section may not be a parent to itself and therefore was not moved.',
++        'The default style may not be modified' => 'The default style may not be modified',
++        'The selected style has been deleted successfully' => 'The selected style has been deleted successfully',
++        'Current style successfully changed' => 'Current style successfully changed',
++        'Style values successfully saved' => 'Style values successfully saved',
++        'Section details updated, no data changed' => 'Section details updated, no data changed',
++
++        /*  CATEGORY MGR    */
++        'Categories' => 'CategorÃ­as',
++        'Category Manager' => 'Gestor categorÃ­as',
++        'Category ID' => 'ID categorÃ­a',
++        'Current Category Name' => 'Nombre categorÃ­a actual',
++        'New Category Name' => 'Nuevo nombre categorÃ­a',
++        'Category will be Added Under' => 'La categorÃ­a se aÃ±adirÃ¡ denajo de',
++        'Target Parent Category' => 'CategorÃ­a padre',
++        'Add Category' => 'AÃ±adir categorÃ­a',
++        'Add Root Category' => 'AÃ±adir categorÃ­a raÃ­z',
++        'Edit Category' => 'Editar categorÃ­a',
++        'Move Category' => 'Mover categorÃ­a',
++        'Delete Category' => 'Borrar categorÃ­a',
++        'List Categories' => 'Listar categorÃ­as',
++        'You are here' => 'Tu estÃ¡s aquÃ­',
++        'category' => 'categorÃ­a',
++        'Category' => 'Categoria',
++        'Please select a new parent category' => 'Por favor, seleccione una nueva categorÃ­a padre',
++        'Please enter a value in the field before submitting' => 'Por favor, introduzca un valor en el campo antes de enviar',
++        'The category has successfully been updated' => 'La categorÃ­a ha sido actualizada correctamente',
++        'The category has successfully been moved' => 'La categorÃ­a ha sido movida correctamente',
++        'The category has successfully been added' => 'La categorÃ­a ha sido aÃ±adida correctamente',
++        'The category has successfully been deleted' => 'La categorÃ­a ha sido borrada correctamente',
++        'Root' => 'RaÃ­z',
++        'Editing a Category' => 'Editando una categorÃ­a',
++        'Adding a New Category' => 'AÃ±adiendo una categorÃ­a nueva',
++        'Moving a Category' => 'Moviendo una categorÃ­a',
++        'Deleting a Category' => 'Borrando una categorÃ­a',
++        'Category to Delete' => 'CategorÃ­a a borrar',
++        'do not delete root category' => 'Actualmente no puedes borrar la categorÃ­a raiz, en lugar de eso prueba a renombrarla',
++        'Welcome to Category Manager' => 'Bienvenido al gestor de categorÃ­as',
++        'Please choose a category from the left to edit' => 'Por favor, escoge una categorÃ­a de la izquierda para editarla',
++        'Reorder Categories' => 'Reordenar CategorÃ­as',
++        'Categories reordered successfully' => 'CategorÃ­as reordenadas correctamente',
++        'Label' => 'Etiqueta',
++        'Category details successfully updated' => 'Detalles de la categorÃ­a actualizados correctamente',
++        'Category details updated, no data changed' => 'Detalles de la categorÃ­a actualizados, ningÃºn dato cambiado',
++
++
++        /*  PERMISSIONS */
++        'Permissions Mgr' => 'Gestor permisos',
++        'Current Category' => 'CategorÃ­a actual',
++        'Current' => 'Actual',
++        'Group Name' => 'Nombre del grupo',
++        'Role Name' => 'Nombre de rol',
++        'Has Permissions' => 'Tiene permisos',
++        'Yes' => 'Si',
++        'No' => 'No',
++        'perms successfully updated' => 'Los permisos para esta categorÃ­a y sus hijos ha sido actualizada correctamente',
++        'Browse' => 'Navegar',
++        'current style, previewed above' => 'estilo actual, vista previa arriba',
++        'preview' => 'vista previa',
++        'return to navigation manager' => 'volver al gestor de navegaciÃ³n',
++        'Last modified' => 'Ãšltima modificaciÃ³n',
++        'Style Name' => 'Nombre del estilo',
++        'With selected section(s)' => 'Secciones seleccionadas',
++        'separate with slashes (/)' => 'separados por barras (/)',
++        'Navigation menu preview as displayed to the following role' => 'Vista previa menÃº de navegaciÃ³n como si fuera para el siguiente rol',
++        'Note' => 'Nota',
++        'Permissions are set by default to allow all users into all catgories. If you would like to deny a certain group access to a category, choose "no" in response to "has permissions" for the given group.' => 'Los permisos por defecto permiten a todos los usuarios el acceso a todas las categorÃ­as. Si quieres impedir el acceso a una categorÃ­a a cierto grupo, elige "no" en respuesta a "tiene permisos" para ese grupo.',
++        'return to category manager' => 'volver al gestor de categorÃ­as',
++ );
++?>
+\ No newline at end of file
+
+Property changes on: modules/navigation2/lang/spanish-utf-8.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/spanish-iso-8859-1.php
+===================================================================
+--- modules/navigation2/lang/spanish-iso-8859-1.php	(revision 0)
++++ modules/navigation2/lang/spanish-iso-8859-1.php	(revision 0)
+@@ -0,0 +1,29 @@
++<?php
++    $words = array(
++/*  SECTION MANAGER */
++        'Page Manager' => 'Gestor de Página',
++        'new section' => 'Nueva página',
++        'Reorder sections' => 'Reordenar secciones',
++        'Resource URI' => 'URI',
++        'Parent ID' => 'ID del padre',
++        'Order' => 'Orden',
++        'Move/Edit' => 'Mover/Editar',
++        'Delete selected section(s)' => 'Eliminar el/las seccion(es) seleccionada(s)',
++        'Modify nav bar appearance' => 'Modificar el aspecto de la barra de navegación',
++        'Navigation Style Manager' => 'Gestor del Estilo de la Navegación',
++        'new style' => 'nuevo estilo',
++        'edit navigation template' => 'editar la plantilla de la navegación',
++
++/*  MESSAGES    */
++        'Sections reordered successfully' => 'Secciones reordenadas correctamente',
++        'Section successfully added' => 'Sección añadida correctamente',
++        'The selected section(s) have successfully been deleted' => 'El/Las seccion(es) seleccionada(s) han sido borradas',
++        'Section details successfully updated' => 'Los detalles de la sección han sido actualizados',
++        'A section may not be a parent to itself and therefore was not moved.' => 'Una sección no debería ser padre de si misma y por lo tanto no ha sido movida.',
++        'The default style may not be modified' => 'El estilo actual no debería ser modificado',
++        'The selected style has been deleted successfully' => 'El estilo seleccionado ha sido borrado correctamente',
++        'Current style successfully changed' => 'El estilo actual ha sido modificado',
++        'Style values successfully saved' => 'Los valores del estilo han sido grabados correctamente',
++        'Section details updated, no data changed' => 'Detalles de la sección actualizados, los datos no han sido modificados',
++    );
++?>
+\ No newline at end of file
+
+Property changes on: modules/navigation2/lang/spanish-iso-8859-1.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/french-iso-8859-1.php
+===================================================================
+--- modules/navigation2/lang/french-iso-8859-1.php	(revision 0)
++++ modules/navigation2/lang/french-iso-8859-1.php	(revision 0)
+@@ -0,0 +1,126 @@
++<?php
++$words['Additional navigation aids for better accessibility. Use values like "home", "prev" or "next".'] = 'Aides à la navigation supplémentaire pour une meilleure accessibilité. Utilisez des valeurs comme "Accueil", "précédent", "suivant".';
++$words['Permissions are set by default to allow all users into all catgories. If you would like to deny a certain group access to a category, choose "no" in response to "has permissions" for the given group.'] = 'Les permissions permettent par défaut à tous les utilisateurs d\'accéder à toutes les catégories. Si vous voulez restreindre l\'accés à un groupe d\'utilisateurs, choisissez "non" pour le groupe en question.';
++$words['AccessKey'] = 'Touche d\'accès';
++$words['Rel Marker'] = 'Marqueur relatif';
++$words['Any number, which can be pressed with the ALT-key to load the page.'] = 'N\'importe quel nombre, sur lequel on peut appuyer avec la touche \'ALT\' pour charger la page.';
++$words['Role Name'] = 'Nom du rôle';
++$words['Browse'] = 'Parcourir';
++$words['current style, previewed above'] = 'style actuel, montré ci-dessus';
++$words['preview'] = 'Prévisualiser';
++$words['return to navigation manager'] = 'retourner au gestionnaire de navigation';
++$words['Last modified'] = 'Dernière modification';
++$words['Style Name'] = 'Nom du style';
++$words['With selected section(s)'] = 'Avec la(les) section(s) sélectionnée(s)';
++$words['separate with slashes (/)'] = 'séparer avec des barres obliques (/)';
++$words['Navigation menu preview as displayed to the following role'] = 'Afficher le menu tel qu\'il sera vu par le rôle suivant';
++$words['Note'] = 'Note';
++$words['return to category manager'] = 'retourner au gestionnaire de catégories';
++$words['Sections'] = 'Sections';
++$words['Section ID'] = 'ID de Section';
++$words['Section Title'] = 'Titre de section';
++$words['Parent Section'] = 'Section parente';
++$words['Top level (no parent)'] = 'Racine (pas de parent)';
++$words['Section'] = 'Section';
++$words['static articles'] = 'article statique';
++$words['Select a content'] = 'Sélectionner un article';
++$words['dynamic sections'] = 'section dynamique';
++$words['Additional params'] = 'Paramètres additionnels';
++$words['do not add the ?'] = 'N\'ajoutez pas le caractère ?';
++$words['Anchor'] = 'Ancre';
++$words['just the anchor name'] = 'Saisissez uniquement le nom de l\'ancre';
++$words['Status'] = 'Status';
++$words['check to activate'] = 'cochez pour activer';
++$words['Can view'] = 'Peu voir';
++$words['Please fill in a title'] = 'Veuillez saisir un nom pour la section';
++$words['You cannot activate unless you first activate.'] = 'Vous ne pouvez pas activer "%1" avant d\'avoir activé "%2"';
++$words['To access this section, a user must have access to the parent section.'] = 'Pour accéder à cette section, les utilisateurs doivent avoir accès à la section parente. Un ou plusieurs des rôles que vous avez sélectionnés n\'ont pas accès à la section "%s".';
++$words['You must select a valid article'] = 'Vous devez sélectionner un article. Si la liste est vide, vous devriez d\'abord en créer un';
++$words['Categories'] = 'Catégories';
++$words['Category Manager'] = 'Gestionnaire de catégories';
++$words['Category ID'] = 'ID de Catégorie';
++$words['Current Category Name'] = 'Nom de la catégorie courante';
++$words['New Category Name'] = 'Nouveau nom de catégorie';
++$words['Category will be Added Under'] = 'La catégorie sera ajoutée sous';
++$words['Target Parent Category'] = 'Catégorie parente cible';
++$words['Add Category'] = 'Ajouter une catégorie';
++$words['Add Root Category'] = 'Ajouter une catégorie principale';
++$words['Edit Category'] = 'Modifier la catégorie';
++$words['Move Category'] = 'Déplacer la catégorie';
++$words['Delete Category'] = 'Supprimer la catégorie';
++$words['You are here'] = 'Vous êtes ici';
++$words['category'] = 'catégorie';
++$words['Category'] = 'catégorie';
++$words['Please select a new parent category'] = 'Veuillez sélectionner une nouvelle catégorie parente';
++$words['Please enter a value in the field before submitting'] = 'Veuillez entrer une valeur pour ce champ';
++$words['The category has successfully been updated'] = 'La catégorie a été mise à jour avec succès';
++$words['The category has successfully been moved'] = 'La catégorie a été déplacée avec succès';
++$words['The category has successfully been added'] = 'La catégorie a été ajoutée avec succès';
++$words['The category has successfully been deleted'] = 'La catégorie a été supprimée avec succès';
++$words['Root'] = 'Racine';
++$words['Editing a Category'] = 'Modifier une catégorie';
++$words['Adding a New Category'] = 'Ajouter une nouvelle catégorie';
++$words['Moving a Category'] = 'Déplacer une catégorie';
++$words['Deleting a Category'] = 'Supprimer une catégorie';
++$words['Category to Delete'] = 'Catégorie à supprimer';
++$words['do not delete root category'] = 'ne supprimer pas la catégorie racine';
++$words['Welcome to Category Manager'] = 'Bienvenue dans le gestionnaire de catégorie';
++$words['Please choose a category from the left to edit'] = 'Veuillez sélectionner une catégorie à modifier à gauche';
++$words['Reorder Categories'] = 'Réordonner';
++$words['Categories reordered successfully'] = 'Catégories réordonnées avec succès';
++$words['Label'] = 'Label';
++$words['Category details successfully updated'] = 'Les détails de la catégorie mis à jour avec succès';
++$words['Category details updated, no data changed'] = 'Les détails de la catégorie mis à jour, aucune donnée n\'a changé';
++$words['Permissions Mgr'] = 'Gestionnaire de permissions';
++$words['Current Category'] = 'Catégorie courante';
++$words['Current'] = 'Courant';
++$words['Group Name'] = 'Nom de groupe';
++$words['Has Permissions'] = 'A les permissions';
++$words['Yes'] = 'Oui';
++$words['No'] = 'Non';
++$words['perms successfully updated'] = 'permissions mises à jour avec succès';
++$words['Section Manager'] = 'Gestionnaire de section';
++$words['New section'] = 'Nouvelle section';
++$words['Edit section'] = 'Editer une section';
++$words['Reorder sections'] = 'Réordonner les sections';
++$words['Resource URI'] = 'URI de la ressource';
++$words['Parent ID'] = 'ID parent';
++$words['Order'] = 'Ordre';
++$words['Move/Edit'] = 'Déplacer/Editer';
++$words['Delete selected section(s)'] = 'Supprimer la(les) section(s) sélectionnée(s)';
++$words['Modify nav bar appearance'] = 'Modifier l\'apparence de la barre de navigation';
++$words['Navigation Style Manager'] = 'Gestionnaire de Style de navigation';
++$words['new style'] = 'nouveau style';
++$words['edit navigation template'] = 'éditer le template de navigation';
++$words['Sections reordered successfully'] = 'Les sections ont été réorganisées avec succès';
++$words['Section successfully added'] = 'La section a été ajoutée avec succès';
++$words['Section successfully added but alias creation failed as there can be no duplicates'] = 'La section a été ajoutée avec succès, mais cet alias existe déjà et n\'a donc pas été créé';
++$words['The selected section(s) have successfully been deleted'] = 'La (les) section(s) sélectionnée(s) a(ont) été supprimée(s) avec succès';
++$words['Section details successfully updated'] = 'Les détails de la section ont été mis à jour avec succès';
++$words['A section may not be a parent to itself and therefore was not moved.'] = 'Une section ne peut être son propre parent et n\'a par conséquent pas été déplacée.';
++$words['The default style may not be modified'] = 'Le style par défaut ne peut pas être modifié';
++$words['The selected style has been deleted successfully'] = 'Le style choisi a été effacé avec succès';
++$words['Current style successfully changed'] = 'Le style actuel a été modifié avec succès';
++$words['Style values successfully saved'] = 'Le style a été sauvegardé avec succès';
++$words['Section details updated, no data changed'] = 'Détails de la section mis à jour avec succès, aucune donnée n\'a changé';
++$words['Section info'] = 'Informations sur la section';
++$words['Optimisation'] = 'Optimisation';
++$words['Target'] = 'Cible';
++$words['Add an alias'] = 'Ajouter un alias ';
++$words['Automatic alias'] = 'Alias automatique';
++$words['Select roles to which you want to grant access'] = 'Sélectionnez les rôles auxquels vous autorisez l\'accès';
++$words['Alias'] = 'Alias';
++$words['alias URI'] = 'URI de l\'alias';
++$words['static article title'] = 'Titre de l\'article';
++$words['Access Key'] = 'Touche d\'accès';
++$words['link to section'] = 'section interne';
++$words['addon'] = 'extension';
++$words['external URI'] = 'lien externe';
++$words['empty link'] = 'lien vide';
++$words['Choose section'] = 'Choisir la section';
++$words['Addon class name'] = 'Classe de l\'extension';
++$words['Choose class name'] = 'Choisir le classe';
++$words['External section URI'] = 'URI du lien externe';
++$words['Addon description'] = 'Description de l\'extension';
++$words['There is no section to delete'] = 'Il n\'y a aucune section à supprimer';
++?>
+
+Property changes on: modules/navigation2/lang/french-iso-8859-1.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/french-utf-8.php
+===================================================================
+--- modules/navigation2/lang/french-utf-8.php	(revision 0)
++++ modules/navigation2/lang/french-utf-8.php	(revision 0)
+@@ -0,0 +1,85 @@
++<?php
++$words['Pages'] = 'Pages';
++$words['Page Manager :: Add'] = 'Gestionnaire de pages :: Ajout';
++$words['Page Manager :: Edit'] = 'Gestionnaire de pages :: Edition';
++$words['Section ID'] = 'ID de Section';
++$words['Page Title'] = 'Titre de page';
++$words['Parent Page'] = 'Page parente';
++$words['Page'] = 'Page';
++$words['static articles'] = 'articles statiques';
++$words['dynamic pages'] = 'pages dynamiques';
++$words['Additional params'] = 'ParamÃ¨tres additionnels';
++$words['do not add the ?'] = 'N\'ajoutez pas le caractÃ¨re ?';
++$words['Anchor'] = 'Ancre';
++$words['just the anchor name'] = 'juste le nom de l\'ancre';
++$words['Status'] = 'Status';
++$words['check to activate'] = 'cochez pour activer';
++$words['Can view'] = 'Peu voir';
++$words['intro text 1'] = 'ChapÃ´ 1';
++$words['intro text 2'] = 'ChapÃ´ 2';
++$words['Categories'] = 'CatÃ©gories';
++$words['Category Manager'] = 'Gestionnaire de catÃ©gories';
++$words['Category ID'] = 'ID de CatÃ©gorie';
++$words['Current Category Name'] = 'Nom de la catÃ©gorie courante';
++$words['New Category Name'] = 'Nouveau nom de catÃ©gorie';
++$words['Category will be Added Under'] = 'La catÃ©gorie sera ajoutÃ©e sous';
++$words['Target Parent Category'] = 'CatÃ©gorie parente cible';
++$words['Add Category'] = 'Ajouter une catÃ©gorie';
++$words['Add Root Category'] = 'Ajouter une catÃ©gorie principale';
++$words['Edit Category'] = 'Modifier la catÃ©gorie';
++$words['Move Category'] = 'DÃ©placer la catÃ©gorie';
++$words['Delete Category'] = 'Supprimer la catÃ©gorie';
++$words['You are here'] = 'Vous Ãªtes ici';
++$words['category'] = 'catÃ©gorie';
++$words['Category'] = 'catÃ©gorie';
++$words['Please select a new parent category'] = 'Veuillez sÃ©lectionner une nouvelle catÃ©gorie parente';
++$words['Please enter a value in the field before submitting'] = 'Veuillez entrer une valeur pour ce champ';
++$words['The category has successfully been updated'] = 'La catÃ©gorie a Ã©tÃ© mise Ã  jour avec succÃ¨s';
++$words['The category has successfully been moved'] = 'La catÃ©gorie a Ã©tÃ© dÃ©placÃ©e avec succÃ¨s';
++$words['The category has successfully been added'] = 'La catÃ©gorie a Ã©tÃ© ajoutÃ©e avec succÃ¨s';
++$words['The category has successfully been deleted'] = 'La catÃ©gorie a Ã©tÃ© supprimÃ©e avec succÃ¨s';
++$words['Root'] = 'Racine';
++$words['Editing a Category'] = 'Modifier une catÃ©gorie';
++$words['Adding a New Category'] = 'Ajouter une nouvelle catÃ©gorie';
++$words['Moving a Category'] = 'DÃ©placer une catÃ©gorie';
++$words['Deleting a Category'] = 'Supprimer une catÃ©gorie';
++$words['Category to Delete'] = 'CatÃ©gorie Ã  supprimer';
++$words['do not delete root category'] = 'ne supprimer pas la catÃ©gorie racine';
++$words['Welcome to Category Manager'] = 'Bienvenue dans le gestionnaire de catÃ©gorie';
++$words['Please choose a category from the left to edit'] = 'Veuillez sÃ©lectionner une catÃ©gorie Ã  modifier Ã  gauche';
++$words['Reorder Categories'] = 'RÃ©ordonner les catÃ©gories';
++$words['Categories reordered successfully'] = 'CatÃ©gories rÃ©ordonnÃ©es avec succÃ¨s';
++$words['Label'] = 'Label';
++$words['Category details successfully updated'] = 'Les dÃ©tails de la catÃ©gorie mis Ã  jour avec succÃ¨s';
++$words['Category details updated, no data changed'] = 'Les dÃ©tails de la catÃ©gorie mis Ã  jour, aucune donnÃ©e n\'a changÃ©';
++$words['Permissions Mgr'] = 'Gestionnaire de permissions';
++$words['Current Category'] = 'CatÃ©gorie courante';
++$words['Current'] = 'Courant';
++$words['Group Name'] = 'Nom de groupe';
++$words['Has Permissions'] = 'A les permissions';
++$words['Yes'] = 'Oui';
++$words['No'] = 'Non';
++$words['perms successfully updated'] = 'permissions mises Ã  jour avec succÃ¨s';
++$words['Page Manager'] = 'Gestionnaire de page';
++$words['new section'] = 'Nouvelle page';
++$words['Reorder sections'] = 'RÃ©ordonner les sections';
++$words['Resource URI'] = 'URI de la ressource';
++$words['Parent ID'] = 'ID parent';
++$words['Order'] = 'Ordre';
++$words['Move/Edit'] = 'DÃ©placer/Editer';
++$words['Delete selected section(s)'] = 'Supprimer la(les) section(s) sÃ©lectionnÃ©e(s)';
++$words['Modify nav bar appearance'] = 'Modifier l\'apparence de la barre de navigation';
++$words['Navigation Style Manager'] = 'Gestionnaire de Style de navigation';
++$words['new style'] = 'nouveau style';
++$words['edit navigation template'] = 'Ã©diter le template de navigation';
++$words['Sections reordered successfully'] = 'Les sections ont Ã©tÃ© rÃ©organisÃ©es avec succÃ¨s';
++$words['Section successfully added'] = 'La section a Ã©tÃ© ajoutÃ©e avec succÃ¨s';
++$words['The selected section(s) have successfully been deleted'] = 'La (les) section(s) sÃ©lectionnÃ©e(s) a(ont) Ã©tÃ© supprimÃ©e(s) avec succÃ¨s';
++$words['Section details successfully updated'] = 'Les dÃ©tails de la section ont Ã©tÃ© mis Ã  jour avec succÃ¨s';
++$words['A section may not be a parent to itself and therefore was not moved.'] = 'Une section ne peut Ãªtre son propre parent et n\'a par consÃ©quent pas Ã©tÃ© dÃ©placÃ©e.';
++$words['The default style may not be modified'] = 'Le style par dÃ©faut ne peut pas Ãªtre modifiÃ©';
++$words['The selected style has been deleted successfully'] = 'Le style choisi a Ã©tÃ© effacÃ© avec succÃ¨s';
++$words['Current style successfully changed'] = 'Le style actuel a Ã©tÃ© modifiÃ© avec succÃ¨s';
++$words['Style values successfully saved'] = 'Le style a Ã©tÃ© sauvegardÃ© avec succÃ¨s';
++$words['Section details updated, no data changed'] = 'DÃ©tails de la section mis Ã  jour avec succÃ¨s, aucune donnÃ©e n\'a changÃ©';
++?>
+\ No newline at end of file
+
+Property changes on: modules/navigation2/lang/french-utf-8.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/swedish-iso-8859-1.php
+===================================================================
+--- modules/navigation2/lang/swedish-iso-8859-1.php	(revision 0)
++++ modules/navigation2/lang/swedish-iso-8859-1.php	(revision 0)
+@@ -0,0 +1,216 @@
++<?php
++$words['Pages'] = 'Sidor';
++$words['Page Manager'] = 'Sidhantering';
++$words['new section'] = 'Ny sida';
++$words['Reorder sections'] = 'Ordna om sektioner';
++$words['Resource URI'] = 'Resurs URI';
++$words['Parent ID'] = 'Förälder ID';
++$words['Order'] = 'Ordning';
++$words['Move/Edit'] = 'Flytta/Redigera';
++$words['Delete selected section(s)'] = 'Radera markerade sektioner';
++$words['Modify nav bar appearance'] = 'Ändra nav-bar utseende';
++$words['Navigation Style Manager'] = 'Navigeringsstilhantering';
++$words['new style'] = 'ny stil';
++$words['edit navigation template'] = 'redigera navigeringsmallar';
++$words['Access Key'] = 'Åtkomstnyckel';
++$words['Rel Marker'] = 'Rel Markör';
++$words['Any number, which can be pressed with the ALT-key to load the page.'] = 'Någon siffra, som kan nedtryckas tillsammans med ALT-tangenten för att ladda sidan.';
++$words['Additional navigation aids for better accessibility. Use values like "home", "prev" or "next".'] = 'Ytterligare navigeringshjälpmedel för bättre åtkomst. Använd värden som \"home\", \"prev\" eller \"next\"';
++$words['Page Manager :: Add'] = 'Sidhantering :: Lägg till';
++$words['Page Manager :: Edit'] = 'Sidhantering :: Redigera';
++$words['Section ID'] = 'Sektions ID';
++$words['Page Title'] = 'Sidans Titel';
++$words['Parent Page'] = 'Föräldersida';
++$words['Target'] = 'Mål';
++$words['static articles'] = 'statiska artiklar';
++$words['dynamic pages'] = 'dynamiska sidor';
++$words['alias'] = 'alias';
++$words['Alias'] = 'Alias';
++$words['external URI'] = 'extern URI';
++$words['alias URI'] = 'alias URI';
++$words['external page URI'] = 'extern sid-URI';
++$words['Choose URI from Aliases'] = 'Välj URI från alias';
++$words['Additional params'] = 'Ytterligare parametrar';
++$words['do not add the ?'] = 'Lägg inte till ?-tecknet';
++$words['Anchor'] = 'Ankare';
++$words['just the anchor name'] = 'bara ankarnamnet';
++$words['Status'] = 'Status';
++$words['check to activate'] = 'kryssa i för att aktivera';
++$words['Can view'] = 'Kan se';
++$words['intro text 1'] = 'I denna sektion kan du skapa navigering som refererar två typer av innehåll i systemet, statisk eller dynamisk. Statiskt innehåll är en statisk HTML sida som skrivs in genom publiceringsmodulen, användandes artikeltypen \"Statisk Htlm artikel\"';
++$words['intro text 2'] = 'För att referera till dynamiskt innehåll måste du välja en av systemets moduler, en specifik hanterarklass och den relevanta handlingen.  Till exempel för att skapa en länk till en skärm som listar alla uppladdade filer i systemet sätter du \"sidtyp\" till \"dynamiska sidor\", välj sedan \"publicering\" modulen, sedan \"DocumentMgr\" hanteraren och slutligen \"list\" händelsen.';
++$words['Sections reordered successfully'] = 'Sektioner omordnade';
++$words['Section successfully added'] = 'Sektionen har lagts till';
++$words['The selected section(s) have successfully been deleted'] = 'De valda sektionerna har raderats';
++$words['Section details successfully updated'] = 'Sektionsdetaljer uppdaterade';
++$words['A section may not be a parent to itself and therefore was not moved.'] = 'En sektion kan inte vara förälder till sig själv och har därför inte flyttats.';
++$words['The default style may not be modified'] = 'Standardstilen kan inte modifieras';
++$words['The selected style has been deleted successfully'] = 'Den valda stilen har raderats';
++$words['Current style successfully changed'] = 'Aktiv stil ändrad';
++$words['Style values successfully saved'] = 'Stilvärden har sparats';
++$words['Section details updated, no data changed'] = 'Sektionsdetaljer uppdaterade, ingen data ändrad';
++$words['Categories'] = 'Kategorier';
++$words['Category Manager'] = 'Kategorihantering';
++$words['Category ID'] = 'Kategori ID';
++$words['Current Category Name'] = 'Aktiv kategoris namn';
++$words['New Category Name'] = 'Nytt kategorinamn';
++$words['Category will be Added Under'] = 'Kategorin kommer läggas till under';
++$words['Target Parent Category'] = 'Målets förälderkategori';
++$words['Add Category'] = 'Lägg till kategori';
++$words['Add Root Category'] = 'Lägg till rotkategori';
++$words['Edit Category'] = 'Redigera kategori';
++$words['Move Category'] = 'Flytta kategori';
++$words['Delete Category'] = 'Radera kategori';
++$words['You are here'] = 'Du är här';
++$words['category'] = 'kategori';
++$words['Category'] = 'Kategori';
++$words['Please select a new parent category'] = 'Välj en ny förälderkategori';
++$words['Please enter a value in the field before submitting'] = 'Fyll i ett värde i fältet innan du går vidare';
++$words['The category has successfully been updated'] = 'Kategorin uppdaterad';
++$words['The category has successfully been moved'] = 'Kategorin har flyttats';
++$words['The category has successfully been added'] = 'Kategorin har lagts till';
++$words['The category has successfully been deleted'] = 'Kategorin har raderats';
++$words['Root'] = 'Rot';
++$words['Editing a Category'] = 'Redigerar kategori';
++$words['Adding a New Category'] = 'Lägger till kategori';
++$words['Moving a Category'] = 'Flyttar kategori';
++$words['Deleting a Category'] = 'Raderar kategori';
++$words['Category to Delete'] = 'Kategori att radera';
++$words['do not delete root category'] = 'För närvarande kan man inte radera rotkategorin. Försök byta namn på den istället.';
++$words['Welcome to Category Manager'] = 'Välkommen till kategorihantering';
++$words['Please choose a category from the left to edit'] = 'Välj en kategori till vänster att redigera';
++$words['Reorder Categories'] = 'Omordna kategorier';
++$words['Categories reordered successfully'] = 'Kategorierna har omordnats';
++$words['Label'] = 'Etikett';
++$words['Category details successfully updated'] = 'Kategoridetaljerna har uppdaterats';
++$words['Category details updated, no data changed'] = 'Kategoridetaljerna har uppdaterats, ingen data ändrad.';
++$words['Permissions Mgr'] = 'Rättighetshantering';
++$words['Current Category'] = 'Aktiv kategori';
++$words['Current'] = 'Aktiv';
++$words['Group Name'] = 'Gruppnamn';
++$words['Role Name'] = 'Rollnamn';
++$words['Has Permissions'] = 'Har rättigheter';
++$words['Yes'] = 'Ja';
++$words['No'] = 'Nej';
++$words['perms successfully updated'] = 'Rättigheter för denna kategori och dess barn har uppdaterats';
++$words['Browse'] = 'Lista';
++$words['current style, previewed above'] = 'aktiv stil, förhandsgranskad ovan';
++$words['preview'] = 'förhandsgranska';
++$words['return to navigation manager'] = 'återgå till navigeringshantering';
++$words['Last modified'] = 'Senast ändrad';
++$words['Style Name'] = 'Stilnamn';
++$words['With selected section(s)'] = 'Med vald(a) sektion(er)';
++$words['separate with slashes (/)'] = 'åtskilj med snedstreck (/)';
++$words['Navigation menu preview as displayed to the following role'] = 'Navigeringsmeny som visad för följande roll';
++$words['Note'] = 'Notera';
++$words['Permissions are set by default to allow all users into all catgories. If you would like to deny a certain group access to a category, choose "no" in response to "has permissions" for the given group.'] = 'Rättigheter sätts per standard till att bevilja alla användare åtkomst till alla kategorier. Om ni vill förhindra en viss grupp åtkomst till en kategori välj \"nej\" som svar på \"har rättigheter\" för den givna gruppen.';
++$words['return to category manager'] = 'återgå till kategorihantering';
++?>
++<?php
++$words['Pages'] = 'Sidor';
++$words['Page Manager'] = 'Sidhantering';
++$words['new section'] = 'Ny sida';
++$words['Reorder sections'] = 'Ordna om sektioner';
++$words['Resource URI'] = 'Resurs URI';
++$words['Parent ID'] = 'Förälder ID';
++$words['Order'] = 'Ordning';
++$words['Move/Edit'] = 'Flytta/Redigera';
++$words['Delete selected section(s)'] = 'Radera markerade sektioner';
++$words['Modify nav bar appearance'] = 'Ändra nav-bar utseende';
++$words['Navigation Style Manager'] = 'Navigeringsstilhantering';
++$words['new style'] = 'ny stil';
++$words['edit navigation template'] = 'redigera navigeringsmallar';
++$words['Access Key'] = 'Åtkomstnyckel';
++$words['Rel Marker'] = 'Rel Markör';
++$words['Any number, which can be pressed with the ALT-key to load the page.'] = 'Någon siffra, som kan nedtryckas tillsammans med ALT-tangenten för att ladda sidan.';
++$words['Additional navigation aids for better accessibility. Use values like "home", "prev" or "next".'] = 'Ytterligare navigeringshjälpmedel för bättre åtkomst. Använd värden som \"home\", \"prev\" eller \"next\"';
++$words['Page Manager :: Add'] = 'Sidhantering :: Lägg till';
++$words['Page Manager :: Edit'] = 'Sidhantering :: Redigera';
++$words['Section ID'] = 'Sektions ID';
++$words['Page Title'] = 'Sidans Titel';
++$words['Parent Page'] = 'Föräldersida';
++$words['Target'] = 'Mål';
++$words['static articles'] = 'statiska artiklar';
++$words['dynamic pages'] = 'dynamiska sidor';
++$words['alias'] = 'alias';
++$words['Alias'] = 'Alias';
++$words['external URI'] = 'extern URI';
++$words['alias URI'] = 'alias URI';
++$words['external page URI'] = 'extern sid-URI';
++$words['Choose URI from Aliases'] = 'Välj URI från alias';
++$words['Additional params'] = 'Ytterligare parametrar';
++$words['do not add the ?'] = 'Lägg inte till ?-tecknet';
++$words['Anchor'] = 'Ankare';
++$words['just the anchor name'] = 'bara ankarnamnet';
++$words['Status'] = 'Status';
++$words['check to activate'] = 'kryssa i för att aktivera';
++$words['Can view'] = 'Kan se';
++$words['intro text 1'] = 'I denna sektion kan du skapa navigering som refererar två typer av innehåll i systemet, statisk eller dynamisk. Statiskt innehåll är en statisk HTML sida som skrivs in genom publiceringsmodulen, användandes artikeltypen \"Statisk Htlm artikel\"';
++$words['intro text 2'] = 'För att referera till dynamiskt innehåll måste du välja en av systemets moduler, en specifik hanterarklass och den relevanta handlingen.  Till exempel för att skapa en länk till en skärm som listar alla uppladdade filer i systemet sätter du \"sidtyp\" till \"dynamiska sidor\", välj sedan \"publicering\" modulen, sedan \"DocumentMgr\" hanteraren och slutligen \"list\" händelsen.';
++$words['Sections reordered successfully'] = 'Sektioner omordnade';
++$words['Section successfully added'] = 'Sektionen har lagts till';
++$words['The selected section(s) have successfully been deleted'] = 'De valda sektionerna har raderats';
++$words['Section details successfully updated'] = 'Sektionsdetaljer uppdaterade';
++$words['A section may not be a parent to itself and therefore was not moved.'] = 'En sektion kan inte vara förälder till sig själv och har därför inte flyttats.';
++$words['The default style may not be modified'] = 'Standardstilen kan inte modifieras';
++$words['The selected style has been deleted successfully'] = 'Den valda stilen har raderats';
++$words['Current style successfully changed'] = 'Aktiv stil ändrad';
++$words['Style values successfully saved'] = 'Stilvärden har sparats';
++$words['Section details updated, no data changed'] = 'Sektionsdetaljer uppdaterade, ingen data ändrad';
++$words['Categories'] = 'Kategorier';
++$words['Category Manager'] = 'Kategorihantering';
++$words['Category ID'] = 'Kategori ID';
++$words['Current Category Name'] = 'Aktiv kategoris namn';
++$words['New Category Name'] = 'Nytt kategorinamn';
++$words['Category will be Added Under'] = 'Kategorin kommer läggas till under';
++$words['Target Parent Category'] = 'Målets förälderkategori';
++$words['Add Category'] = 'Lägg till kategori';
++$words['Add Root Category'] = 'Lägg till rotkategori';
++$words['Edit Category'] = 'Redigera kategori';
++$words['Move Category'] = 'Flytta kategori';
++$words['Delete Category'] = 'Radera kategori';
++$words['You are here'] = 'Du är här';
++$words['category'] = 'kategori';
++$words['Category'] = 'Kategori';
++$words['Please select a new parent category'] = 'Välj en ny förälderkategori';
++$words['Please enter a value in the field before submitting'] = 'Fyll i ett värde i fältet innan du går vidare';
++$words['The category has successfully been updated'] = 'Kategorin uppdaterad';
++$words['The category has successfully been moved'] = 'Kategorin har flyttats';
++$words['The category has successfully been added'] = 'Kategorin har lagts till';
++$words['The category has successfully been deleted'] = 'Kategorin har raderats';
++$words['Root'] = 'Rot';
++$words['Editing a Category'] = 'Redigerar kategori';
++$words['Adding a New Category'] = 'Lägger till kategori';
++$words['Moving a Category'] = 'Flyttar kategori';
++$words['Deleting a Category'] = 'Raderar kategori';
++$words['Category to Delete'] = 'Kategori att radera';
++$words['do not delete root category'] = 'För närvarande kan man inte radera rotkategorin. Försök byta namn på den istället.';
++$words['Welcome to Category Manager'] = 'Välkommen till kategorihantering';
++$words['Please choose a category from the left to edit'] = 'Välj en kategori till vänster att redigera';
++$words['Reorder Categories'] = 'Omordna kategorier';
++$words['Categories reordered successfully'] = 'Kategorierna har omordnats';
++$words['Label'] = 'Etikett';
++$words['Category details successfully updated'] = 'Kategoridetaljerna har uppdaterats';
++$words['Category details updated, no data changed'] = 'Kategoridetaljerna har uppdaterats, ingen data ändrad.';
++$words['Permissions Mgr'] = 'Rättighetshantering';
++$words['Current Category'] = 'Aktiv kategori';
++$words['Current'] = 'Aktiv';
++$words['Group Name'] = 'Gruppnamn';
++$words['Role Name'] = 'Rollnamn';
++$words['Has Permissions'] = 'Har rättigheter';
++$words['Yes'] = 'Ja';
++$words['No'] = 'Nej';
++$words['perms successfully updated'] = 'Rättigheter för denna kategori och dess barn har uppdaterats';
++$words['Browse'] = 'Lista';
++$words['current style, previewed above'] = 'aktiv stil, förhandsgranskad ovan';
++$words['preview'] = 'förhandsgranska';
++$words['return to navigation manager'] = 'återgå till navigeringshantering';
++$words['Last modified'] = 'Senast ändrad';
++$words['Style Name'] = 'Stilnamn';
++$words['With selected section(s)'] = 'Med vald(a) sektion(er)';
++$words['separate with slashes (/)'] = 'åtskilj med snedstreck (/)';
++$words['Navigation menu preview as displayed to the following role'] = 'Navigeringsmeny som visad för följande roll';
++$words['Note'] = 'Notera';
++$words['Permissions are set by default to allow all users into all catgories. If you would like to deny a certain group access to a category, choose "no" in response to "has permissions" for the given group.'] = 'Rättigheter sätts per standard till att bevilja alla användare åtkomst till alla kategorier. Om ni vill förhindra en viss grupp åtkomst till en kategori välj \"nej\" som svar på \"har rättigheter\" för den givna gruppen.';
++$words['return to category manager'] = 'återgå till kategorihantering';
++?>
+\ No newline at end of file
+
+Property changes on: modules/navigation2/lang/swedish-iso-8859-1.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/japanese-euc-jp.php
+===================================================================
+--- modules/navigation2/lang/japanese-euc-jp.php	(revision 0)
++++ modules/navigation2/lang/japanese-euc-jp.php	(revision 0)
+@@ -0,0 +1,99 @@
++<?php
++    $words = array(
++/*  SECTION MANAGER */
++        'Section Manager' => '¥»¥¯¥·¥ç¥ó´ÉÍý',
++        'New section' => '¿·µ¬¥»¥¯¥·¥ç¥ó¤ÎºîÀ®',
++        'Reorder sections' => 'ÊÂ¤Ó½ç¤ÎÊÑ¹¹',
++        'Resource URI' => '¥ê¥½¡¼¥¹URI',
++        'Parent ID' => '¿ÆID',
++        'Order' => '½çÈÖ',
++        'Navigation Style Manager' => '¥Ê¥Ó¥²¡¼¥·¥ç¥ó¥¹¥¿¥¤¥ë´ÉÍý',
++        'Access Key' => '¥¢¥¯¥»¥¹¥­¡¼',
++        'Rel Marker' => 'Rel ÀßÄê',
++        'Any number, which can be pressed with the ALT-key to load the page.' => '¿ôÃÍ¤òÆþÎÏ¡£ALT¥­¡¼¤ÈÆ±»þ¤Ë²¡¤¹¤È¡¢¤½¤Î¥Ú¡¼¥¸¤¬¥í¡¼¥É¤µ¤ì¤Þ¤¹¡£',
++        'Additional navigation aids for better accessibility. Use values like "home", "prev" or "next".' => '¤è¤êÎÉ¤¤¥¢¥¯¥»¥·¥Ó¥ê¥Æ¥£¤ò¼Â¸½¤¹¤ë¤¿¤á¤ÎÄÉ²Ã¥Ê¥Ó¥²¡¼¥·¥ç¥ó¾ðÊó¡£¡Öhome¡×¤ä¡Öprev¡×¡¢¡Önext¡×¤Ê¤É¤ò»ØÄê¤·¤Æ¤¯¤À¤µ¤¤',
++
++/* Add / Edit template */
++        'Add section' => '¥»¥¯¥·¥ç¥ó¤òÄÉ²Ã',
++        'Edit section' => '¥»¥¯¥·¥ç¥ó¤òÊÔ½¸',
++        'Section Title' => '¥»¥¯¥·¥ç¥ó¥¿¥¤¥È¥ë',
++        'Parent Section' => '¿Æ¥»¥¯¥·¥ç¥ó',
++        'Top level (no parent)' => 'ºÇ¾å°Ì¡Ê¿Æ¥»¥¯¥·¥ç¥ó¤Ê¤·¡Ë',
++        'Target' => '¥¿¡¼¥²¥Ã¥È',
++        'Publish' => '¸ø³«',
++        'static articles' => '¥¹¥¿¥Æ¥£¥Ã¥¯µ­»ö',
++        'dynamic sections' => '¥À¥¤¥Ê¥ß¥Ã¥¯ ¥»¥¯¥·¥ç¥ó',
++        'Alias' => '¥¨¥¤¥ê¥¢¥¹',
++        'Add an alias' => '¥¨¥¤¥ê¥¢¥¹¤òÄÉ²Ã',
++        'Automatic alias' => '¼«Æ°¥¨¥¤¥ê¥¢¥¹ÀßÄê',
++        'external URI' => '³°ÉôURI',
++        'alias URI' => '¥¨¥¤¥ê¥¢¥¹URI',
++        'link to section' => '¥»¥¯¥·¥ç¥ó¤Ø¤Î¥ê¥ó¥¯',
++        'addon' => '¥¢¥É¥ª¥ó',
++        'empty link' => '¥ê¥ó¥¯¤Ê¤·',
++        'External section URI' => '³°Éô¥»¥¯¥·¥ç¥óURI',
++        'Choose section' => '¥»¥¯¥·¥ç¥ó¤òÁªÂò¤·¤Æ¤¯¤À¤µ¤¤',
++        'Addon class name' => '¥¢¥É¥ª¥ó ¥¯¥é¥¹Ì¾',
++        'Choose class name' => '¥¯¥é¥¹Ì¾¤òÁªÂò¤·¤Æ¤¯¤À¤µ¤¤',
++        'Addon description' => '¥¢¥É¥ª¥ó ÀâÌÀ',
++        'Additional params' => 'ÄÉ²Ã¥Ñ¥é¥á¡¼¥¿',
++        'Anchor' => '¥¢¥ó¥«¡¼Ì¾',
++        'just the anchor name' => '¥¢¥ó¥«¡¼¡Êanchor¡Ë¤ÎÃÍ',
++        'Can view' => '±ÜÍ÷²ÄÇ½',
++        'All roles' => 'Á´¤Æ¤Î¥í¡¼¥ë',
++        'Please fill in a title' => '¥¿¥¤¥È¥ë¤òÆþÎÏ¤·¤Æ¤¯¤À¤µ¤¤',
++        'You cannot activate unless you first activate.' => '"%2" ¤òÍ­¸ú²½¤¹¤ë¤Þ¤Ç "%1" ¤ÏÍ­¸ú²½¤Ç¤­¤Þ¤»¤ó',
++        'To access this section, a user must have access to the parent section.' => '¥æ¡¼¥¶¡¼¤¬¤³¤Î¥»¥¯¥·¥ç¥ó¤Ø¥¢¥¯¥»¥¹¤¹¤ë¤Ë¤Ï¡¢¿Æ¥»¥¯¥·¥ç¥ó¤Ø¥¢¥¯¥»¥¹¤¹¤ëÉ¬Í×¤¬¤¢¤ê¤Þ¤¹¡£ÁªÂò¤µ¤ì¤¿1¤Ä¡¢¤â¤·¤¯¤ÏÊ£¿ô¤Î¥í¡¼¥ë¤Ï"%s"¤Ø¥¢¥¯¥»¥¹¤Ç¤­¤Þ¤»¤ó¡£',
++
++
++/*  MESSAGES    */
++        'Sections reordered successfully' => '¥»¥¯¥·¥ç¥ó¤ÎÊÂ¤Ó½ç¤Ï¹¹¿·¤µ¤ì¤Þ¤·¤¿',
++        'Section successfully added' => '¥»¥¯¥·¥ç¥ó¤¬ÄÉ²Ã¤µ¤ì¤Þ¤·¤¿',
++        'Section successfully added but alias creation failed as there can be no duplicates' => '¥»¥¯¥·¥ç¥ó¤¬ÄÉ²Ã¤µ¤ì¤Þ¤·¤¿¤¬¡¢¥¨¥¤¥ê¥¢¥¹¤Ï½ÅÊ£¤·¤Æ¤¤¤ë¤¿¤áºîÀ®¤µ¤ì¤Þ¤»¤ó¤Ç¤·¤¿',
++        'The selected section(s) have successfully been deleted' => 'ÁªÂò¤µ¤ì¤¿¥»¥¯¥·¥ç¥ó¤Ïºï½ü¤µ¤ì¤Þ¤·¤¿',
++        'Section details successfully updated' => '¥»¥¯¥·¥ç¥ó¾ðÊó¤Ï¹¹¿·¤µ¤ì¤Þ¤·¤¿',
++        'Current style successfully changed' => '¥¹¥¿¥¤¥ë¤ÏÊÑ¹¹¤µ¤ì¤Þ¤·¤¿',
++        'Section details updated, no data changed' => '¥»¥¯¥·¥ç¥ó¾ðÊó¤Ï¹¹¿·¤µ¤ì¤Þ¤·¤¿¡Ê¥Ç¡¼¥¿¤ÎÊÑ¹¹¤Ê¤·¡Ë',
++
++/*  CATEGORY MGR    */
++        'Category Manager' => '¥«¥Æ¥´¥ê´ÉÍý',
++        'Current Category Name' => '¸½ºß¤Î¥«¥Æ¥´¥êÌ¾',
++        'Target Parent Category' => '¿Æ¥«¥Æ¥´¥ê¤Î»ØÄê',
++        'Add Category' => '¥«¥Æ¥´¥ê¤ÎÄÉ²Ã',
++        'Add Root Category' => '¥ë¡¼¥È¥«¥Æ¥´¥ê¤ÎÄÉ²Ã',
++        'category' => '¥«¥Æ¥´¥ê',
++        'The category has successfully been deleted' => '¥«¥Æ¥´¥ê¤Ïºï½ü¤µ¤ì¤Þ¤·¤¿',
++        'do not delete root category' => 'º£¤Î¤È¤³¤í¥ë¡¼¥È¥«¥Æ¥´¥ê¤Îºï½ü¤Ï½ÐÍè¤Þ¤»¤ó¡£Âå¤ï¤ê¤Ë¥ê¥Í¡¼¥à¤·¤Æ¤¯¤À¤µ¤¤',
++        'Please choose a category from the left to edit' => 'ÊÔ½¸¤·¤¿¤¤¥«¥Æ¥´¥ê¤òº¸¤«¤éÁªÂò¤·¤Æ¤¯¤À¤µ¤¤',
++        'Reorder Categories' => '¥«¥Æ¥´¥ê¤ÎÊÂ¤ÓÂØ¤¨',
++        'Categories reordered successfully' => '¥«¥Æ¥´¥ê¤ÎÊÂ¤Ó½ç¤òÊÑ¹¹¤·¤Þ¤·¤¿',
++        'Label' => '¥é¥Ù¥ë',
++        'Category details successfully updated' => '¥«¥Æ¥´¥ê¾ðÊó¤Ï¹¹¿·¤µ¤ì¤Þ¤·¤¿',
++
++
++/*  PERMISSIONS */
++        'Has Permissions' => '¸¢¸Â¤¢¤ê',
++        'Yes' => '¤Ï¤¤',
++        'No' => '¤¤¤¤¤¨',
++        'Browse' => '¥Ö¥é¥¦¥º',
++        'current style, previewed above' => '¸½ºß¤Î¥¹¥¿¥¤¥ë, ¾åÉô¥×¥ì¥Ó¥å¡¼»²¾È',
++        'preview' => '¥×¥ì¥Ó¥å¡¼',
++        'return to navigation manager' => '¥Ê¥Ó¥²¡¼¥·¥ç¥ó´ÉÍý¤ØÌá¤ë',
++        'Last modified' => 'ºÇ½ª¹¹¿·Æü»þ',
++        'Style Name' => '¥¹¥¿¥¤¥ëÌ¾',
++        'separate with slashes (/)' => '¡Ö/¡×¡Ê¥¹¥é¥Ã¥·¥å¡Ë¤Ç¶èÀÚ¤ë',
++        'Navigation menu preview as displayed to the following role' => '¥Ê¥Ó¥²¡¼¥·¥ç¥ó¥á¥Ë¥å¡¼¤Î¥×¥ì¥Ó¥å¡¼ÍÑ¤Î¥í¡¼¥ë»ØÄê',
++        'Permissions are set by default to allow all users into all catgories. If you would like to deny a certain group access to a category, choose "no" in response to "has permissions" for the given group.' => '¥Ç¥Õ¥©¥ë¥È¤ÎÀßÄê¤Ç¤Ï¡¢Á´¤Æ¤Î¥æ¡¼¥¶¡¼¤¬Á´¤Æ¤Î¥«¥Æ¥´¥ê¤Ø¥¢¥¯¥»¥¹²ÄÇ½¤Ç¤¹¡£¤¤¤¯¤Ä¤«¤Î¥°¥ë¡¼¥×¤ËÂÐ¤·¤ÆÇ¤°Õ¤Î¥«¥Æ¥´¥ê¤Ø¤Î¥¢¥¯¥»¥¹¤ò¶Ø»ß¤·¤¿¤¤¾ì¹ç¤Ë¤Ï¡¢¤³¤ì¤é¤Î¥°¥ë¡¼¥×¤ËÂÐ¤·¤Æ¤³¤ÎÀßÄê¤ò¡Ö¤¤¤¤¤¨¡×¤Ë¤·¤Æ¤¯¤À¤µ¤¤¡£',
++        'static article title' => '¥¹¥¿¥Æ¥£¥Ã¥¯µ­»ö¤Î¥¿¥¤¥È¥ë',
++        'Manager' => '´ÉÍý',
++        'Module' => '¥â¥¸¥å¡¼¥ë',
++        'none' => '¤Ê¤·',
++        'Section info' => '¥»¥¯¥·¥ç¥ó¾ðÊó',
++        'Optimisation' => 'ºÇÅ¬²½',
++        'Select roles to which you want to grant access' => '¥¢¥¯¥»¥¹¤òµö²Ä¤¹¤ë¥í¡¼¥ë¤òÁªÂò¤·¤Æ¤¯¤À¤µ¤¤',
++        'Section Manager :: Add' => '¥»¥¯¥·¥ç¥ó´ÉÍý :: ¿·µ¬ºîÀ®',
++        'Editing options' => '¥ª¥×¥·¥ç¥óÀßÄê',
++        'Section details successfully updated but alias creation failed as there can be no duplicates' => '¥»¥¯¥·¥ç¥ó¤Ï¹¹¿·¤µ¤ì¤Þ¤·¤¿¤¬¡¢¥¨¥¤¥ê¥¢¥¹¤Ï½ÅÊ£¤·¤Æ¤¤¤ë¤¿¤áºîÀ®¤µ¤ì¤Þ¤»¤ó¤Ç¤·¤¿',
++        'Categories successfully reordered' => '¥«¥Æ¥´¥ê¤ÎÊÂ¤Ó½ç¤Ï¹¹¿·¤µ¤ì¤Þ¤·¤¿',
++ );
++?>
+
+Property changes on: modules/navigation2/lang/japanese-euc-jp.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/dutch-iso-8859-1.php
+===================================================================
+--- modules/navigation2/lang/dutch-iso-8859-1.php	(revision 0)
++++ modules/navigation2/lang/dutch-iso-8859-1.php	(revision 0)
+@@ -0,0 +1,90 @@
++<?php
++$words['Select a content'] = 'Selecteer inhoud';
++$words['pre-existing static content'] = 'Bestaande \'statische\' inhoud';
++$words['output from specified module'] = 'Uitvoer van een gespecificeerde module';
++$words['select where your content is coming from'] = 'Selecteer waar de inhoud vandaan komt';
++$words['specify the section under which yours will be placed'] = 'Specificeer de sectie waaronder de nieuwe sectie geplaatst moet worden';
++$words['You must select a valid article'] = 'U moet een bestaand artikel selecteren';
++$words['The category has successfully been deleted'] = 'De categorie is met succes verwijderd';
++$words['Manager'] = 'Manager';
++$words['Module'] = 'Module';
++$words['Accessibility'] = 'Toegankelijkheid';
++$words['Editing options'] = 'Wijzigings opties';
++$words['Section details successfully updated but alias creation failed as there can be no duplicates'] = 'Sectie detais met succes gewijzigd, maar \'alias\' aanmaak is niet gelukt, aangezien duplikaten niet mogen voorkomen';
++$words['Categories successfully reordered'] = 'Categorieën met succes gehergroepeerd';
++$words['Section Manager'] = 'Sectie Manager';
++$words['New section'] = 'Nieuwe Sectie';
++$words['Reorder sections'] = 'Hergroepeer secties';
++$words['Resource URI'] = 'Resource URI';
++$words['Parent ID'] = '\'Parent \' ID';
++$words['Order'] = 'Volgorde';
++$words['Navigation Style Manager'] = 'Navigatie Stijl Manager';
++$words['Access Key'] = 'Toegangssleutel';
++$words['Rel Marker'] = 'Rel Marker';
++$words['Any number, which can be pressed with the ALT-key to load the page.'] = 'Any number, which can be pressed with the ALT-key to load the page.';
++$words['Additional navigation aids for better accessibility. Use values like "home", "prev" or "next".'] = 'Aanvullende navigatie hulp voor verbeterde toegang. Gebruik waarden als: \'home\', \'vorige\' of \'volgende\'.';
++$words['Add section'] = 'Voeg sectie toe';
++$words['Edit section'] = 'Wijzig sectie';
++$words['Section Title'] = 'Sectie titel';
++$words['Parent Section'] = '\'Parent\' sectie';
++$words['Top level (no parent)'] = 'Hoogste niveau (geen \'parent\')';
++$words['Target'] = 'Doel';
++$words['Publish'] = 'Publiceer';
++$words['Alias'] = 'Alias';
++$words['Add an alias'] = 'Voeg een alias toe';
++$words['Automatic alias'] = 'Automatische alias';
++$words['external URI'] = 'externe URI';
++$words['alias URI'] = 'alias URI';
++$words['link to section'] = 'link naar sectie';
++$words['addon'] = 'toevoeging';
++$words['empty link'] = 'lege link';
++$words['External section URI'] = 'Externe sectie URI';
++$words['Choose section'] = 'Kies sectie';
++$words['Addon class name'] = '\'Toevoeging\'  klasse naam';
++$words['Choose class name'] = 'Kies klasse naam';
++$words['Addon description'] = '\'Toevoeging\' omschrijving';
++$words['Additional params'] = 'Aanvullende parameters';
++$words['Anchor'] = 'Anker';
++$words['just the anchor name'] = 'alleen de anker naam';
++$words['Can view'] = 'Kan bekijken';
++$words['All roles'] = 'Alle rollen';
++$words['Please fill in a title'] = 'Vul een titel in';
++$words['You cannot activate unless you first activate.'] = 'U kunt  \'%1\' niet activeren zonder eerst \'%2\' te activeren';
++$words['To access this section, a user must have access to the parent section.'] = 'Deze sectie is alleen toegankelijk als ook de \'parent\' sectie toegankelijk is. Een of meer van de geselecteerde rollen hebben geen toegang tot \'%s\'.';
++$words['Sections reordered successfully'] = 'Secties met succes gehergroepeerd';
++$words['Section successfully added'] = 'Sectie met succes toegevoegd';
++$words['Section successfully added but alias creation failed as there can be no duplicates'] = 'Sectie met succes toegevoegd maar \'alias\' creatie is niet gelukt: geen duplikaten toegestaan';
++$words['The selected section(s) have successfully been deleted'] = 'De geselecteerde sectie(s) is/zijn met succes verwijderd';
++$words['Section details successfully updated'] = 'Sectie details zijn met succes gewijzigd';
++$words['Current style successfully changed'] = 'De huidige stijl is met succes gewijzigd';
++$words['Section details updated, no data changed'] = 'Sectie details gewijzigd, geen data gewijzigd';
++$words['Category Manager'] = 'Categorie Manager';
++$words['Current Category Name'] = 'Huidige categorie naam';
++$words['Target Parent Category'] = 'Doel \'parent\' categorie';
++$words['Add Category'] = 'Voeg categorie toe';
++$words['Add Root Category'] = 'Voeg \'root\' categorie toe';
++$words['category'] = 'categorie';
++$words['do not delete root category'] = 'U kunt geen \'root\' categorie verwijderen. Probeer de categorie te hernoemen.';
++$words['Please choose a category from the left to edit'] = 'Kies a.u.b. een categorie om aan te passen in de linker kolom';
++$words['Reorder Categories'] = 'Hergroepeer categorieën';
++$words['Categories reordered successfully'] = 'Categorieën met succes gehergroepeerd';
++$words['Label'] = 'Label';
++$words['Category details successfully updated'] = 'Categorie detail met succes gewijzigd';
++$words['Has Permissions'] = 'Heeft permissies';
++$words['Yes'] = 'Ja';
++$words['No'] = 'Nee';
++$words['Browse'] = 'Bladeren';
++$words['current style, previewed above'] = 'huidige stijl, previewed hierboven';
++$words['preview'] = 'preview';
++$words['return to navigation manager'] = 'terug naar navigatie manager';
++$words['Last modified'] = 'Laatst gewijzigd';
++$words['Style Name'] = 'Stijl naam';
++$words['separate with slashes (/)'] = 'scheiden met \'slashes\'  (/)';
++$words['Navigation menu preview as displayed to the following role'] = 'Navigatie menu preview zoals zichtbaar bij de volgende rol';
++$words['Permissions are set by default to allow all users into all catgories. If you would like to deny a certain group access to a category, choose "no" in response to "has permissions" for the given group.'] = 'Permissies geven standaard toegang aan alle gebruikers voor alle categorieën. Als u een bepaalde groep geen toegang wilt geven tot een categorie, kies dan \'nee\' als antwoord op \'heeft permissies\' voor die betreffende groep';
++$words['static article title'] = 'statisch artikel titel';
++$words['none'] = 'geen';
++$words['Section info'] = 'Sectie info';
++$words['Select roles to which you want to grant access'] = 'Selecteer de rollen die u toegang wilt verlenen';
++$words['Section Manager :: Add'] = 'Sectie Manager :: Toevoegen';
++?>
+\ No newline at end of file
+
+Property changes on: modules/navigation2/lang/dutch-iso-8859-1.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/chinese_traditional-utf-8.php
+===================================================================
+--- modules/navigation2/lang/chinese_traditional-utf-8.php	(revision 0)
++++ modules/navigation2/lang/chinese_traditional-utf-8.php	(revision 0)
+@@ -0,0 +1,108 @@
++<?php
++$words['Choose URI from Aliases'] = 'å¾žåˆ¥åä¸­é¸æ“‡ç¶²å€';
++$words['Additional navigation aids for better accessibility. Use values like "home", "prev" or "next".'] = 'å…¶ä»–å°Žè¦½åŠŸèƒ½å¯ä»¥è®“ç¶²ç«™æ›´å…·è¦ªå’ŒåŠ›ï¼Œä½¿ç”¨åƒæ˜¯ "é¦–é "ã€"ä¸Šä¸€é "æˆ–"ä¸‹ä¸€é "ç­‰é …ç›®ã€‚';
++$words['Please choose a category from the left to edit'] = 'è«‹å¾žå·¦é‚Šé¸æ“‡ä¸€å€‹é¡žåˆ¥ä¾†ç·¨è¼¯';
++$words['Reorder Categories'] = 'é‡æ–°æŽ’åºé¡žåˆ¥';
++$words['Categories reordered successfully'] = 'é¡žåˆ¥é‡æ–°æŽ’åºæˆåŠŸ';
++$words['Label'] = 'æ¨™ç±¤';
++$words['Category details successfully updated'] = 'é¡žåˆ¥ç´°ç¯€æˆåŠŸæ›´æ–°';
++$words['Category details updated, no data changed'] = 'é¡žåˆ¥ç´°ç¯€æ›´æ–°äº†ï¼Œä½†æ˜¯æ²’æœ‰è³‡æ–™ç•°å‹•';
++$words['Role Name'] = 'è§’è‰²åç¨±';
++$words['Browse'] = 'ç€è¦½';
++$words['current style, previewed above'] = 'ç›®å‰é¢¨æ ¼ï¼Œå¾žä¸Šé¢é è¦½';
++$words['preview'] = 'é è¦½';
++$words['return to navigation manager'] = 'å›žåˆ°å°Žè¦½é¦–é ';
++$words['Last modified'] = 'æœ€å¾Œæ›´æ–°';
++$words['Style Name'] = 'é¢¨æ ¼åç¨±';
++$words['With selected section(s)'] = 'é¸æ“‡çš„å€åŸŸ';
++$words['separate with slashes (/)'] = 'ä»¥æ–œç·š(/)å€éš”';
++$words['Navigation menu preview as displayed to the following role'] = 'ä¸‹é¢è§’è‰²ä½¿ç”¨çš„å°Žè¦½é¸å–®é è¦½';
++$words['Note'] = 'å‚™è¨»';
++$words['Permissions are set by default to allow all users into all catgories. If you would like to deny a certain group access to a category, choose "no" in response to "has permissions" for the given group.'] = 'é è¨­æ¬Šé™æœƒå…è¨±æ‰€æœ‰ä½¿ç”¨è€…çœ‹åˆ°æ‰€æœ‰é¡žåˆ¥ï¼Œå¦‚æžœæ‚¨å¸Œæœ›åœ¨æŸäº›ç¾¤çµ„ä¸­åœç”¨å¯ä»¥é¸æ“‡ \\\\\"no\\\\\" ä¾†å–ä»£ \\\\\"has permissions\\\\\"ã€‚';
++$words['return to category manager'] = 'å›žåˆ°é¡žåˆ¥ç®¡ç†';
++$words['Access Key'] = 'å¿«é€Ÿéµ';
++$words['Rel Marker'] = 'Rel Marker';
++$words['Any number, which can be pressed with the ALT-key to load the page.'] = 'ä»»æ„æ•¸å­—ï¼Œå¯ä»¥ç”¨ä¾†æ­é… ALT éµè®€å–é é¢ã€‚';
++$words['Target'] = 'ç›®æ¨™';
++$words['alias'] = 'è½‰å€';
++$words['Alias'] = 'ä»£ç¨±';
++$words['external URI'] = 'å¤–éƒ¨ç¶²å€';
++$words['alias URI'] = 'è½‰æ›ç¶²å€';
++$words['external page URI'] = 'å¤–éƒ¨é é¢ç¶²å€';
++$words['Pages'] = 'é¸å–®';
++$words['Page Manager'] = 'é¸å–®ç®¡ç†';
++$words['Page Manager :: Add'] = 'é¸å–®ç®¡ç† :: æ–°å¢ž';
++$words['Page Manager :: Edit'] = 'é¸å–®ç®¡ç† :: ç·¨è¼¯';
++$words['Section ID'] = 'ç·¨è™Ÿ';
++$words['Page Title'] = 'æ¨™é¡Œ';
++$words['Parent Page'] = 'çˆ¶éšŽ';
++$words['static articles'] = 'éœæ…‹æ–‡ç« ';
++$words['dynamic pages'] = 'å‹•æ…‹ç¶²é ';
++$words['Additional params'] = 'åƒæ•¸';
++$words['do not add the ?'] = 'ä¸è¦åŠ ?ç¬¦è™Ÿ';
++$words['Anchor'] = 'éŒ¨';
++$words['just the anchor name'] = 'éŒ¨åç¨±';
++$words['check to activate'] = 'å•Ÿç”¨';
++$words['Can view'] = 'å…è¨±ç€è¦½';
++$words['intro text 1'] = 'ä»‹ç´¹1';
++$words['intro text 2'] = 'ä»‹ç´¹2';
++$words['Section details updated, no data changed'] = 'å€åŸŸç´°ç¯€æ›´æ–°ï¼Œè³‡æ–™æ²’æœ‰æ”¹è®Š';
++$words['Categories'] = 'åˆ†é¡ž';
++$words['Category Manager'] = 'åˆ†é¡žç®¡ç†';
++$words['Category ID'] = 'åˆ†é¡žç·¨è™Ÿ';
++$words['Current Category Name'] = 'ç›®å‰åˆ†é¡žåç¨±';
++$words['New Category Name'] = 'æ–°åˆ†é¡žåç¨±';
++$words['Category will be Added Under'] = 'åˆ†é¡žå°‡æ–°å¢žè‡³';
++$words['Target Parent Category'] = 'çˆ¶åˆ†é¡ž';
++$words['Add Category'] = 'æ–°å¢žåˆ†é¡ž';
++$words['Add Root Category'] = 'æ–°å¢žæ ¹åˆ†é¡ž';
++$words['Edit Category'] = 'ç·¨è¼¯åˆ†é¡ž';
++$words['Move Category'] = 'ç§»å‹•åˆ†é¡ž';
++$words['Delete Category'] = 'åˆªé™¤åˆ†é¡ž';
++$words['You are here'] = 'æ‚¨åœ¨æ­¤';
++$words['category'] = 'åˆ†é¡ž';
++$words['Category'] = 'åˆ†é¡ž';
++$words['Please select a new parent category'] = 'è«‹é¸æ“‡ä¸€å€‹æ–°çš„çˆ¶åˆ†é¡ž';
++$words['Please enter a value in the field before submitting'] = 'è«‹åœ¨é€å‡ºå‰å¡«å¯«è³‡æ–™';
++$words['The category has successfully been updated'] = 'åˆ†é¡žæ›´æ–°å®Œæˆ';
++$words['The category has successfully been moved'] = 'åˆ†é¡žç§»å‹•å®Œæˆ';
++$words['The category has successfully been added'] = 'åˆ†é¡žæ–°å¢žå®Œæˆ';
++$words['The category has successfully been deleted'] = 'åˆ†é¡žåˆªé™¤å®Œæˆ';
++$words['Root'] = 'æ ¹';
++$words['Editing a Category'] = 'ç·¨è¼¯åˆ†é¡ž';
++$words['Adding a New Category'] = 'æ–°å¢žæ–°åˆ†é¡ž';
++$words['Moving a Category'] = 'ç§»å‹•åˆ†é¡ž';
++$words['Deleting a Category'] = 'æº–å‚™åˆªæŽ‰çš„åˆ†é¡ž';
++$words['Category to Delete'] = 'è¦åˆªçš„åˆ†é¡ž';
++$words['do not delete root category'] = 'ä¸è¦åˆªæŽ‰æ ¹åˆ†é¡ž';
++$words['Welcome to Category Manager'] = 'æ­¡è¿Žå…‰è‡¨åˆ†é¡žç®¡ç†';
++$words['Permissions Mgr'] = 'æ¬Šé™ç®¡ç†';
++$words['Current Category'] = 'ç›®å‰åˆ†é¡ž';
++$words['Current'] = 'ç›®å‰';
++$words['Group Name'] = 'ç¾¤çµ„å';
++$words['Has Permissions'] = 'æœ‰æ¬Šé™';
++$words['Yes'] = 'æ˜¯';
++$words['No'] = 'å¦';
++$words['perms successfully updated'] = 'æ¬Šé™å·²æ›´æ–°';
++$words['new section'] = 'æ–°å¢žé¸å–®';
++$words['Reorder sections'] = 'é‡æŽ’é †åº';
++$words['Resource URI'] = 'ç¶²å€';
++$words['Status'] = 'ç‹€æ…‹';
++$words['Parent ID'] = 'çˆ¶é ';
++$words['Order'] = 'é †åº';
++$words['Move/Edit'] = 'ç§»å‹•/ç·¨è¼¯';
++$words['Delete selected section(s)'] = 'åˆªé™¤é¸æ“‡çš„å€æ®µ';
++$words['Modify nav bar appearance'] = 'ä¿®æ”¹é¸å–®å¤–è§€';
++$words['Navigation Style Manager'] = 'é¸å–®é¢¨æ ¼ç®¡ç†';
++$words['new style'] = 'æ–°å¢žé¢¨æ ¼';
++$words['edit navigation template'] = 'ç·¨è¼¯é¸å–®æ¨¡æ¿';
++$words['Sections reordered successfully'] = 'å®Œæˆå€æ®µé †åºé‡æŽ’';
++$words['Section successfully added'] = 'å®Œæˆå€æ®µæ–°å¢ž';
++$words['The selected section(s) have successfully been deleted'] = 'é¸æ“‡çš„å€æ®µå·²ç¶“åˆªé™¤';
++$words['Section details successfully updated'] = 'å®Œæˆå€æ®µå…§å®¹æ›´æ–°';
++$words['A section may not be a parent to itself and therefore was not moved.'] = 'å€æ®µä¸å¯ç‚ºè‡ªå·±çš„çˆ¶è¼©å› æ­¤æ²’æœ‰ç§»å‹•.';
++$words['The default style may not be modified'] = 'å…§å®šé¢¨æ ¼ä¸å¯ä¿®æ”¹';
++$words['The selected style has been deleted successfully'] = 'é¸æ“‡çš„é¢¨æ ¼å·²ç¶“åˆªé™¤';
++$words['Current style successfully changed'] = 'ç›®å‰é¢¨æ ¼å·²ç¶“æ”¹è®Š';
++$words['Style values successfully saved'] = 'å®Œæˆé¢¨æ ¼å…§å®¹å„²å­˜';
++?>
+\ No newline at end of file
+
+Property changes on: modules/navigation2/lang/chinese_traditional-utf-8.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/german-iso-8859-1.php
+===================================================================
+--- modules/navigation2/lang/german-iso-8859-1.php	(revision 0)
++++ modules/navigation2/lang/german-iso-8859-1.php	(revision 0)
+@@ -0,0 +1,90 @@
++<?php
++$words['Select a content'] = 'Wählen Sie einen Inhalt aus';
++$words['pre-existing static content'] = 'Vorhandener Statischer Artikel';
++$words['output from specified module'] = 'Ausgabe von einem Modul';
++$words['select where your content is coming from'] = 'Geben Sie an woher der Inhalt kommt';
++$words['specify the section under which yours will be placed'] = 'Unter welcher Sektion soll diese Sektion platziert werden?';
++$words['You cannot activate unless you first activate.'] = 'Sie können nicht %1 aktivieren wenn %2 nicht aktiviert ist';
++$words['You must select a valid article'] = 'Sie müssen einen gültigen Artikel angeben';
++$words['Manager'] = 'Manager';
++$words['Module'] = 'Modul';
++$words['Accessibility'] = 'Erreichbarkeit';
++$words['Editing options'] = 'Editieroptionen';
++$words['Section details successfully updated but alias creation failed as there can be no duplicates'] = 'Sektionsdetails erfolgreich aktualisert aber der Alias konnte nicht erzeugt werden, da doppelte Einträge nicht erlaubt sind';
++$words['Categories successfully reordered'] = 'Kategorien erfolgreich neu geordnet';
++$words['Top level (no parent)'] = 'Oberste Ebene';
++$words['Automatic alias'] = 'automatischer Alias';
++$words['All roles'] = 'Alle Rollen';
++$words['Please fill in a title'] = 'Bitte geben Sie einen Titel an';
++$words['To access this section, a user must have access to the parent section.'] = 'Ein Benutzer muss zuerst die übergeordnete Sektion aufrufen bevor er diese Sektion aufrufen kann';
++$words['Section successfully added but alias creation failed as there can be no duplicates'] = 'Die Sektion wurde erfolgreich hinzugefügt. Leider konnte der Alias nicht erstellt werden, weil keine Duplikate erlaubt sind';
++$words['Section Manager :: Add'] = 'Sektionsmanager :: Hinzufügen';
++$words['Section Manager'] = 'Sektionsmanager';
++$words['New section'] = 'Neue Sektion';
++$words['Add section'] = 'Sektion hinzufügen';
++$words['Edit section'] = 'Sektion bearbeiten';
++$words['Section Title'] = 'Titel der Sektion';
++$words['Parent Section'] = 'Übergeordnete Sektion';
++$words['link to section'] = 'Link zur Sektion';
++$words['External section URI'] = 'Externe URI';
++$words['Choose section'] = 'Sektion auswählen';
++$words['Section info'] = 'Seiteninformationen';
++$words['none'] = 'keine';
++$words['Access Key'] = 'Tastenkürzel';
++$words['Rel Marker'] = 'Relative Auszeichnung';
++$words['Any number, which can be pressed with the ALT-key to load the page.'] = 'Jede Taste, die mit der [ALT]-Taste zusammen gedrückt werden kann um die Seite zu laden';
++$words['Additional navigation aids for better accessibility. Use values like "home", "prev" or "next".'] = 'Zusätzliche Navigationshilfen für bessere Barrierefreiheit. Z.B. home, prev oder next';
++$words['Target'] = 'Ziel';
++$words['Publish'] = 'Veröffenltichen';
++$words['Alias'] = 'Alias';
++$words['Add an alias'] = 'Alias hinzufügen';
++$words['external URI'] = 'Externe URI';
++$words['alias URI'] = 'Alias URI';
++$words['addon'] = 'Erweiterung';
++$words['empty link'] = 'Leerer Link';
++$words['Addon class name'] = 'Klassenname der Erweiterung';
++$words['Choose class name'] = 'Klassenname auswählen';
++$words['Addon description'] = 'Beschreibung der Erweiterung';
++$words['static article title'] = 'Titel des statischen Artikels';
++$words['Select roles to which you want to grant access'] = 'Bitte wählen Sie die Rollen aus, die Zugang zu dieser Seite haben sollen';
++$words['Permissions are set by default to allow all users into all catgories. If you would like to deny a certain group access to a category, choose "no" in response to "has permissions" for the given group.'] = 'Standardmässig dürfen alle Benutzer jede Kategorie sehen. Mit einem Klick auf nein können Sie eine bestimmte Gruppe von einer Kategorie ausschliessen';
++$words['Browse'] = 'Übersicht';
++$words['current style, previewed above'] = 'Aktueller Stil wie in der Vorschau';
++$words['preview'] = 'Vorschau';
++$words['return to navigation manager'] = 'Zurück zum Navigationsmanager';
++$words['Last modified'] = 'Zuletzt geändert';
++$words['Style Name'] = 'Name des Stils';
++$words['separate with slashes (/)'] = 'mit Schrägstrichen (/) trennen';
++$words['Navigation menu preview as displayed to the following role'] = 'Navigationsmenu der folgenden Rolle';
++$words['Categories reordered successfully'] = 'Kategorien erfolgreich neu geordnet';
++$words['Label'] = 'Name';
++$words['Category details successfully updated'] = 'Kategoriedetails erfolgreich aktualisiert';
++$words['Please choose a category from the left to edit'] = 'Bitte wählen Sie eine Kategorie in der Übersicht links aus, um sie zu bearbeiten';
++$words['Reorder Categories'] = 'Kategorien neu ordnen';
++$words['Additional params'] = 'zusätzliche Parameter';
++$words['Anchor'] = 'Anker';
++$words['just the anchor name'] = 'nur der Ankername';
++$words['Can view'] = 'Sichtbar für';
++$words['Category Manager'] = 'Kategorie Manager';
++$words['Current Category Name'] = 'Derzeitiger Kategorienname';
++$words['Target Parent Category'] = 'Übergeordnete Zielkategorie';
++$words['Add Category'] = 'Kategorie hinzufügen';
++$words['Add Root Category'] = 'Hauptkategorie hinzufügen';
++$words['category'] = 'Kategorie';
++$words['The category has successfully been deleted'] = 'Die Kategorie wurde erfolgreich gelöscht';
++$words['do not delete root category'] = 'Löschen sie die Hauptkategorie nicht';
++$words['Has Permissions'] = 'Hat Rechte';
++$words['Yes'] = 'Ja';
++$words['No'] = 'Nein';
++$words['Section details updated, no data changed'] = 'Die Sektionsdetails wurden erfolgreich aktualisiert, keine Daten geändert';
++$words['Resource URI'] = 'Ressourcen URI';
++$words['Parent ID'] = 'Eltern-ID';
++$words['Order'] = 'Reihenfolge';
++$words['Navigation Style Manager'] = 'Navigations-stil Manager';
++$words['Sections reordered successfully'] = 'Die Sektionen wurden erfolgreich neu geordnet';
++$words['Section successfully added'] = 'Die Sektion wurde erfolgreich hinzugefügt';
++$words['The selected section(s) have successfully been deleted'] = 'Die Sektion(en) wurde(n) erfolgreich gelöscht';
++$words['Section details successfully updated'] = 'Die Sektionsdetails wurden erfolgreich aktualisiert';
++$words['Current style successfully changed'] = 'Der aktuelle Stil wurde erfolgreich geändert';
++$words['Reorder sections'] = 'Sektionen neu ordnen';
++?>
+\ No newline at end of file
+
+Property changes on: modules/navigation2/lang/german-iso-8859-1.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/chinese-gb2312.php
+===================================================================
+--- modules/navigation2/lang/chinese-gb2312.php	(revision 0)
++++ modules/navigation2/lang/chinese-gb2312.php	(revision 0)
+@@ -0,0 +1,80 @@
++<?php
++$words['Pages'] = 'Ñ¡µ¥';
++$words['Page Manager'] = 'Ñ¡µ¥¹ÜÀí';
++$words['Page Manager :: Add'] = 'Ñ¡µ¥¹ÜÀí :: Ìí¼Ó';
++$words['Page Manager :: Edit'] = 'Ñ¡µ¥¹ÜÀí :: ±à¼­';
++$words['Section ID'] = '±àºÅ';
++$words['Page Title'] = '±êÌâ';
++$words['Parent Page'] = '¸¸½×';
++$words['Page'] = '±¾Ò³';
++$words['static articles'] = '¾²Ì¬ÎÄÕÂ';
++$words['dynamic pages'] = '¶¯Ì¬ÍøÒ³';
++$words['Additional params'] = '²ÎÊý';
++$words['do not add the ?'] = '²»Òª¼Ó?·ûºÅ';
++$words['Anchor'] = 'Ãª';
++$words['just the anchor name'] = 'ÃªÃû³Æ';
++$words['check to activate'] = '¼¤»î';
++$words['Can view'] = 'ÔÊÐíä¯ÀÀ';
++$words['intro text 1'] = '½éÉÜ1';
++$words['intro text 2'] = '½éÉÜ2';
++$words['Section details updated, no data changed'] = 'ÇøÓòÏ¸½Ú¸üÐÂ£¬×ÊÁÏÃ»ÓÐ¸Ä±ä';
++$words['Categories'] = '·ÖÀà';
++$words['Category Manager'] = '·ÖÀà¹ÜÀí';
++$words['Category ID'] = '·ÖÀà±àºÅ';
++$words['Current Category Name'] = 'Ä¿Ç°·ÖÀàÃû³Æ';
++$words['New Category Name'] = 'ÐÂ·ÖÀàÃû³Æ';
++$words['Category will be Added Under'] = '·ÖÀà½«Ìí¼ÓÖÁ';
++$words['Target Parent Category'] = '¸¸·ÖÀà';
++$words['Add Category'] = 'Ìí¼Ó·ÖÀà';
++$words['Add Root Category'] = 'Ìí¼Ó¸ù·ÖÀà';
++$words['Edit Category'] = '±à¼­·ÖÀà';
++$words['Move Category'] = 'ÒÆ¶¯·ÖÀà';
++$words['Delete Category'] = 'É¾³ý·ÖÀà';
++$words['You are here'] = 'ÄãÔÚ´Ë';
++$words['category'] = '·ÖÀà';
++$words['Category'] = '·ÖÀà';
++$words['Please select a new parent category'] = 'ÇëÑ¡ÔñÒ»¸öÐÂµÄ¸¸·ÖÀà';
++$words['Please enter a value in the field before submitting'] = 'ÇëÔÚËÍ³öÇ°ÌîÐ´×ÊÁÏ';
++$words['The category has successfully been updated'] = '·ÖÀà¸üÐÂÍê³É';
++$words['The category has successfully been moved'] = '·ÖÀàÒÆ¶¯Íê³É';
++$words['The category has successfully been added'] = '·ÖÀàÌí¼ÓÍê³É';
++$words['The category has successfully been deleted'] = '·ÖÀàÉ¾³ýÍê³É';
++$words['Root'] = '¸ù';
++$words['Editing a Category'] = '±à¼­·ÖÀà';
++$words['Adding a New Category'] = 'Ìí¼ÓÐÂ·ÖÀà';
++$words['Moving a Category'] = 'ÒÆ¶¯·ÖÀà';
++$words['Deleting a Category'] = '×¼±¸É¾µôµÄ·ÖÀà';
++$words['Category to Delete'] = 'ÒªÉ¾µÄ·ÖÀà';
++$words['do not delete root category'] = '²»ÒªÉ¾µô¸ù·ÖÀà';
++$words['Welcome to Category Manager'] = '»¶Ó­¹âÁÙ·ÖÀà¹ÜÀí';
++$words['Please chose a category from the left site or click here to'] = 'ÇëÑ¡Ôñ·ÖÀà';
++$words['Permissions Mgr'] = 'È¨ÏÞ¹ÜÀí';
++$words['Current Category'] = 'Ä¿Ç°·ÖÀà';
++$words['Current'] = 'Ä¿Ç°';
++$words['Group Name'] = 'Èº×éÃû';
++$words['Has Permissions'] = 'ÓÐÈ¨ÏÞ';
++$words['Yes'] = 'ÊÇ';
++$words['No'] = '·ñ';
++$words['perms successfully updated'] = 'È¨ÏÞÒÑ¸üÐÂ';
++$words['new section'] = 'Ìí¼ÓÑ¡µ¥';
++$words['Reorder sections'] = 'ÖØÅÅË³Ðò';
++$words['Resource URI'] = 'ÍøÖ·';
++$words['Status'] = '×´Ì¬';
++$words['Parent ID'] = '¸¸Ò³';
++$words['Order'] = 'Ë³Ðò';
++$words['Move/Edit'] = 'ÒÆ¶¯/±à¼­';
++$words['Delete selected section(s)'] = 'É¾³ýÑ¡ÔñµÄÇø¶Î';
++$words['Modify nav bar appearance'] = 'ÐÞ¸ÄÑ¡µ¥Íâ¹Û';
++$words['Navigation Style Manager'] = 'Ñ¡µ¥·ç¸ñ¹ÜÀí';
++$words['new style'] = 'ÐÂÔö·ç¸ñ';
++$words['edit navigation template'] = '±à¼­Ñ¡µ¥Ä£°å';
++$words['Sections reordered successfully'] = 'Íê³ÉÇø¶ÎË³ÐòÖØÅÅ';
++$words['Section successfully added'] = 'Íê³ÉÇø¶ÎÐÂÔö';
++$words['The selected section(s) have successfully been deleted'] = 'Ñ¡ÔñµÄÇø¶ÎÒÑ¾­É¾³ý';
++$words['Section details successfully updated'] = 'Íê³ÉÇø¶ÎÄÚÈÝ¸üÐÂ';
++$words['A section may not be a parent to itself and therefore was not moved.'] = 'Çø¶Î²»¿ÉÎª×Ô¼ºµÄ¸¸±²Òò´ËÃ»ÓÐÒÆ¶¯.';
++$words['The default style may not be modified'] = 'ÄÚ¶¨·ç¸ñ²»¿ÉÐÞ¸Ä';
++$words['The selected style has been deleted successfully'] = 'Ñ¡ÔñµÄ·ç¸ñÒÑ¾­É¾³ý';
++$words['Current style successfully changed'] = 'Ä¿Ç°·ç¸ñÒÑ¾­¸Ä±ä';
++$words['Style values successfully saved'] = 'Íê³É·ç¸ñÄÚÈÝ´¢´æ';
++?>
+\ No newline at end of file
+
+Property changes on: modules/navigation2/lang/chinese-gb2312.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/english-iso-8859-15.php
+===================================================================
+--- modules/navigation2/lang/english-iso-8859-15.php	(revision 0)
++++ modules/navigation2/lang/english-iso-8859-15.php	(revision 0)
+@@ -0,0 +1,104 @@
++<?php
++    $words = array(
++/*  SECTION MANAGER */
++        'Section Manager' => 'Section Manager',
++        'New section' => 'New section',
++        'Reorder sections' => 'Reorder sections',
++        'Resource URI' => 'Resource URI',
++        'Parent ID' => 'Parent ID',
++        'Order' => 'Order',
++        'Navigation Style Manager' => 'Navigation Style Manager',
++        'Access Key' => 'Access Key',
++        'Rel Marker' => 'Rel Marker',
++        'Any number, which can be pressed with the ALT-key to load the page.' => 'Any number, which can be pressed with the ALT-key to load the page.',
++        'Additional navigation aids for better accessibility. Use values like "home", "prev" or "next".' => 'Additional navigation aids for better accessibility. Use values like "home", "prev" or "next".',
++
++/* Add / Edit template */
++        'Add section' => 'Add section',
++        'Edit section' => 'Edit section',
++        'Section Title' => 'Section Title',
++        'Parent Section' => 'Parent Section',
++        'Top level (no parent)' => 'Top level (no parent)',
++        'Target' => 'Target',
++        'Publish' => 'Publish',
++        'Select a content' => 'Select an article',
++        'pre-existing static content' => 'pre-existing static content',
++        'output from specified module' => 'output from specified module',
++        'select where your content is coming from' => 'select where your content is coming from',
++        'Alias' => 'Alias',
++        'Add an alias' => 'Add an alias',
++        'Automatic alias' => 'Automatic alias',
++        'external URI' => 'external URI',
++        'alias URI' => 'alias URI',
++        'link to section' => 'link to section',
++        'addon' => 'addon',
++        'empty link' => 'empty link',
++        'External section URI' => 'External section URI',
++        'Choose section' => 'Choose section',
++        'Addon class name' => 'Addon class name',
++        'Choose class name' => 'Choose class name',
++        'Addon description' => 'Addon description',
++        'Additional params' => 'Additional params',
++        'Anchor' => 'Anchor',
++        'just the anchor name' => 'just the anchor name',
++        'specify the section under which yours will be placed' => 'specify the section under which yours will be placed',
++        'Can view' => 'Can view',
++        'All roles' => 'All roles',
++        'Please fill in a title' => 'Please fill in a title',
++        'You cannot activate unless you first activate.' => 'You cannot activate "%1" unless you first activate "%2"',
++        'To access this section, a user must have access to the parent section.' => 'To access this section, a user must have access to the parent section. One or more of the roles you selected does not have access to "%s".',
++        'You must select a valid article' => 'You must select a valid article. If none in the list, please first create a static article to link to',
++        'an alias is just a search-engine-friendly URL' => 'an alias is just a search-engine-friendly URL, ie my-article-name instead of /article/view/frmArticleId/23/',
++
++
++/*  MESSAGES    */
++        'Sections reordered successfully' => 'Sections reordered successfully',
++        'Section successfully added' => 'Section successfully added',
++        'Section successfully added but alias creation failed as there can be no duplicates' => 'Section successfully added but alias creation failed as there can be no duplicates',
++        'The selected section(s) have successfully been deleted' => 'The selected section(s) have successfully been deleted',
++        'Section details successfully updated' => 'Section details successfully updated',
++        'Current style successfully changed' => 'Current style successfully changed',
++        'Section details updated, no data changed' => 'Section details updated, no data changed',
++
++/*  CATEGORY MGR    */
++        'Category Manager' => 'Category Manager',
++        'Current Category Name' => 'Current Category Name',
++        'Target Parent Category' => 'Target Parent Category',
++        'Add Category' => 'Add Category',
++        'Add Root Category' => 'Add Root Category',
++        'category' => 'category',
++        'The category has successfully been deleted' => 'The category has successfully been deleted',
++        'do not delete root category' => 'Currently you cannot delete the root category, trying renaming it instead',
++        'Please choose a category from the left to edit' => 'Please choose a category from the left to edit',
++        'Reorder Categories' => 'Reorder Categories',
++        'Categories reordered successfully' => 'Categories reordered successfully',
++        'Label' => 'Label',
++        'Category details successfully updated' => 'Category details successfully updated',
++
++
++/*  PERMISSIONS */
++        'Has Permissions' => 'Has Permissions',
++        'Yes' => 'Yes',
++        'No' => 'No',
++        'Browse' => 'Browse',
++        'current style, previewed above' => 'current style, previewed above',
++        'preview' => 'preview',
++        'return to navigation manager' => 'return to navigation manager',
++        'Last modified' => 'Last modified',
++        'Style Name' => 'Style Name',
++        'separate with slashes (/)' => 'separate with slashes (/)',
++        'Navigation menu preview as displayed to the following role' => 'Navigation menu preview as displayed to the following role',
++        'Permissions are set by default to allow all users into all catgories. If you would like to deny a certain group access to a category, choose "no" in response to "has permissions" for the given group.' => 'Permissions are set by default to allow all users into all catgories. If you would like to deny a certain group access to a category, choose "no" in response to "has permissions" for the given group.',
++        'static article title' => 'static article title',
++        'Manager' => 'Manager',
++        'Module' => 'Module',
++        'none' => 'none',
++        'Section info' => 'Section info',
++        'Accessibility' => 'Accessibility',
++        'Select roles to which you want to grant access' => 'Select roles to which you want to grant access',
++        'Section Manager :: Add' => 'Section Manager :: Add',
++        'Editing options' => 'Editing options',
++        'Section details successfully updated but alias creation failed as there can be no duplicates' => 'Section details successfully updated but alias creation failed as there can be no duplicates',
++        'Categories successfully reordered' => 'Categories successfully reordered',
++ );
++?>
+
+Property changes on: modules/navigation2/lang/english-iso-8859-15.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/italian-iso-8859-1.php
+===================================================================
+--- modules/navigation2/lang/italian-iso-8859-1.php	(revision 0)
++++ modules/navigation2/lang/italian-iso-8859-1.php	(revision 0)
+@@ -0,0 +1,91 @@
++<?php
++$words['an alias is just a search-engine-friendly URL'] = 'per alias si indica un URL gestibile dai motori di ricerca';
++$words['You cannot activate unless you first activate.'] = 'You cannot activate unless you first activate.';
++$words['To access this section, a user must have access to the parent section.'] = 'Per accedere a questa sezione, uno user deve poter accedere alla sezione padre';
++$words['You must select a valid article'] = 'Si deve selezionare un articolo valido';
++$words['Section successfully added but alias creation failed as there can be no duplicates'] = 'Sezione aggiunta ma la creazione dell\'alias è fallita perché ne esiste un duplicato.';
++$words['Manager'] = 'Manager';
++$words['Module'] = 'Modulo';
++$words['none'] = 'niente';
++$words['Accessibility'] = 'Accessibilità';
++$words['Select roles to which you want to grant access'] = 'Seleziona il ruolo che può accedere';
++$words['Editing options'] = 'Opzioni di modifica';
++$words['Section details successfully updated but alias creation failed as there can be no duplicates'] = 'Dettagli della sezione aggiornati ma la creazione dell\'alias è fallita perché ne esiste un duplicato';
++$words['Categories successfully reordered'] = 'Categorie riordinate';
++$words['Edit section'] = 'Modifica sezione';
++$words['Top level (no parent)'] = 'Livello più elevato (privo di genitori)';
++$words['Publish'] = 'Pubblica';
++$words['Select a content'] = 'Seleziona un contenuto';
++$words['pre-existing static content'] = 'Contenuto statico pre-esistente';
++$words['output from specified module'] = 'output da modulo specificato';
++$words['select where your content is coming from'] = 'seleziona da dove il tuo contenuto proviene';
++$words['Alias'] = 'Alias';
++$words['Automatic alias'] = 'Alias automatico';
++$words['external URI'] = 'URI esterno';
++$words['alias URI'] = 'alias URI';
++$words['link to section'] = 'collegamento alla sezione';
++$words['addon'] = 'addon';
++$words['empty link'] = 'collegamento vuoto';
++$words['External section URI'] = 'URI sezione esterna';
++$words['Choose section'] = 'Seleziona una sezione';
++$words['Addon class name'] = 'Class Name dell\'addon';
++$words['Choose class name'] = 'Seleziona il Class Name';
++$words['Addon description'] = 'Descrizione dell\'addon';
++$words['specify the section under which yours will be placed'] = 'specifica la sezione nella quale verrà piazzato';
++$words['All roles'] = 'Tutti i ruoli';
++$words['Please fill in a title'] = 'Inserisci un titolo';
++$words['Please choose a category from the left to edit'] = 'Seleziona una categoria da modificare';
++$words['Reorder Categories'] = 'Riordina le categorie';
++$words['Categories reordered successfully'] = 'Categorie riordinate';
++$words['Label'] = 'Titolo';
++$words['Category details successfully updated'] = 'Dettagli categoria aggiornati';
++$words['Parent Section'] = 'Pagina padre';
++$words['Additional params'] = 'Parametri addizionali';
++$words['Anchor'] = 'Anchor';
++$words['just the anchor name'] = 'solo il nome dell\'anchor';
++$words['Can view'] = 'Visibile a';
++$words['Category Manager'] = 'Gestione Categorie';
++$words['Current Category Name'] = 'Attuale nome della Categoria';
++$words['Target Parent Category'] = 'Categoria padre';
++$words['Add Category'] = 'Aggiungi Categoria';
++$words['Add Root Category'] = 'Aggiungi una categoria principale';
++$words['category'] = 'categoria';
++$words['The category has successfully been deleted'] = 'Categoria eliminata';
++$words['do not delete root category'] = 'non eliminare la Categoria root';
++$words['Has Permissions'] = 'Permessi';
++$words['Yes'] = 'Sì';
++$words['No'] = 'No';
++$words['Section details updated, no data changed'] = 'Dettagli sezione aggiornati, nessuna cambiamento';
++$words['New section'] = 'Nuova sezione';
++$words['Reorder sections'] = 'Riordina le sezioni';
++$words['Resource URI'] = 'URI della Risorsa';
++$words['Parent ID'] = 'ID padre';
++$words['Order'] = 'Ordine';
++$words['Navigation Style Manager'] = 'Gestione Stile Navigazione';
++$words['Sections reordered successfully'] = 'Sezioni riordinate';
++$words['Section successfully added'] = 'Sezione aggiunta';
++$words['The selected section(s) have successfully been deleted'] = 'Le sezioni selezionate sono state eliminate';
++$words['Section details successfully updated'] = 'Sezione aggiornata';
++$words['Current style successfully changed'] = 'Stile attuale modificato';
++$words['Browse'] = 'Elenco';
++$words['current style, previewed above'] = 'stile attuale in anteprima sopra';
++$words['preview'] = 'anteprima';
++$words['return to navigation manager'] = 'torna al gestore navigazione';
++$words['Last modified'] = 'Ultima modifica';
++$words['Style Name'] = 'Nome stile';
++$words['separate with slashes (/)'] = 'separate dalla barra (/)';
++$words['Navigation menu preview as displayed to the following role'] = 'Anteprima del menu di vanigazione per il seguente ruolo';
++$words['Permissions are set by default to allow all users into all catgories. If you would like to deny a certain group access to a category, choose "no" in response to "has permissions" for the given group.'] = 'I permessi sono impostati di default per permettere a tutti gli utenti di accedere a tutte le categorie. Se volete impedire a certi gruppi di accedere a delle categorie, indicare [no] nel campo [Permessi] per il relativo gruppo';
++$words['Access Key'] = 'Scorciatoia';
++$words['Rel Marker'] = '*Rel Marker*';
++$words['Any number, which can be pressed with the ALT-key to load the page.'] = 'Tasto che premuto assieme ad ALT avvia il caricamento della pagina';
++$words['Additional navigation aids for better accessibility. Use values like "home", "prev" or "next".'] = 'Aiuto addizionale alla navigazione. Usa valori tipo [home], [precedente] o [successivo].';
++$words['Add an alias'] = 'Aggiungi un alias';
++$words['Add section'] = 'Aggiungi sezione';
++$words['Target'] = 'Obiettivo';
++$words['Section Manager'] = 'Gestione sezioni';
++$words['Section Manager :: Add'] = 'Gestione sezioni :: Aggiungi';
++$words['Section info'] = 'Informazioni sezione';
++$words['Section Title'] = 'Titolo sezione';
++$words['static article title'] = 'Titolo articolo statico';
++?>
+\ No newline at end of file
+
+Property changes on: modules/navigation2/lang/italian-iso-8859-1.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/chinese_simplified-utf-8.php
+===================================================================
+--- modules/navigation2/lang/chinese_simplified-utf-8.php	(revision 0)
++++ modules/navigation2/lang/chinese_simplified-utf-8.php	(revision 0)
+@@ -0,0 +1,80 @@
++<?php
++$words['Pages'] = 'é€‰å•';
++$words['Page Manager'] = 'é€‰å•ç®¡ç†';
++$words['Page Manager :: Add'] = 'é€‰å•ç®¡ç† :: æ·»åŠ ';
++$words['Page Manager :: Edit'] = 'é€‰å•ç®¡ç† :: ç¼–è¾‘';
++$words['Section ID'] = 'ç¼–å·';
++$words['Page Title'] = 'æ ‡é¢˜';
++$words['Parent Page'] = 'çˆ¶é˜¶';
++$words['Page'] = 'æœ¬é¡µ';
++$words['static articles'] = 'é™æ€æ–‡ç« ';
++$words['dynamic pages'] = 'åŠ¨æ€ç½‘é¡µ';
++$words['Additional params'] = 'å‚æ•°';
++$words['do not add the ?'] = 'ä¸è¦åŠ ?ç¬¦å·';
++$words['Anchor'] = 'é”š';
++$words['just the anchor name'] = 'é”šåç§°';
++$words['check to activate'] = 'æ¿€æ´»';
++$words['Can view'] = 'å…è®¸æµè§ˆ';
++$words['intro text 1'] = 'ä»‹ç»1';
++$words['intro text 2'] = 'ä»‹ç»2';
++$words['Section details updated, no data changed'] = 'åŒºåŸŸç»†èŠ‚æ›´æ–°ï¼Œèµ„æ–™æ²¡æœ‰æ”¹å˜';
++$words['Categories'] = 'åˆ†ç±»';
++$words['Category Manager'] = 'åˆ†ç±»ç®¡ç†';
++$words['Category ID'] = 'åˆ†ç±»ç¼–å·';
++$words['Current Category Name'] = 'ç›®å‰åˆ†ç±»åç§°';
++$words['New Category Name'] = 'æ–°åˆ†ç±»åç§°';
++$words['Category will be Added Under'] = 'åˆ†ç±»å°†æ·»åŠ è‡³';
++$words['Target Parent Category'] = 'çˆ¶åˆ†ç±»';
++$words['Add Category'] = 'æ·»åŠ åˆ†ç±»';
++$words['Add Root Category'] = 'æ·»åŠ æ ¹åˆ†ç±»';
++$words['Edit Category'] = 'ç¼–è¾‘åˆ†ç±»';
++$words['Move Category'] = 'ç§»åŠ¨åˆ†ç±»';
++$words['Delete Category'] = 'åˆ é™¤åˆ†ç±»';
++$words['You are here'] = 'ä½ åœ¨æ­¤';
++$words['category'] = 'åˆ†ç±»';
++$words['Category'] = 'åˆ†ç±»';
++$words['Please select a new parent category'] = 'è¯·é€‰æ‹©ä¸€ä¸ªæ–°çš„çˆ¶åˆ†ç±»';
++$words['Please enter a value in the field before submitting'] = 'è¯·åœ¨é€å‡ºå‰å¡«å†™èµ„æ–™';
++$words['The category has successfully been updated'] = 'åˆ†ç±»æ›´æ–°å®Œæˆ';
++$words['The category has successfully been moved'] = 'åˆ†ç±»ç§»åŠ¨å®Œæˆ';
++$words['The category has successfully been added'] = 'åˆ†ç±»æ·»åŠ å®Œæˆ';
++$words['The category has successfully been deleted'] = 'åˆ†ç±»åˆ é™¤å®Œæˆ';
++$words['Root'] = 'æ ¹';
++$words['Editing a Category'] = 'ç¼–è¾‘åˆ†ç±»';
++$words['Adding a New Category'] = 'æ·»åŠ æ–°åˆ†ç±»';
++$words['Moving a Category'] = 'ç§»åŠ¨åˆ†ç±»';
++$words['Deleting a Category'] = 'å‡†å¤‡åˆ æŽ‰çš„åˆ†ç±»';
++$words['Category to Delete'] = 'è¦åˆ çš„åˆ†ç±»';
++$words['do not delete root category'] = 'ä¸è¦åˆ æŽ‰æ ¹åˆ†ç±»';
++$words['Welcome to Category Manager'] = 'æ¬¢è¿Žå…‰ä¸´åˆ†ç±»ç®¡ç†';
++$words['Please chose a category from the left site or click here to'] = 'è¯·é€‰æ‹©åˆ†ç±»';
++$words['Permissions Mgr'] = 'æƒé™ç®¡ç†';
++$words['Current Category'] = 'ç›®å‰åˆ†ç±»';
++$words['Current'] = 'ç›®å‰';
++$words['Group Name'] = 'ç¾¤ç»„å';
++$words['Has Permissions'] = 'æœ‰æƒé™';
++$words['Yes'] = 'æ˜¯';
++$words['No'] = 'å¦';
++$words['perms successfully updated'] = 'æƒé™å·²æ›´æ–°';
++$words['new section'] = 'æ·»åŠ é€‰å•';
++$words['Reorder sections'] = 'é‡æŽ’é¡ºåº';
++$words['Resource URI'] = 'ç½‘å€';
++$words['Status'] = 'çŠ¶æ€';
++$words['Parent ID'] = 'çˆ¶é¡µ';
++$words['Order'] = 'é¡ºåº';
++$words['Move/Edit'] = 'ç§»åŠ¨/ç¼–è¾‘';
++$words['Delete selected section(s)'] = 'åˆ é™¤é€‰æ‹©çš„åŒºæ®µ';
++$words['Modify nav bar appearance'] = 'ä¿®æ”¹é€‰å•å¤–è§‚';
++$words['Navigation Style Manager'] = 'é€‰å•é£Žæ ¼ç®¡ç†';
++$words['new style'] = 'æ–°å¢žé£Žæ ¼';
++$words['edit navigation template'] = 'ç¼–è¾‘é€‰å•æ¨¡æ¿';
++$words['Sections reordered successfully'] = 'å®ŒæˆåŒºæ®µé¡ºåºé‡æŽ’';
++$words['Section successfully added'] = 'å®ŒæˆåŒºæ®µæ–°å¢ž';
++$words['The selected section(s) have successfully been deleted'] = 'é€‰æ‹©çš„åŒºæ®µå·²ç»åˆ é™¤';
++$words['Section details successfully updated'] = 'å®ŒæˆåŒºæ®µå†…å®¹æ›´æ–°';
++$words['A section may not be a parent to itself and therefore was not moved.'] = 'åŒºæ®µä¸å¯ä¸ºè‡ªå·±çš„çˆ¶è¾ˆå› æ­¤æ²¡æœ‰ç§»åŠ¨.';
++$words['The default style may not be modified'] = 'å†…å®šé£Žæ ¼ä¸å¯ä¿®æ”¹';
++$words['The selected style has been deleted successfully'] = 'é€‰æ‹©çš„é£Žæ ¼å·²ç»åˆ é™¤';
++$words['Current style successfully changed'] = 'ç›®å‰é£Žæ ¼å·²ç»æ”¹å˜';
++$words['Style values successfully saved'] = 'å®Œæˆé£Žæ ¼å†…å®¹å‚¨å­˜';
++?>
+\ No newline at end of file
+
+Property changes on: modules/navigation2/lang/chinese_simplified-utf-8.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/russian-utf-8.php
+===================================================================
+--- modules/navigation2/lang/russian-utf-8.php	(revision 0)
++++ modules/navigation2/lang/russian-utf-8.php	(revision 0)
+@@ -0,0 +1,139 @@
++<?php
++
++$words = array(
++
++/* SectionMgr */
++
++    // page titles
++    'Section Manager'        => 'Ð£Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ñ€Ð°Ð·Ð´ÐµÐ»Ð°Ð¼Ð¸',
++    'Section Manager :: Add' => 'Ð£Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ñ€Ð°Ð·Ð´ÐµÐ»Ð°Ð¼Ð¸ :: Ð”Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ',
++
++    // actions
++    'New section'      => 'ÐÐ¾Ð²Ñ‹Ð¹ Ñ€Ð°Ð·Ð´ÐµÐ»',
++    'Reorder sections' => 'ÐŸÐ¾Ñ€ÑÐ´Ð¾Ðº Ñ€Ð°Ð·Ð´ÐµÐ»Ð¾Ð²',
++    'Add section'      => 'Ð”Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ Ñ€Ð°Ð·Ð´ÐµÐ»Ð°',
++    'Edit section'     => 'Ð ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ Ñ€Ð°Ð·Ð´ÐµÐ»Ð°',
++    'Browse'           => 'ÐŸÑ€Ð¾ÑÐ¼Ð¾Ñ‚Ñ€',
++
++    // list
++    'Resource URI' => 'URI Ñ€ÐµÑÑƒÑ€ÑÐ°',
++    'Order'        => 'ÐŸÐ¾Ñ€ÑÐ´Ð¾Ðº',
++    'Parent ID'    => 'ID Ñ€Ð¾Ð´Ð¸Ñ‚ÐµÐ»Ñ',
++    'Alias'        => 'Alias', // ÐµÑÑ‚ÑŒ Ð¸Ð´ÐµÐ¸?
++
++    // add / edit - section tab
++    'Section info'                                         => 'ÐžÐ¿Ð¸ÑÐ°Ð½Ð¸Ðµ',
++    'Section Title'                                        => 'Ð—Ð°Ð³Ð¾Ð»Ð¾Ð²Ð¾Ðº',
++    'Parent Section'                                       => 'Ð Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÑÐºÐ¸Ð¹ Ñ€Ð°Ð·Ð´ÐµÐ»',
++    'Top level (no parent)'                                => 'ÐšÐ¾Ñ€Ð½ÐµÐ²Ð¾Ð¹ ÑƒÑ€Ð¾Ð²ÐµÐ½ÑŒ (Ð½ÐµÑ‚ Ñ€Ð¾Ð´Ð¸Ñ‚ÐµÐ»Ñ)',
++    'specify the section under which yours will be placed' => 'ÑƒÐºÐ°Ð¶Ð¸Ñ‚Ðµ Ñ€Ð°Ð·Ð´ÐµÐ», Ð¿Ð¾Ð´ ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¼ Ð±ÑƒÐ´ÐµÑ‚ Ñ€Ð°ÑÐ¿Ð¾Ð»Ð¾Ð¶ÐµÐ½ Ð’Ð°Ñˆ Ñ€Ð°Ð·Ð´ÐµÐ»',
++    'Target'                                               => 'ÐÐ°Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ',
++    'select where your content is coming from'             => 'ÑƒÐºÐ°Ð¶Ð¸Ñ‚Ðµ Ñ‚Ð¸Ð¿ ÑÐ¾Ð´ÐµÑ€Ð¶Ð°Ð½Ð¸Ñ',
++    'pre-existing static content'                          => 'ÑÑƒÑ‰ÐµÑÑ‚Ð²ÑƒÑŽÑ‰Ð¸Ð¹ ÑÑ‚Ð°Ñ‚Ð¸Ñ‡Ð½Ñ‹Ð¹ ÐºÐ¾Ð½Ñ‚ÐµÐ½Ñ‚',
++    'output from specified module'                         => 'Ð²Ñ‹Ð²Ð¾Ð´ ÑƒÐºÐ°Ð·Ð°Ð½Ð½Ð¾Ð³Ð¾ Ð¼Ð¾Ð´ÑƒÐ»Ñ',
++    'external URI'                                         => 'Ð²Ð½ÐµÑˆÐ½Ð¸Ð¹ URI',
++    'link to section'                                      => 'ÑÑÑ‹Ð»ÐºÐ° Ð½Ð° Ñ€Ð°Ð·Ð´ÐµÐ»',
++    'addon'                                                => 'Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ (add-on)',
++    'empty link'                                           => 'Ð¿ÑƒÑÑ‚Ð°Ñ ÑÑÑ‹Ð»ÐºÐ°',
++    'static article title'                                 => 'Ð·Ð°Ð³Ð»Ð°Ð²Ð¸Ðµ ÑÑ‚Ð°Ñ‚Ð¸Ñ‡Ð½Ð¾Ð¹ ÑÑ‚Ð°Ñ‚ÑŒÐ¸',
++    'Module'                                               => 'ÐœÐ¾Ð´ÑƒÐ»ÑŒ',
++    'Manager'                                              => 'Ðœanager-ÐºÐ»Ð°ÑÑ',
++    'none'                                                 => 'Ð½Ðµ ÑƒÐºÐ°Ð·Ð°Ð½Ð¾',
++    'Additional params'                                    => 'Ð”Ð¾Ð¿Ð¾Ð»Ð½Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ðµ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹',
++    'separate with slashes (/)'                            => 'Ñ€Ð°Ð·Ð´ÐµÐ»ÑÐ¹Ñ‚Ðµ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹ Ð·Ð½Ð°ÐºÐ¾Ð¼ /',
++    'Anchor'                                               => 'Ð¯ÐºÐ¾Ñ€ÑŒ (anchor)',
++    'just the anchor name'                                 => 'Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð¸Ð¼Ñ ÑÐºÐ¾Ñ€Ñ',
++    'Add an alias'                                         => 'Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ alias',
++    'Automatic alias'                                      => 'ÐÐ²Ñ‚Ð¾Ð¼Ð°Ñ‚Ð¸Ñ‡ÐµÑÐºÐ¸Ð¹ alias',
++    'alias URI'                                            => 'alias URI',
++    'an alias is just a search-engine-friendly URL'        => 'alias - ÑÑ‚Ð¾ Ð´Ñ€ÑƒÐ¶ÐµÐ»ÑŽÐ±Ð½Ñ‹Ð¹ Ð´Ð»Ñ Ð¿Ð¾Ð¸ÑÐºÐ¾Ð²Ð¾Ð¹ ÑÐ¸ÑÑ‚ÐµÐ¼Ñ‹ URL, Ð½Ð°Ð¿Ñ€Ð¸Ð¼ÐµÑ€ my-article-name Ð²Ð¼ÐµÑÑ‚Ð¾ /article/view/frmArticleId/23/',
++    'Choose section'                                       => 'Ð£ÐºÐ°Ð¶Ð¸Ñ‚Ðµ Ñ€Ð°Ð·Ð´ÐµÐ»',
++    'Addon class name'                                     => 'Ð˜Ð¼Ñ ÐºÐ»Ð°ÑÑÐ° Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ñ',
++    'Choose class name'                                    => 'Ð£ÐºÐ°Ð¶Ð¸Ñ‚Ðµ Ð¸Ð¼Ñ ÐºÐ»Ð°ÑÑÐ°',
++    'Addon description'                                    => 'ÐžÐ¿Ð¸ÑÐ°Ð½Ð¸Ðµ Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ñ',
++    'External section URI'                                 => 'URI Ð²Ð½ÐµÑˆÐ½ÐµÐ³Ð¾ Ñ€Ð°Ð·Ð´ÐµÐ»Ð°',
++
++    'Select a content'                                     => 'Ð’Ñ‹Ð±ÐµÑ€Ð¸Ñ‚Ðµ ÑÑ‚Ð°Ñ‚ÑŒÑŽ',
++    'You must select a valid article'                      => 'Ð’Ñ‹Ð±ÐµÑ€Ð¸Ñ‚Ðµ ÑÑƒÑ‰ÐµÑÑ‚Ð²ÑƒÑŽÑ‰ÑƒÑŽ ÑÑ‚Ð°Ñ‚ÑŒÑŽ. Ð•ÑÐ»Ð¸ Ñ‚Ð°ÐºÐ¾Ð²Ð¾Ð¹ Ð½ÐµÑ‚ Ð² ÑÐ¿Ð¸ÑÐºÐµ, Ð¿Ð¾Ð¶Ð°Ð»ÑƒÐ¹ÑÑ‚Ð°, ÑÐ½Ð°Ñ‡Ð°Ð»Ð° ÑÐ¾Ð·Ð´Ð°Ð¹Ñ‚Ðµ ÑÑ‚Ð°Ñ‚Ð¸Ñ‡Ð½ÑƒÑŽ ÑÑ‚Ð°Ñ‚ÑŒÑŽ',
++
++    // editing tab
++    'Editing options' => 'Ð”Ð¾ÑÑ‚ÑƒÐ¿',
++    'Publish'         => 'ÐŸÐ¾ÐºÐ°Ð·Ñ‹Ð²Ð°Ñ‚ÑŒ',
++    'Can view'        => 'Ð”Ð¾ÑÑ‚ÑƒÐ¿',
++    'All roles'       => 'Ð’ÑÐµ Ñ€Ð¾Ð»Ð¸',
++    'Select roles to which you want to grant access' => 'Ð£ÐºÐ°Ð¶Ð¸Ñ‚Ðµ Ñ€Ð¾Ð»Ð¸, ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ðµ Ð±ÑƒÐ´ÑƒÑ‚ Ð¸Ð¼ÐµÑ‚ÑŒ Ð´Ð¾ÑÑ‚ÑƒÐ¿ Ðº Ð´Ð°Ð½Ð½Ð¾Ð¼Ñƒ Ñ€Ð°Ð·Ð´ÐµÐ»',
++
++    // accessibility tab
++    'Accessibility' => 'Ð”Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð¾ÑÑ‚ÑŒ',
++    'Access Key'    => 'Access key',
++    'Rel Marker'    => 'Rel marker',
++    'Any number, which can be pressed with the ALT-key to load the page.'                            => 'Ð›ÑŽÐ±Ð¾Ð¹ ÑÐ¸Ð¼Ð²Ð¾Ð», ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¹ Ð¼Ð¾Ð¶ÐµÑ‚ Ð±Ñ‹Ñ‚ÑŒ Ð½Ð°Ð¶Ð°Ñ‚ ÐºÐ¾Ð¼Ð±Ð¸Ð½Ð°Ñ†Ð¸ÐµÐ¹ ÐºÐ»Ð°Ð²Ð¸Ñˆ ALT+ÑÐ¸Ð¼Ð²Ð¾Ð» Ð´Ð»Ñ Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÐ¸ ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ†Ñ‹',
++    'Additional navigation aids for better accessibility. Use values like "home", "prev" or "next".' => 'Ð’ÑÐ¿Ð¾Ð¼Ð¾Ð³Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð¾Ðµ ÑÑ€ÐµÐ´ÑÑ‚Ð²Ð¾ Ð´Ð»Ñ Ð»ÑƒÑ‡ÑˆÐµÐ³Ð¾ Ð´Ð¾ÑÑ‚ÑƒÐ¿Ð°. Ð˜ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐ¹Ñ‚Ðµ Ñ‚Ð°ÐºÐ¸Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ, ÐºÐ°Ðº "home", "prev" Ð¸Ð»Ð¸ "next"',
++
++    // validate
++    'Please fill in a title'                                                 => 'ÐŸÐ¾Ð¶Ð°Ð»ÑƒÐ¹ÑÑ‚Ð°, ÑƒÐºÐ°Ð¶Ð¸Ñ‚Ðµ Ð·Ð°Ð³Ð¾Ð»Ð¾Ð²Ð¾Ðº',
++    'You cannot activate unless you first activate.'                         => 'Ð’Ñ‹ Ð½Ðµ Ð¼Ð¾Ð¶ÐµÑ‚Ðµ Ð°ÐºÑ‚Ð¸Ð²Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ñ€Ð°Ð·Ð´ÐµÐ» "%1" Ð¿Ð¾ÐºÐ° Ð½Ðµ Ð°ÐºÑ‚Ð¸Ð²Ð¸Ñ€Ð¾Ð²Ð°Ð½ Ñ€Ð°Ð·Ð´ÐµÐ» "%2"',
++    'To access this section, a user must have access to the parent section.' => 'Ð”Ð»Ñ Ð´Ð¾ÑÑ‚ÑƒÐ¿Ð° Ðº ÑÑ‚Ð¾Ð¼Ñƒ Ñ€Ð°Ð·Ð´ÐµÐ»Ñƒ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŒ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð¸Ð¼ÐµÑ‚ÑŒ Ð´Ð¾ÑÑ‚ÑƒÐ¿ Ðº Ñ€Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÑÐºÐ¾Ð¼Ñƒ Ñ€Ð°Ð·Ð´ÐµÐ»Ñƒ. Ð˜Ð»Ð¸ Ð¾Ð´Ð½Ð° Ð¸Ð»Ð¸ Ð½ÐµÑÐºÐ¾Ð»ÑŒÐºÐ¾ Ð¸Ð· Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð½Ñ‹Ñ… Ð’Ð°Ð¼Ð¸ Ñ€Ð¾Ð»ÐµÐ¹ Ð½Ðµ Ð¸Ð¼ÐµÐµÑ‚ Ð´Ð¾ÑÑ‚ÑƒÐ¿Ð° Ðº Ñ€Ð°Ð·Ð´ÐµÐ»Ñƒ "%s"',
++
++    // messages
++    'Sections reordered successfully'                                     => 'Ð Ð°Ð·Ð´ÐµÐ»Ñ‹ ÑƒÑÐ¿ÐµÑˆÐ½Ð¾ ÑƒÐ¿Ð¾Ñ€ÑÐ´Ð¾Ñ‡ÐµÐ½Ñ‹',
++    'Section successfully added'                                          => 'Ð Ð°Ð·Ð´ÐµÐ» ÑƒÑÐ¿ÐµÑˆÐ½Ð¾ Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½',
++    'Section details successfully updated'                                => 'Ð Ð°Ð·Ð´ÐµÐ» ÑƒÑÐ¿ÐµÑˆÐ½Ð¾ Ð¾Ñ‚Ñ€ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½',
++    'Section details updated, no data changed'                            => 'Ð Ð°Ð·Ð´ÐµÐ» ÑƒÑÐ¿ÐµÑˆÐ½Ð¾ Ð¾Ñ‚Ñ€ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½, Ð´Ð°Ð½Ð½Ñ‹Ðµ Ð½Ðµ Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ñ‹',
++    'The selected section(s) have successfully been deleted'              => 'Ð’Ñ‹Ð±Ñ€Ð°Ð½Ð½Ñ‹Ðµ Ñ€Ð°Ð·Ð´ÐµÐ»Ñ‹ ÑƒÑÐ¿ÐµÑˆÐ½Ð¾ ÑƒÐ´Ð°Ð»ÐµÐ½Ñ‹',
++    'Section successfully added but alias creation failed as there can '.
++    'be no duplicates'                                                    => 'Ð Ð°Ð·Ð´ÐµÐ» ÑƒÑÐ¿ÐµÑˆÐ½Ð¾ Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½, Ð½Ð¾ URL alias Ð½Ðµ Ð±Ñ‹Ð» ÑÐ¾Ð·Ð´Ð°Ð½, Ñ‚.Ðº. alias Ñ ÑƒÐºÐ°Ð·Ð°Ð½Ð½Ñ‹Ð¼ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸ÐµÐ¼ ÑƒÐ¶Ðµ ÑÑƒÑ‰ÐµÑÑ‚Ð²ÑƒÐµÑ‚',
++    'Section details successfully updated but alias creation failed as '.
++    'there can be no duplicates'                                          => 'Ð Ð°Ð·Ð´ÐµÐ» ÑƒÑÐ¿ÐµÑˆÐ½Ð¾ Ð¾Ñ‚Ñ€ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½, Ð½Ð¾ URL alias Ð½Ðµ Ð±Ñ‹Ð» ÑÐ¾Ð·Ð´Ð°Ð½, Ñ‚.Ðº. alias Ñ ÑƒÐºÐ°Ð·Ð°Ð½Ð½Ñ‹Ð¼ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸ÐµÐ¼ ÑƒÐ¶Ðµ ÑÑƒÑ‰ÐµÑÑ‚Ð²ÑƒÐµÑ‚',
++
++
++/* NavStyleMgr */
++
++    // title
++    'Navigation Style Manager'  => 'Ð£Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ ÑÑ‚Ð¸Ð»ÐµÐ¼ Ð½Ð°Ð²Ð¸Ð³Ð°Ñ†Ð¸Ð¸',
++
++    // list
++    'current style, previewed above'                             => 'Ñ‚ÐµÐºÑƒÑ‰Ð¸Ð¹ ÑÑ‚Ð¸Ð»ÑŒ, Ð¿Ð¾ÐºÐ°Ð·Ð°Ð½Ð½Ñ‹Ð¹ Ð²Ñ‹ÑˆÐµ, Ð² Ñ€Ð°Ð¼ÐºÐµ Ð¿Ñ€ÐµÐ´Ð²Ð°Ñ€Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¹ Ð¿Ñ€Ð¾ÑÐ¼Ð¾Ñ‚Ñ€',
++    'preview'                                                    => 'Ð¿Ñ€ÐµÐ´Ð²Ð°Ñ€Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¹ Ð¿Ñ€Ð¾ÑÐ¼Ð¾Ñ‚Ñ€',
++    'Navigation menu preview as displayed to the following role' => 'ÐŸÑ€ÐµÐ´Ð²Ð°Ñ€Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ð¹ Ð¿Ñ€Ð¾ÑÐ¼Ð¾Ñ‚Ñ€ Ð¼ÐµÐ½ÑŽ Ð½Ð°Ð²Ð¸Ð³Ð°Ñ†Ð¸Ð¸ Ð¿Ð¾ÐºÐ°Ð·Ð°Ð½ Ð´Ð»Ñ ÑÐ»ÐµÐ´ÑƒÑŽÑ‰ÐµÐ¹ Ñ€Ð¾Ð»Ð¸',
++    'Style Name'                                                 => 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ ÑÑ‚Ð¸Ð»Ñ',
++    'Last modified'                                              => 'ÐŸÐ¾ÑÐ»ÐµÐ´Ð½Ð¸Ðµ Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ð¸Ñ',
++    'return to navigation manager'                               => 'Ð²ÐµÑ€Ð½ÑƒÑ‚ÑŒÑÑ Ðº ÑƒÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸ÑŽ Ð½Ð°Ð²Ð¸Ð³Ð°Ñ†Ð¸ÐµÐ¹',
++
++    // messages
++    'Current style successfully changed' => 'Ð¢ÐµÐºÑƒÑ‰Ð¸Ð¹ ÑÑ‚Ð¸Ð»ÑŒ ÑƒÑÐ¿ÐµÑˆÐ½Ð¾ Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½',
++
++
++/* CategoryMgr */
++
++    // titles
++    'Category Manager' => 'Ð£Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸ÑÐ¼Ð¸',
++
++    // list
++    'Add Category'                                           => 'Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸ÑŽ',
++    'Add Root Category'                                      => 'Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ ÐºÐ¾Ñ€Ð½ÐµÐ²ÑƒÑŽ ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸ÑŽ',
++    'category'                                               => 'ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ñ',
++    'Please choose a category from the left to edit'         => 'ÐŸÐ¾Ð¶Ð°Ð»ÑƒÐ¹ÑÑ‚Ð°, Ð²Ñ‹Ð±ÐµÑ€Ð¸Ñ‚Ðµ ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸ÑŽ ÑÐ»ÐµÐ²Ð° Ð´Ð»Ñ Ñ€ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ñ',
++    'Target Parent Category'                                 => 'Ð Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÑÐºÐ°Ñ ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ñ',
++    'Current Category Name'                                  => 'Ð˜Ð¼Ñ Ñ‚ÐµÐºÑƒÑ‰ÐµÐ¹ ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸',
++    'Has Permissions'                                        => 'Ð˜Ð¼ÐµÐµÑ‚ Ð´Ð¾ÑÑ‚ÑƒÐ¿',
++    'Yes'                                                    => 'Ð”Ð°',
++    'No'                                                     => 'ÐÐµÑ‚',
++    'Permissions are set by default to allow all users into '.
++    'all catgories. If you would like to deny a certain '.
++    'group access to a category, choose "no" in response '.
++    'to "has permissions" for the given group.'              => 'ÐŸÐ¾ ÑƒÐ¼Ð¾Ð»Ñ‡Ð°Ð½Ð¸ÑŽ Ð²ÑÐµ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»Ð¸ Ð¸Ð¼ÐµÑŽÑ‚ Ð´Ð¾ÑÑ‚ÑƒÐ¿ ÐºÐ¾ Ð²ÑÐµÐ¼ ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸ÑÐ¼. Ð’ ÑÐ»ÑƒÑ‡Ð°Ðµ, ÐµÑÐ»Ð¸ Ð’Ñ‹ Ñ…Ð¾Ñ‚Ð¸Ñ‚Ðµ Ð¾Ð³Ñ€Ð°Ð½Ð¸Ñ‡Ð¸Ñ‚ÑŒ Ð´Ð¾ÑÑ‚ÑƒÐ¿ Ð³Ñ€ÑƒÐ¿Ð¿Ðµ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÐµÐ¹ Ðº Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð½Ð¾Ð¹ ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸, Ñ‚Ð¾ Ð²Ñ‹Ð±Ð¸Ñ€Ð¸Ñ‚Ðµ Ð¾Ð¿Ñ†Ð¸ÑŽ "Ð½ÐµÑ‚" Ñƒ ÑÐ¾Ð¾Ñ‚Ð²ÐµÑ‚ÑÑ‚Ð²ÑƒÑŽÑ‰ÐµÐ¹ Ð³Ñ€ÑƒÐ¿Ð¿Ñ‹',
++
++    // reorder
++    'Reorder Categories' => 'Ð£Ð¿Ð¾Ñ€ÑÐ´Ð¾Ñ‡Ð¸Ñ‚ÑŒ ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸',
++    'Label'              => 'ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ',
++
++    // Messages
++    'Category details successfully updated'      => 'ÐšÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ñ ÑƒÑÐ¿ÐµÑˆÐ½Ð¾ Ð¾Ñ‚Ñ€ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð°',
++    'The category has successfully been deleted' => 'ÐšÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ñ ÑƒÑÐ¿ÐµÑˆÐ½Ð¾ ÑƒÐ´Ð°Ð»ÐµÐ½Ð°',
++    'Categories successfully reordered'          => 'ÐšÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸ ÑƒÑÐ¿ÐµÑˆÐ½Ð¾ ÑƒÐ¿Ð¾Ñ€ÑÐ´Ð¾Ñ‡ÐµÐ½Ñ‹',
++    'Categories reordered successfully'          => 'ÐšÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸ ÑƒÑÐ¿ÐµÑˆÐ½Ð¾ ÑƒÐ¿Ð¾Ñ€ÑÐ´Ð¾Ñ‡ÐµÐ½Ñ‹',
++    'do not delete root category'                => 'ÐÐ° Ð´Ð°Ð½Ð½Ñ‹Ð¹ Ð¼Ð¾Ð¼ÐµÐ½Ñ‚ Ð½ÐµÐ²Ð¾Ð·Ð¼Ð¾Ð¶Ð½Ð¾ ÑƒÐ´Ð°Ð»Ð¸Ñ‚ÑŒ ÐºÐ¾Ñ€Ð½ÐµÐ²ÑƒÑŽ ÐºÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸ÑŽ, Ð¿Ð¾Ð¿Ñ€Ð¾Ð±ÑƒÐ¹Ñ‚Ðµ Ð²Ð¼ÐµÑÑ‚Ð¾ ÑÑ‚Ð¾Ð³Ð¾ ÐµÐµ Ð¿ÐµÑ€ÐµÐ¸Ð¼ÐµÐ½Ð¾Ð²Ð°Ñ‚ÑŒ',
++);
++
++?>
+\ No newline at end of file
+
+Property changes on: modules/navigation2/lang/russian-utf-8.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/lang/japanese-utf-8.php
+===================================================================
+--- modules/navigation2/lang/japanese-utf-8.php	(revision 0)
++++ modules/navigation2/lang/japanese-utf-8.php	(revision 0)
+@@ -0,0 +1,99 @@
++<?php
++    $words = array(
++/*  SECTION MANAGER */
++        'Section Manager' => 'ã‚»ã‚¯ã‚·ãƒ§ãƒ³ç®¡ç†',
++        'New section' => 'æ–°è¦ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ä½œæˆ',
++        'Reorder sections' => 'ä¸¦ã³é †ã®å¤‰æ›´',
++        'Resource URI' => 'ãƒªã‚½ãƒ¼ã‚¹URI',
++        'Parent ID' => 'è¦ªID',
++        'Order' => 'é †ç•ª',
++        'Navigation Style Manager' => 'ãƒŠãƒ“ã‚²ãƒ¼ã‚·ãƒ§ãƒ³ã‚¹ã‚¿ã‚¤ãƒ«ç®¡ç†',
++        'Access Key' => 'ã‚¢ã‚¯ã‚»ã‚¹ã‚­ãƒ¼',
++        'Rel Marker' => 'Rel è¨­å®š',
++        'Any number, which can be pressed with the ALT-key to load the page.' => 'æ•°å€¤ã‚’å…¥åŠ›ã€‚ALTã‚­ãƒ¼ã¨åŒæ™‚ã«æŠ¼ã™ã¨ã€ãã®ãƒšãƒ¼ã‚¸ãŒãƒ­ãƒ¼ãƒ‰ã•ã‚Œã¾ã™ã€‚',
++        'Additional navigation aids for better accessibility. Use values like "home", "prev" or "next".' => 'ã‚ˆã‚Šè‰¯ã„ã‚¢ã‚¯ã‚»ã‚·ãƒ“ãƒªãƒ†ã‚£ã‚’å®Ÿç¾ã™ã‚‹ãŸã‚ã®è¿½åŠ ãƒŠãƒ“ã‚²ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±ã€‚ã€Œhomeã€ã‚„ã€Œprevã€ã€ã€Œnextã€ãªã©ã‚’æŒ‡å®šã—ã¦ãã ã•ã„',
++
++/* Add / Edit template */
++        'Add section' => 'ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’è¿½åŠ ',
++        'Edit section' => 'ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’ç·¨é›†',
++        'Section Title' => 'ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚¿ã‚¤ãƒˆãƒ«',
++        'Parent Section' => 'è¦ªã‚»ã‚¯ã‚·ãƒ§ãƒ³',
++        'Top level (no parent)' => 'æœ€ä¸Šä½ï¼ˆè¦ªã‚»ã‚¯ã‚·ãƒ§ãƒ³ãªã—ï¼‰',
++        'Target' => 'ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ',
++        'Publish' => 'å…¬é–‹',
++        'static articles' => 'ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯è¨˜äº‹',
++        'dynamic sections' => 'ãƒ€ã‚¤ãƒŠãƒŸãƒƒã‚¯ ã‚»ã‚¯ã‚·ãƒ§ãƒ³',
++        'Alias' => 'ã‚¨ã‚¤ãƒªã‚¢ã‚¹',
++        'Add an alias' => 'ã‚¨ã‚¤ãƒªã‚¢ã‚¹ã‚’è¿½åŠ ',
++        'Automatic alias' => 'è‡ªå‹•ã‚¨ã‚¤ãƒªã‚¢ã‚¹è¨­å®š',
++        'external URI' => 'å¤–éƒ¨URI',
++        'alias URI' => 'ã‚¨ã‚¤ãƒªã‚¢ã‚¹URI',
++        'link to section' => 'ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã¸ã®ãƒªãƒ³ã‚¯',
++        'addon' => 'ã‚¢ãƒ‰ã‚ªãƒ³',
++        'empty link' => 'ãƒªãƒ³ã‚¯ãªã—',
++        'External section URI' => 'å¤–éƒ¨ã‚»ã‚¯ã‚·ãƒ§ãƒ³URI',
++        'Choose section' => 'ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é¸æŠžã—ã¦ãã ã•ã„',
++        'Addon class name' => 'ã‚¢ãƒ‰ã‚ªãƒ³ ã‚¯ãƒ©ã‚¹å',
++        'Choose class name' => 'ã‚¯ãƒ©ã‚¹åã‚’é¸æŠžã—ã¦ãã ã•ã„',
++        'Addon description' => 'ã‚¢ãƒ‰ã‚ªãƒ³ èª¬æ˜Ž',
++        'Additional params' => 'è¿½åŠ ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿',
++        'Anchor' => 'ã‚¢ãƒ³ã‚«ãƒ¼å',
++        'just the anchor name' => 'ã‚¢ãƒ³ã‚«ãƒ¼ï¼ˆanchorï¼‰ã®å€¤',
++        'Can view' => 'é–²è¦§å¯èƒ½',
++        'All roles' => 'å…¨ã¦ã®ãƒ­ãƒ¼ãƒ«',
++        'Please fill in a title' => 'ã‚¿ã‚¤ãƒˆãƒ«ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„',
++        'You cannot activate unless you first activate.' => '"%2" ã‚’æœ‰åŠ¹åŒ–ã™ã‚‹ã¾ã§ "%1" ã¯æœ‰åŠ¹åŒ–ã§ãã¾ã›ã‚“',
++        'To access this section, a user must have access to the parent section.' => 'ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒã“ã®ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã¸ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ã«ã¯ã€è¦ªã‚»ã‚¯ã‚·ãƒ§ãƒ³ã¸ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™ã€‚é¸æŠžã•ã‚ŒãŸ1ã¤ã€ã‚‚ã—ãã¯è¤‡æ•°ã®ãƒ­ãƒ¼ãƒ«ã¯"%s"ã¸ã‚¢ã‚¯ã‚»ã‚¹ã§ãã¾ã›ã‚“ã€‚',
++
++
++/*  MESSAGES    */
++        'Sections reordered successfully' => 'ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ä¸¦ã³é †ã¯æ›´æ–°ã•ã‚Œã¾ã—ãŸ',
++        'Section successfully added' => 'ã‚»ã‚¯ã‚·ãƒ§ãƒ³ãŒè¿½åŠ ã•ã‚Œã¾ã—ãŸ',
++        'Section successfully added but alias creation failed as there can be no duplicates' => 'ã‚»ã‚¯ã‚·ãƒ§ãƒ³ãŒè¿½åŠ ã•ã‚Œã¾ã—ãŸãŒã€ã‚¨ã‚¤ãƒªã‚¢ã‚¹ã¯é‡è¤‡ã—ã¦ã„ã‚‹ãŸã‚ä½œæˆã•ã‚Œã¾ã›ã‚“ã§ã—ãŸ',
++        'The selected section(s) have successfully been deleted' => 'é¸æŠžã•ã‚ŒãŸã‚»ã‚¯ã‚·ãƒ§ãƒ³ã¯å‰Šé™¤ã•ã‚Œã¾ã—ãŸ',
++        'Section details successfully updated' => 'ã‚»ã‚¯ã‚·ãƒ§ãƒ³æƒ…å ±ã¯æ›´æ–°ã•ã‚Œã¾ã—ãŸ',
++        'Current style successfully changed' => 'ã‚¹ã‚¿ã‚¤ãƒ«ã¯å¤‰æ›´ã•ã‚Œã¾ã—ãŸ',
++        'Section details updated, no data changed' => 'ã‚»ã‚¯ã‚·ãƒ§ãƒ³æƒ…å ±ã¯æ›´æ–°ã•ã‚Œã¾ã—ãŸï¼ˆãƒ‡ãƒ¼ã‚¿ã®å¤‰æ›´ãªã—ï¼‰',
++
++/*  CATEGORY MGR    */
++        'Category Manager' => 'ã‚«ãƒ†ã‚´ãƒªç®¡ç†',
++        'Current Category Name' => 'ç¾åœ¨ã®ã‚«ãƒ†ã‚´ãƒªå',
++        'Target Parent Category' => 'è¦ªã‚«ãƒ†ã‚´ãƒªã®æŒ‡å®š',
++        'Add Category' => 'ã‚«ãƒ†ã‚´ãƒªã®è¿½åŠ ',
++        'Add Root Category' => 'ãƒ«ãƒ¼ãƒˆã‚«ãƒ†ã‚´ãƒªã®è¿½åŠ ',
++        'category' => 'ã‚«ãƒ†ã‚´ãƒª',
++        'The category has successfully been deleted' => 'ã‚«ãƒ†ã‚´ãƒªã¯å‰Šé™¤ã•ã‚Œã¾ã—ãŸ',
++        'do not delete root category' => 'ä»Šã®ã¨ã“ã‚ãƒ«ãƒ¼ãƒˆã‚«ãƒ†ã‚´ãƒªã®å‰Šé™¤ã¯å‡ºæ¥ã¾ã›ã‚“ã€‚ä»£ã‚ã‚Šã«ãƒªãƒãƒ¼ãƒ ã—ã¦ãã ã•ã„',
++        'Please choose a category from the left to edit' => 'ç·¨é›†ã—ãŸã„ã‚«ãƒ†ã‚´ãƒªã‚’å·¦ã‹ã‚‰é¸æŠžã—ã¦ãã ã•ã„',
++        'Reorder Categories' => 'ã‚«ãƒ†ã‚´ãƒªã®ä¸¦ã³æ›¿ãˆ',
++        'Categories reordered successfully' => 'ã‚«ãƒ†ã‚´ãƒªã®ä¸¦ã³é †ã‚’å¤‰æ›´ã—ã¾ã—ãŸ',
++        'Label' => 'ãƒ©ãƒ™ãƒ«',
++        'Category details successfully updated' => 'ã‚«ãƒ†ã‚´ãƒªæƒ…å ±ã¯æ›´æ–°ã•ã‚Œã¾ã—ãŸ',
++
++
++/*  PERMISSIONS */
++        'Has Permissions' => 'æ¨©é™ã‚ã‚Š',
++        'Yes' => 'ã¯ã„',
++        'No' => 'ã„ã„ãˆ',
++        'Browse' => 'ãƒ–ãƒ©ã‚¦ã‚º',
++        'current style, previewed above' => 'ç¾åœ¨ã®ã‚¹ã‚¿ã‚¤ãƒ«, ä¸Šéƒ¨ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼å‚ç…§',
++        'preview' => 'ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼',
++        'return to navigation manager' => 'ãƒŠãƒ“ã‚²ãƒ¼ã‚·ãƒ§ãƒ³ç®¡ç†ã¸æˆ»ã‚‹',
++        'Last modified' => 'æœ€çµ‚æ›´æ–°æ—¥æ™‚',
++        'Style Name' => 'ã‚¹ã‚¿ã‚¤ãƒ«å',
++        'separate with slashes (/)' => 'ã€Œ/ã€ï¼ˆã‚¹ãƒ©ãƒƒã‚·ãƒ¥ï¼‰ã§åŒºåˆ‡ã‚‹',
++        'Navigation menu preview as displayed to the following role' => 'ãƒŠãƒ“ã‚²ãƒ¼ã‚·ãƒ§ãƒ³ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ç”¨ã®ãƒ­ãƒ¼ãƒ«æŒ‡å®š',
++        'Permissions are set by default to allow all users into all catgories. If you would like to deny a certain group access to a category, choose "no" in response to "has permissions" for the given group.' => 'ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®è¨­å®šã§ã¯ã€å…¨ã¦ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼ãŒå…¨ã¦ã®ã‚«ãƒ†ã‚´ãƒªã¸ã‚¢ã‚¯ã‚»ã‚¹å¯èƒ½ã§ã™ã€‚ã„ãã¤ã‹ã®ã‚°ãƒ«ãƒ¼ãƒ—ã«å¯¾ã—ã¦ä»»æ„ã®ã‚«ãƒ†ã‚´ãƒªã¸ã®ã‚¢ã‚¯ã‚»ã‚¹ã‚’ç¦æ­¢ã—ãŸã„å ´åˆã«ã¯ã€ã“ã‚Œã‚‰ã®ã‚°ãƒ«ãƒ¼ãƒ—ã«å¯¾ã—ã¦ã“ã®è¨­å®šã‚’ã€Œã„ã„ãˆã€ã«ã—ã¦ãã ã•ã„ã€‚',
++        'static article title' => 'ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯è¨˜äº‹ã®ã‚¿ã‚¤ãƒˆãƒ«',
++        'Manager' => 'ç®¡ç†',
++        'Module' => 'ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«',
++        'none' => 'ãªã—',
++        'Section info' => 'ã‚»ã‚¯ã‚·ãƒ§ãƒ³æƒ…å ±',
++        'Optimisation' => 'æœ€é©åŒ–',
++        'Select roles to which you want to grant access' => 'ã‚¢ã‚¯ã‚»ã‚¹ã‚’è¨±å¯ã™ã‚‹ãƒ­ãƒ¼ãƒ«ã‚’é¸æŠžã—ã¦ãã ã•ã„',
++        'Section Manager :: Add' => 'ã‚»ã‚¯ã‚·ãƒ§ãƒ³ç®¡ç† :: æ–°è¦ä½œæˆ',
++        'Editing options' => 'ã‚ªãƒ—ã‚·ãƒ§ãƒ³è¨­å®š',
++        'Section details successfully updated but alias creation failed as there can be no duplicates' => 'ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã¯æ›´æ–°ã•ã‚Œã¾ã—ãŸãŒã€ã‚¨ã‚¤ãƒªã‚¢ã‚¹ã¯é‡è¤‡ã—ã¦ã„ã‚‹ãŸã‚ä½œæˆã•ã‚Œã¾ã›ã‚“ã§ã—ãŸ',
++        'Categories successfully reordered' => 'ã‚«ãƒ†ã‚´ãƒªã®ä¸¦ã³é †ã¯æ›´æ–°ã•ã‚Œã¾ã—ãŸ',
++ );
++?>
+
+Property changes on: modules/navigation2/lang/japanese-utf-8.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/conf.ini
+===================================================================
+--- modules/navigation2/conf.ini	(revision 0)
++++ modules/navigation2/conf.ini	(revision 0)
+@@ -0,0 +1,2 @@
++[NodeMgr]
++requiresAuth    = false
+Index: modules/navigation2/data/schema.my.sql
+===================================================================
+--- modules/navigation2/data/schema.my.sql	(revision 0)
++++ modules/navigation2/data/schema.my.sql	(revision 0)
+@@ -0,0 +1,19 @@
++-- 
++-- Table structure for table `navinode`
++-- 
++
++CREATE TABLE `navinode` (
++  `navinode_id` int(10) unsigned NOT NULL,
++  `lft` int(11) default NULL,
++  `rght` int(11) NOT NULL default '0',
++  `title` varchar(32) NOT NULL default '0',
++  `type` smallint(6) NOT NULL default '1',
++  `value` varchar(128) default NULL,
++  `trans_id` int(11) default NULL,
++  `is_enabled` smallint(6) NOT NULL default '0',
++  `cleanuri` varchar(256) default NULL,
++  PRIMARY KEY  (`navinode_id`),
++  KEY `AK_key_left` (`lft`),
++  KEY `AK_key_right` (`rght`),
++  KEY `cleanuri` (`cleanuri`)
++);
+Index: modules/navigation2/data/tableAliases.ini
+===================================================================
+--- modules/navigation2/data/tableAliases.ini	(revision 0)
++++ modules/navigation2/data/tableAliases.ini	(revision 0)
+@@ -0,0 +1 @@
++navinode                 = navinode
+\ No newline at end of file
+Index: modules/navigation2/data/data.default.my.sql
+===================================================================
+--- modules/navigation2/data/data.default.my.sql	(revision 0)
++++ modules/navigation2/data/data.default.my.sql	(revision 0)
+@@ -0,0 +1,30 @@
++INSERT INTO module VALUES ({SGL_NEXT_ID}, 1, 'navigation2', 'Navigation2', 'The ''Navigation2'' module is what you use to build your site navigation, it creates menus that you can customise in terms of look and feel, and allows you to link to any site resource.', 'navigation/page', 'navigation.png', 'Matti Tahvonen', NULL, 'BSD', 'beta');
++SELECT @moduleId := MAX(module_id) FROM module;
++
++INSERT INTO permission VALUES ({SGL_NEXT_ID}, 'nodemgr', '', @moduleId);
++
++-- 
++-- Dumping data for table `navinode`
++-- 
++
++INSERT INTO `navinode` (`navinode_id`, `lft`, `rght`, `title`, `type`, `value`, `trans_id`, `is_enabled`, `cleanuri`) VALUES (1, 1, 10, 'User menu', 0, '', NULL, 1, NULL),
++(2, 11, 60, 'Admin menu', 0, '', NULL, 1, NULL),
++(9, 4, 5, 'My Account', 1, 'user/account', NULL, 1, NULL),
++(6, 2, 3, 'Home', 1, 'default/default', NULL, 1, NULL),
++(51, 25, 26, 'Manage navigation', 1, 'navigation/section', NULL, 1, NULL),
++(13, 12, 23, 'General', 1, 'default/module', NULL, 1, NULL),
++(15, 15, 16, 'Configuration', 1, 'default/config', NULL, 1, NULL),
++(17, 17, 18, 'Maintenance', 1, 'default/maintenance', NULL, 1, NULL),
++(19, 19, 20, 'Module Generator', 1, 'default/modulegeneration', NULL, 1, NULL),
++(23, 24, 27, 'Navigation', 1, 'navigation/section', NULL, 1, NULL),
++(25, 28, 31, 'Blocks', 1, 'block/block', NULL, 1, NULL),
++(35, 32, 41, 'Users and security', 1, 'user/user', NULL, 1, NULL),
++(37, 33, 34, 'Manage users', 1, 'user/user', NULL, 1, NULL),
++(39, 35, 36, 'Manage permissions', 1, 'user/permission', NULL, 1, NULL),
++(41, 37, 38, 'Manage roles', 1, 'user/role', NULL, 1, NULL),
++(43, 39, 40, 'Manage preferences', 1, 'user/preference', NULL, 1, NULL),
++(53, 13, 14, 'Manage modules', 1, 'default/module', NULL, 1, NULL),
++(59, 29, 30, 'Manage blocks', 1, 'block/block', NULL, 1, NULL),
++(63, 21, 22, 'PEAR packages', 1, 'default/pear', NULL, 1, NULL),
++(8, 6, 7, 'Guestbook', 1, 'guestbook/guestbook', NULL, 1, 'very/weird/and/long/cleanuri/leading/to/guestbook'),
++(3, 8, 9, 'Admin', 1, 'default/module', NULL, 1, 'go/to/Administration/panel/with/Good/Looking/URI/Alias');
+Index: modules/navigation2/blocks/Navigation.php
+===================================================================
+--- modules/navigation2/blocks/Navigation.php	(revision 0)
++++ modules/navigation2/blocks/Navigation.php	(revision 0)
+@@ -0,0 +1,62 @@
++<?php
++/* Reminder: always indent with 4 spaces (no tabs). */
++// +---------------------------------------------------------------------------+
++// | Copyright (c) 2006, Demian Turner                                         |
++// | All rights reserved.                                                      |
++// |                                                                           |
++// | Redistribution and use in source and binary forms, with or without        |
++// | modification, are permitted provided that the following conditions        |
++// | are met:                                                                  |
++// |                                                                           |
++// | o Redistributions of source code must retain the above copyright          |
++// |   notice, this list of conditions and the following disclaimer.           |
++// | o Redistributions in binary form must reproduce the above copyright       |
++// |   notice, this list of conditions and the following disclaimer in the     |
++// |   documentation and/or other materials provided with the distribution.    |
++// | o The names of the authors may not be used to endorse or promote          |
++// |   products derived from this software without specific prior written      |
++// |   permission.                                                             |
++// |                                                                           |
++// | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
++// | "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT         |
++// | LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR     |
++// | A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT      |
++// | OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,     |
++// | SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT          |
++// | LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,     |
++// | DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY     |
++// | THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT       |
++// | (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE     |
++// | OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.      |
++// |                                                                           |
++// +---------------------------------------------------------------------------+
++// | Seagull 0.6.0                                                             |
++// +---------------------------------------------------------------------------+
++// | Navigation.php                                                            |
++// +---------------------------------------------------------------------------+
++// | Author: Matti Tahvonen                                                    |
++// +---------------------------------------------------------------------------+
++
++/**
++ * Navigation2 block.
++ *
++ * @package navigation2
++ */
++class Navigation2_Block_Navigation
++{
++    function init(&$output, $block_id, &$aParams)
++    {
++        SGL::logMessage(null, PEAR_LOG_DEBUG);
++
++        return $this->getBlockContent($output, $aParams);
++    }
++
++    function getBlockContent(&$output, &$aParams)
++    {
++        SGL::logMessage(null, PEAR_LOG_DEBUG);
++        require_once(SGL_MOD_DIR . '/navigation2/classes/Navitree.php');
++        $nav = & Navitree::singleton();
++        return $nav->renderHtmlList($aParams['startParentNode'],$aParams);
++    }
++}
++?>
+\ No newline at end of file
+
+Property changes on: modules/navigation2/blocks/Navigation.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/blocks/Navigation.ini
+===================================================================
+--- modules/navigation2/blocks/Navigation.ini	(revision 0)
++++ modules/navigation2/blocks/Navigation.ini	(revision 0)
+@@ -0,0 +1,61 @@
++[details]
++name        = "Navigation2 block"
++description = "Show navigation as a block"
++author      = "Matti Tahvonen"
++created     = "2006-10-26"
++version     = "0.1"
++copyright   =
++
++[startParentNode]
++type        = "text"
++value       = 0
++label       = "Start root node"
++description = "Start rendering the tree from this node ID"
++
++;[startLevel]
++;type        = "text"
++;value       = 0
++;label       = "Start rendered level"
++;description = "Nodes will be rendered starting from level 0 by default"
++;
++;[levelsToRender]
++;type        = "text"
++;value       = 0
++;label       = "How many levels to render"
++;description = "To render all levels set to 0"
++
++[collapsed]
++type        = "yesno"
++value       = 0
++label       = "Collapsible mode"
++description = "When collapsible mode is enabled, children will only be displayed when parent is current"
++
++;[showAlways]
++;type        = "yesno"
++;value       = 0
++;label       = "Show always"
++;description = "If yes, navigation menu will always be shown, even if a different branch of navigation tree is current"
++;
++;[cacheEnabled]
++;type        = "yesno"
++;value       = 1
++;label       = "Use cacheable navigation menu"
++;description = "If no, navigation menu will be recalculated every time"
++;
++;[breadcrumbs]
++;type        = "yesno"
++;value       = 0
++;label       = "Generate breadcrumbs objects"
++;description = "Tells navigation driver to generate bredcrumbs objects"
++;
++;[renderer]
++;type        = "text"
++;value       = "SimpleRenderer"
++;label       = "Navigation Html renderer class"
++;description = "Indicate renderer class from modules/navigation/classes/*Renderer.php"
++;
++;[template]
++;type        = "text"
++;value       = ""
++;label       = "Template name (optional)"
++;description = "For navigation renderer which requires template"
+Index: modules/navigation2/classes/NodeMgr.php
+===================================================================
+--- modules/navigation2/classes/NodeMgr.php	(revision 0)
++++ modules/navigation2/classes/NodeMgr.php	(revision 0)
+@@ -0,0 +1,90 @@
++<?php
++/* Reminder: always indent with 4 spaces (no tabs). */
++// +---------------------------------------------------------------------------+
++// | Copyright (c) 2006, Demian Turner                                         |
++// | All rights reserved.                                                      |
++// |                                                                           |
++// | Redistribution and use in source and binary forms, with or without        |
++// | modification, are permitted provided that the following conditions        |
++// | are met:                                                                  |
++// |                                                                           |
++// | o Redistributions of source code must retain the above copyright          |
++// |   notice, this list of conditions and the following disclaimer.           |
++// | o Redistributions in binary form must reproduce the above copyright       |
++// |   notice, this list of conditions and the following disclaimer in the     |
++// |   documentation and/or other materials provided with the distribution.    |
++// | o The names of the authors may not be used to endorse or promote          |
++// |   products derived from this software without specific prior written      |
++// |   permission.                                                             |
++// |                                                                           |
++// | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
++// | "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT         |
++// | LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR     |
++// | A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT      |
++// | OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,     |
++// | SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT          |
++// | LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,     |
++// | DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY     |
++// | THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT       |
++// | (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE     |
++// | OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.      |
++// |                                                                           |
++// +---------------------------------------------------------------------------+
++// | Seagull 0.6                                                               |
++// +---------------------------------------------------------------------------+
++// | SectionMgr.php                                                            |
++// +---------------------------------------------------------------------------+
++// | Author:   Matti Tahvonen <matti ät nettirasia.com>                        |
++// +---------------------------------------------------------------------------+
++
++/**
++ * To administer Navigation nodes.
++ * 
++ *
++ * @package navigation2
++ * @author  Matti Tahvonen <matti ät nettirasia.com>
++ */
++class NodeMgr extends SGL_Manager
++{
++    function NodeMgr()
++    {
++        SGL::logMessage(null, PEAR_LOG_DEBUG);
++        parent::SGL_Manager();
++
++        $this->pageTitle      = 'Section Manager';
++        $this->template       = 'nodeList.html';
++        $this->masterTemplate = 'masterMinimal.html';
++
++        $this->_aActionsMapping =  array(
++            'add'       => array('add'),
++            'insert'    => array('insert', 'redirectToDefault'),
++            'edit'      => array('edit'),
++            'update'    => array('update', 'redirectToDefault'),
++            'reorder'   => array('reorder', 'redirectToDefault'),
++            'delete'    => array('delete', 'redirectToDefault'),
++            'list'      => array('list'),
++        );
++    }
++
++    function validate($req, &$input)
++    {
++        SGL::logMessage(null, PEAR_LOG_DEBUG);
++
++        $this->validated = true;
++        $input->pageTitle   = $this->pageTitle;
++        $input->masterTemplate = $this->masterTemplate;
++        $input->template    = $this->template;
++        $input->error       = array();
++        $input->action      = ($req->get('action')) ? $req->get('action') : 'list';
++
++    }
++
++    function _cmd_list(&$input, &$output) {
++        SGL::logMessage(null, PEAR_LOG_DEBUG);
++        require_once(SGL_MOD_DIR . '/navigation2/classes/NaviTree.php');
++        $tree = & Navitree::singleton();
++        $output->test = $tree->renderHtmlList(1);
++        $output->test2 = $tree->renderHtmlList(2);
++    }
++}
++?>
+
+Property changes on: modules/navigation2/classes/NodeMgr.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/classes/Navitree.php
+===================================================================
+--- modules/navigation2/classes/Navitree.php	(revision 0)
++++ modules/navigation2/classes/Navitree.php	(revision 0)
+@@ -0,0 +1,174 @@
++<?php
++
++define('SGL_NAV2_NODETYPE_EMPTY',   0);
++define('SGL_NAV2_NODETYPE_URI',     1);
++define('SGL_NAV2_NODETYPE_EXTURI',  2);
++define('SGL_NAV2_NODETYPE_LINK',    3);
++
++/**
++ * Base class for navigaion tree to be used with navigation etc
++ * Selects nested set from navinode table and build tree
++ * no pear module used to keep this light and fast
++ * TODO: Make class that extends this for editing navigation tree add, move, delete methods for nodes
++ * 
++ */
++class Navitree {
++    var $aRootNodes;
++    var $aNodes;
++    
++    function Navitree() {
++        if(empty($this->aNodes)) {
++            $this->_buildTree();
++        }
++    }
++    
++    function &singleton()
++    {
++        static $instance;
++        if (!isset($instance)) {
++            $instance = new Navitree();
++        }
++        return $instance;
++    }
++    
++    function _buildTree() {
++        $dbh = & SGL_DB::singleton();
++        $req = & SGL_Request::singleton();
++        $qs = addslashes($req->getUri());
++        $query = "
++        SELECT 
++            node.navinode_id, 
++            node.title,
++            node.type,
++            node.value,
++            node.cleanuri,
++            (COUNT(parent.navinode_id) - 1) AS depth,
++            MIN(parent.navinode_id) AS root_id,
++            (
++                (node.cleanuri IS NOT NULL AND POSITION(node.cleanuri IN '$qs') = 1) OR 
++                (node.type = 1 AND POSITION(node.value IN '$qs') = 1)
++            )
++                AS isCurrent
++        FROM navinode AS node,
++        navinode AS parent
++        WHERE node.lft BETWEEN parent.lft AND parent.rght
++        GROUP BY node.navinode_id
++        ORDER BY node.lft;
++        ";
++        $this->aNodes = array();
++        $this->aRootNodes = array();
++        // build tree
++        $aPS = array(); // to save refs to parents and determine max-depth
++        $prevNode = null;
++        $aRows = $dbh->getAssoc($query);
++        foreach($aRows as $key => $n) {
++            $node = new Navinode();
++            $node->setFrom($n);
++            $this->aNodes[$n->navinode_id] = & $node;
++            if($node->depth == 0) {
++                $this->aRootNodes[] = $node;
++            } else {
++                if($node->depth > $prevNode->depth) {
++                    // entering new level
++                    $prevNode->children = array();
++                    $aPS[$prevNode->depth] = $prevNode;
++                } else {
++                    // getting up in tree
++                }
++                $aPS[($node->depth - 1)]->children[] = $node;
++            }
++            if($node->isCurrent) {
++                for($i = 0; $i < $node->depth; $i++) {
++                    $aPS[$i]->childIsCurrent = true;
++                }
++            }
++            $prevNode = $node;
++            unset($node);
++        }
++        $this->maxDepth = count($aPS);
++    }
++    
++    /**
++      * @param rootId id of root of subtree to be rendered
++      */
++    function renderHtmlList($rootId = false, $aParams = false) {
++        if(!$aParams) {
++            // set default parameters
++            $aParams = array(
++                'collapsed' => false,
++            );
++        }
++        // select first root node if not given
++        if(!$rootId) {
++            if(isset($this->aRootNodes[0])) {
++                $rootId = $this->aRootNodes[0]->navinode_id;
++            } else {
++                return false;
++            }
++        }
++        $node = $this->aNodes[$rootId];
++        $html = '<ul>';
++        foreach($node->children as $subNode) {
++            $html .= '<li'.(($subNode->isCurrent || $subNode->childIsCurrent) ? ' class="current"':'').'>';
++            $html .= $subNode->toHtml();
++            if(isset($subNode->children)) {
++                if(!$aParams['collapsed'] || $subNode->childIsCurrent) {
++                    $html .= $this->renderHtmlList($subNode->navinode_id);
++                }
++            }
++            $html .= '</li>';
++        }
++        $html .= '</ul>';
++        return $html;
++    }
++    
++}
++
++class Navinode {
++    var $navinode_id = 0;
++    var $type = 0;
++    var $title = '';
++    var $value = 0;
++    var $is_enabled = 0;
++    var $cleanuri = '';
++    var $isCurrent = false;
++    var $childIsCurrent = false;
++    
++    function setFrom($obj) {
++        foreach (get_object_vars($obj) as $prop => $val) {
++            $this->$prop = $val;
++        }
++    }
++    /** get nodes html representation (with anchors, classes etc) */
++    function toHtml() {
++        $html = '';
++        if(empty($this->cleanuri)) {
++            // set link according to type
++            switch($this->type) {
++                case SGL_NAV2_NODETYPE_URI:
++                    $mod = '';
++                    $man = '';
++                    $pString = '';
++                    @ list($mod, $man, $pString) = explode('/',$this->value,3);
++                    $html = "<a href=\"".SGL_Output::makeUrl('',$man,$mod,array(),$pString)."\">$this->title</a>";
++                    break;
++                case SGL_NAV2_NODETYPE_EXTURI:
++                    $html = "<a href=\"$this->value\">$this->title</a>";
++                    break;
++                case SGL_NAV2_NODETYPE_LINK:
++                    //value has navinode_id to use as an alias
++                    $html = "<a href=\"$this->value\">$this->title</a>";
++                    break;            
++                case SGL_NAV2_NODETYPE_EMPTY:
++                default:
++                    $html = "<a href=\"#\">{$this->title}</a>";
++                    break;
++            }
++        } else {
++            // doesn't look quality code, but ain't gonna renew everything :(
++            $html = "<a href=\"".SGL_Output::makeUrl('',$this->cleanuri,$this->cleanuri)."\">{$this->title}</a>";
++        }
++        return $html;
++    }
++}
++?>
+
+Property changes on: modules/navigation2/classes/Navitree.php
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+
+Index: modules/navigation2/templates/nodeList.html
+===================================================================
+--- modules/navigation2/templates/nodeList.html	(revision 0)
++++ modules/navigation2/templates/nodeList.html	(revision 0)
+@@ -0,0 +1,9 @@
++
++<h1>Node Manager</h1>
++<h1>Usermenu id:1</h1>
++
++<p>{test:h}</p>
++
++<h1>Adminmenu id:2</h1>
++<p>{test2:h}</p>
++
+
+Property changes on: modules/navigation2/templates/nodeList.html
+___________________________________________________________________
+Name: svn:eol-style
+   + native
+

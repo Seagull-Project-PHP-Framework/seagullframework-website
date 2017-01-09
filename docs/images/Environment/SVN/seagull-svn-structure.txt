@@ -1,0 +1,10 @@
+svn+ssh://localhost/svn/project/branches
+svn+ssh://localhost/svn/project/tags
+svn+ssh://localhost/svn/project/tags/modules/
+svn+ssh://localhost/svn/project/tags/releases/
+svn+ssh://localhost/svn/project/trunk
+svn+ssh://localhost/svn/project/vendors
+svn+ssh://localhost/svn/project/vendors/seagull
+svn+ssh://localhost/svn/project/vendors/seagull/current
+
+

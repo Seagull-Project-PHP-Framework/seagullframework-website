@@ -1,0 +1,1910 @@
+<html><head><link type="text/css" rel="stylesheet" href="sfToTrac_files/visualize" id="autofillVisualize"><link type="text/css" rel="stylesheet" href="sfToTrac_files/visualize" id="autofillVisualize"><link type="text/css" rel="stylesheet" href="sfToTrac_files/visualize" id="autofillVisualize"><link type="text/css" rel="stylesheet" href="sfToTrac_files/visualize" id="autofillVisualize"><link type="text/css" rel="stylesheet" href="sfToTrac_files/visualize" id="autofillVisualize"><link type="text/css" rel="stylesheet" href="sfToTrac_files/visualize" id="autofillVisualize"><link type="text/css" rel="stylesheet" href="sfToTrac_files/visualize" id="autofillVisualize"></head><body><pre><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		rename section table to screen
+<strong>body</strong>:		rename section table to navigation
+
+
+<hr><strong>submitter:</strong>	werner_krauss
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		sort by "start date" optionally
+<strong>body</strong>:		
+you can easily add sorting by "start date" if you
+change in lib/SGL/item.php in function
+retrievePaginated() the SQL:
+
+ORDER BY i.start_date DESC
+
+would be great if it was switchable between start_date
+and last_updated, maybe on a per category basis
+
+
+
+<hr><strong>submitter:</strong>	miccool
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Configurable paths
+<strong>body</strong>:		Please make as much paths as possible configurable. In
+constants.php paths like 'var', 'etc', 'var/log' and so
+on should be configurable on the ini file!
+
+I use other directories, that's why I had to change the
+orignal source code. And these changes get lost when I
+update the seagul version :(
+
+Thank you for your attention!
+
+Mick
+
+
+<hr><strong>submitter:</strong>	miccool
+<strong>status</strong>:		Deleted
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Inherit permission and method check in process method
+<strong>body</strong>:		In many manager classes the same process method is coded:
+
+(Pseudo code)
+
+1. Determine method implied by specified parameter
+2. Check if method allowed...
+3. ...and if user has perms for this method
+
+This partial code takes 20 code lines. If we'd abstract
+these lines into a super class, we save space and the
+check is centralized!
+
+And because there are other Manager classes which don't
+need this check, I'd suggest to create an intermediate
+manager class like "ActionManager" or so...
+
+Or make the SGL_Manager class more intelligent: if
+there are allowedActions listed, perform this check.
+Otherwise skip it.
+
+Cheers
+
+Mick
+
+
+<hr><strong>submitter:</strong>	werner_krauss
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		meta information for uploaded docs
+<strong>body</strong>:		as noone answered to my mail at ML, i put this at the
+tracker:
+
+i want to do:
+
+- upload several pdf files to a categorie "bible cards"
+- each card (pdf) is for a special chapter of the bible
+
+now i want several fields of "meta information", like
+- author (of the pdf)
+- chapter (of bible, e.g. lukas, 2, 20-22)
+- which date this is for (e.g. feb, 2nd, or 3rd sunday..)
+...etc...
+
+for easier search later.
+
+each category could have it's own set of meta
+information. e.g.
+
+maybe it's possible to define a SGL_ITEM for this kind
+of document...?
+
+
+
+<hr><strong>submitter:</strong>	open-haus
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Misleading error when database is not started
+<strong>body</strong>:		Upon calling the site it says "Cannot connect to DB,
+check your credentials, exiting ..." - well, the
+credential are not quite the problem. 
+
+I do not know if there is a way to check for a running
+db. Just a little note for better error handling.
+
+System: Linux with 2.6 kernel
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Allow/Disallow Permission to edit an article
+<strong>body</strong>:		Modify ArtileMgr::Edit to allow/disallow permission to
+edit an article by groups.
+
+
+<hr><strong>submitter:</strong>	nobody
+<strong>status</strong>:		Deleted
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		we need 'help' links pointing to wiki
+<strong>body</strong>:		maybe context sensitive for each screen?
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Uninstall script
+<strong>body</strong>:		The script would use the web server to delete the var
+directory. Which contain files that are not owned by
+the regular user when using linux shared hosting.
+
+
+<hr><strong>submitter:</strong>	chrisnutting
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Allow navigation object to be rendered externally
+<strong>body</strong>:		It would be really useful to be able to generate the
+navigation object independently from the seagull
+framework (ie for inclusion in other applications on a
+web site, such as a forum or a wiki)
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Backup &amp; Restore Database Feature
+<strong>body</strong>:		Have a backup-database-to-file and restore button
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		a blogger module
+<strong>body</strong>:		like MT or any of the popular blogs, would be very useful
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		store text in unicode
+<strong>body</strong>:		this has some implications but certainly is possible
+
+
+<hr><strong>submitter:</strong>	johdah
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		prefix for tables
+<strong>body</strong>:		I have only two dbs available at my webhost so I want 
+to use an already existing db with my tables prefixed 
+with seagull_ for example.
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Reordering Pages in PageMgr
+<strong>body</strong>:		PageMgr::_add/_edit  There needs to be a set or radio
+buttons: before &amp; after and a select box containing the
+current order of pages. This would allow you to select
+where to place the item when you create it or if you
+want to move it far up/down the tree (too many click
+when you need to move it up 10 items).
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		defensive coding - implement better error checking
+<strong>body</strong>:		n/a
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		make forms Bobby compliant
+<strong>body</strong>:		 http://bobby.watchfire.com/bobby/html/en/index.jsp
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		make db LIMITs cross db compatible
+<strong>body</strong>:		 $sql = "SELECT a,b
+FROM table
+WHERE a='123'";
+$dbh = &amp; Base::DB();
+$result = &amp; $dbh-&gt;limitQuery($sql, $from, $limit);
+while ($row =&amp; $result-&gt;fetchRow()){
+do stuff;
+}
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		remove quickform code from blockMgr
+<strong>body</strong>:		also the existing code is quite buggy, needs a rewrite
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		remove dependency on PEAR.php
+<strong>body</strong>:		 this involves
+- supplying a patch for Benchmark_Timer to it doesn't
+extend PEAR
+- removing DB_DataObject dependencies
+- working with Flexy author to remove PEAR dependency
+- replace all calls to PEAR::isError with is_a($result,
+'PEAR_Error')
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Navigation Mgr needs to be able to link to external sites
+<strong>body</strong>:		rather than just various internal article types
+
+
+<hr><strong>submitter:</strong>	jacdx
+<strong>status</strong>:		Deleted
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Class-wide perms!
+<strong>body</strong>:		As discussed on the ML.
+
+
+<hr><strong>submitter:</strong>	nobody
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		PDF Check
+<strong>body</strong>:		A built-in PDF check on pages linking to pdf documents.
+
+The purpose of this PDF check is to show a warning to
+visitors without an installed pdf viewer (maybye with a
+download link).
+
+The same check could be extended for any other plugins
+like Quicktime.
+
+Cheers
+
+Mick
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		supply patch so Pager id is more flexible
+<strong>body</strong>:		&gt; I may be able to find the time to do one however in
+the next 2 weeks we have an enormous deadline.  Do you
+agree that changing the 'urlVar' option as follows
+would be BC (obviously propagating the change through
+your package)?
+&gt;
+&gt; array('urlVar' =&gt; $_GET['pageID'])
+
+
+this won't work... it will assign the
+*value* of the url variable to 'urlVar',
+not its name... It is definitely a BC break.
+
+Off the top of my head, one solution would
+be an extra parameter called 'currentPage'
+that overrides the value calculated in the
+class. This would keep BC, at the cost
+of having Yet Another Parameter :]
+
+The implementation is a no-brainer,
+just add a check at the bottom of
+Pager_Common::_setOptions() and eventually
+ovverride $this-&gt;_currentPage.
+
+If you can have a look at this solution,
+please tell me if it suits your needs. 
+
+
+<hr><strong>submitter:</strong>	miccool
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Use Director pattern
+<strong>body</strong>:		In most software application, the very first code to
+load the application is not object oriented :)
+
+Here in Seagull too, firsth constants.php and init.php,
+then it's object oriented.
+
+I suggest to use the Director Pattern!
+
+The director commands the procedure. Try to create a
+singleton called Director and let him make the
+constants and the initialization. You will experience
+the advantages...
+
+Cheers
+
+Mick
+
+
+<hr><strong>submitter:</strong>	mvrhov
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		index.php in seagull root folder
+<strong>body</strong>:		It would be fine if seagull root folder would contain
+index.php file which would automaticali redirect to www
+folder.
+
+
+<hr><strong>submitter:</strong>	werner_krauss
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		versioning / recent changes
+<strong>body</strong>:		would be great if publisher could also handle
+versioning, so we can have a "recent changes" function
+like in the wiki 
+
+http://seagull.phpkitchen.com/docs/wakka.php?wakka=RecentChanges
+
+great for bigger sites.
+
+
+<hr><strong>submitter:</strong>	uprooter
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Trivial description for categories.
+<strong>body</strong>:		Hi all.
+I think it's necessary to have at least a description
+for categories.
+Shortly: I want to display categories like SF list it's
+modules.
+Each module has:
+1. A title.
+2. Short description.
+3. Small icon/image.
+Categories can have these attributes as well.
+And of curse a pager.
+
+Maybe extending CategoryMgr _list() and adding a
+categoryList.html template to the navigation module is
+the proper way to do this.
+
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		create a cvs branch for module development
+<strong>body</strong>:		see
+http://marc.theaimsgroup.com/?l=seagull-general&amp;m=110107070013610&amp;w=2
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		create sample application with test data, a la petstore
+<strong>body</strong>:		as discussed on list
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		create an IRC interface from wiki for quick help
+<strong>body</strong>:		as discussed here:
+http://marc.theaimsgroup.com/?l=seagull-general&amp;m=110086455115856&amp;w=2
+
+
+<hr><strong>submitter:</strong>	werner_krauss
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		implement user-friendly URLs in wiki
+<strong>body</strong>:		- clean searchfriendly urls (see wackos .htaccess)
+
+see also:
+
+http://wackowiki.com/WackoDocumentation/WackoSetup
+
+don't know if the old behaviour is still available if
+you switch to 
+it? otherwise just set the 404 error doc to 
+"HomePage&amp;phrase=foobar". then the user see's the
+homepage with a "search result" for the phrase "foobar"
+
+hth
+
+werner
+
+
+<hr><strong>submitter:</strong>	rbenea
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		modify RegisterMgr AutoLogin to use POST
+<strong>body</strong>:		    I found that if you enable AutoLogin in RegisterMgr
+then after registration you are redirected to the
+login.php and the user/pass data are passed as GET and
+loged in httpd.log.
+     "GET
+/login.php?frmUsername=user&amp;frmPassword=password&amp;submitted=login&amp;action=login&amp;
+HTTP/1.1" 
+    
+    Not good....
+ 
+    Is there a way to redirect internally SGL and not
+via the http server?
+
+-----------
+
+Hi Rares
+
+You certainly have a point, I don't think I looked too
+closely at that patch.
+
+The easy way around that to use something like
+HTTP_Reqest to do a POST with those values, you're
+right that the current method is inadequate.  I've
+removed it.
+
+Do you want to submit a bug for that - it's an easy fix.
+
+cheers
+
+Demian
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		get maintainState functionality into request::get
+<strong>body</strong>:		get maintainState functionality into request::get
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		single install file
+<strong>body</strong>:		make single file seagull downloader/untarrer app that
+endusers could execute from their webhosts
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		remove all DO as far as perms are concerned
+<strong>body</strong>:		remove all DO as far as perms are concerned
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Rename IMessageMgr to InstantMessangeMgr
+<strong>body</strong>:		Rename IMessageMgr to InstantMessangeMgr
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		new invocation for dataobject
+<strong>body</strong>:		according to this post we need to use a new invocation
+for dataobject: http://news.php.net/php.pear.general/14312
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		add meta tags per article with desc, keywords
+<strong>body</strong>:		add meta tags per article with desc, keywords
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		DB Errors should not make it into SimpleNav
+<strong>body</strong>:		db no connect and no tables errors should not make
+their way into SimpleNav
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		rename navigation/classes/Permissions to CategoryPermission
+<strong>body</strong>:		rename navigation/classes/Permissions to CategoryPermission
+
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		create error template, with back button
+<strong>body</strong>:		create error template, with back button
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		replace count($GLOBALS['_SGL']['ERRORS']) with SGL::isError(
+<strong>body</strong>:		replace count($GLOBALS['_SGL']['ERRORS']) with
+SGL::isError()
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		rename 'document manager' to file manager
+<strong>body</strong>:		rename 'document manager' to file manager
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		display page size in article editor
+<strong>body</strong>:		display page size in article editor, this would have to
+be determine at publish time and added to item table
+  implement above in edit and insert, user strlen to
+get bytes for string
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		replace PEAR::isError()
+<strong>body</strong>:		replace PEAR::isError() with if (is_a($response,
+'PEAR_Error'))  and no longer include PEAR.php
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		make global prefs more like user prefs
+<strong>body</strong>:		make global prefs more like user prefs
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		I18Nv2 package in PEAR
+<strong>body</strong>:		There is a I18Nv2 package in PEAR  which provides
+localized country and language names and more for most
+countries. So There wouldn't be a neccessary to have
+additionial files in seagull. 
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		is array_map if (get_magic_quotes_gpc()) faster?
+<strong>body</strong>:		is this faster?
+ if (get_magic_quotes_gpc()) {
+     array_map($_GET, 'stripslashes');
+     array_map($_POST, 'stripslashes');
+     array_map($_COOKIE, 'stripslashes');
+}
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		sort out better solution for provisional fix for missing cat
+<strong>body</strong>:		sort out better solution for provisional fix for
+missing category ID
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		make distinction between ms-word and txt in docMgr
+<strong>body</strong>:		make distinction between ms-word and txt in docMgr
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		make 'documentation' article type
+<strong>body</strong>:		make 'documentation' article type
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		version numbers for modules would be useful
+<strong>body</strong>:		version numbers for modules would be useful
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		change from SGL_HTTP_SESSSION to $_SESSION
+<strong>body</strong>:		change from SGL_HTTP_SESSSION to $_SESSION
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		put up error handling VSD
+<strong>body</strong>:		put up error handling VSD
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		"Messages" -&gt; "Contacts" there is no info for the groups
+<strong>body</strong>:		"Messages" -&gt; "Contacts" there is no information for
+the groups.
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		gui to view errors
+<strong>body</strong>:		for errors logged to db, create gui to view them
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		check general security
+<strong>body</strong>:		check general security against :
+http://dev.nexen.net/news/gen.php3/2003/10/10/2197,0,1,0,0.php3
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		add option to copy messages to email
+<strong>body</strong>:		add option to copy messages to email
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		export users as csv
+<strong>body</strong>:		users -&gt; options -&gt; export users as csv
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		log to db every transaction, optional
+<strong>body</strong>:		log to db every transaction, optional
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Config_Singleton
+<strong>body</strong>:		http://devel.akbkhome.com/svn/index.php/akpear/Config_Singleton/Singleton.php
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		'delete contacts' needed
+<strong>body</strong>:		'delete contacts' needed
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		log failed logons, set max logons
+<strong>body</strong>:		log failed logons, set max logons
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		filter docs by doctype checkbox
+<strong>body</strong>:		filter docs by doctype checkbox
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		checkout ezDebug and ezHttpTool, ezSys some nice stuff
+<strong>body</strong>:		checkout ezDebug and ezHttpTool, ezSys some nice stuff
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		check out methods from Ecoscene Response class
+<strong>body</strong>:		check out methods from Ecoscene Response class
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Documentor mod needs cleanup
+<strong>body</strong>:		- revisit categories, links seem to be broken
+- move this mod into publisher as it depends on articleMgr
+- create a 'documentation' article type that will be
+picked up by this class
+- refactor the way an article collection is called
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		User Email confirmation
+<strong>body</strong>:		An option that can be enabled/disabled that requires a
+user to confirm thier email address before being able
+to access members are of a site. In the welcome email a
+random string (confirmation code) would be sent them.
+When they attempt to login they must enter the
+confirmation code.
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		provide additional images for collapsible menus
+<strong>body</strong>:		http://www.chipchapin.com/WebTools/MenuTools/HTML_TreeMenuXL/
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		if specified method, X does not exist, do friendly redirect
+<strong>body</strong>:		Redirect to default manager/action when production = true
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		file upload improvements
+<strong>body</strong>:		aside from moving to the PEAR package:
+  - customise size of preview popup window for images
+with imagesize()
+  - check PHP's predefined upload error constants as
+per p. 140 in "php5 power programming"
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		pass more formatting options to SGL_Date::format()
+<strong>body</strong>:		pass more formatting options to Output::formatDate()
+
+
+<hr><strong>submitter:</strong>	rfsbsb
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Webdav integration with FileMgr and/or DocumentMrg
+<strong>body</strong>:		Webdav integration with Seagul FileMgr and/or
+DocumentMrg. PEAR's Webdav sever
+class(http://pear.php.net/package/HTTP_WebDAV_Server/)
+may be a start point.
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		create wrapper method to load pear libs
+<strong>body</strong>:		if the pear lib is  not present, a user-friendly error
+will prompt for it
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Encryption of passwd from the client to the server
+<strong>body</strong>:		Either using client-side JS w/a unique &amp; random hash,
+or SSL. The latter being better.
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Do not allow more than X number of login attempts from an IP
+<strong>body</strong>:		To slow down (but will not necessarily stop) brute
+force attacks
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		After session timeout use JS to refresh page causing login
+<strong>body</strong>:		Removing sensative info and stops the wrong person to
+acces a web site.
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		random verification data option
+<strong>body</strong>:		Ability to enable the option UserMgr for random
+verification data. The user can enter an 8-10
+alphanumeric string. After loging in with a username &amp;
+password they are ask to enter 2-3 random characters
+from the previously entered string.
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Option to make user change password after X amout of time
+<strong>body</strong>:		Option to make user change password after X amout of time
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		good ideas from Mambo ;-)
+<strong>body</strong>:		- forward to index.php from seagull root
+- initial page before install detects
+  - if var is writable
+  - if PHP config is sound, ie, safe_mod,
+register_globals, etc
+- analyse web traffic, ie, option to log hits
+- installer with clearly labelled step1, step2, etc
+- right hand multi-tab context panel for, eg, editing docs
+
+
+<hr><strong>submitter:</strong>	miccool
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		DataTypes for Preferences
+<strong>body</strong>:		It would be cool if each preference has a reference to
+a data type. for example a foreign key to data types
+like this:
+
+INSERT INTO `data_type` (`data_type_id`, `name`,
+`regex`, `is_string`, `is_boolean`, `is_number`) VALUES
+(1, '0 or 1', '(0|1)', 0, 1, 0),
+(2, 'string', '(.*)', 1, 0, 0),
+(3, 'positive integer', '([0-9]+)', 0, 0, 1),
+(10, 'decimal until 10', '([0-9]{1,2})', 0, 0, 1),
+(11, 'decimal until 100', '([0-9]{1,3})', 0, 0, 1);
+
+so we can check inputs on user preferences and most of
+all: we can list these automagically in
+preferencemanager... for strings we use textfield, for
+boolean we use checkbox, for numbers we use comboboxes.
+
+in the output class we can build a function like:
+
+function getPreferenceInput($preferenceId, $value)
+
+which creates the textfield or checkbox or combobox
+automagically depending on the datatype.
+
+so we can call this function from any html flexy
+template. and the big idea is: when we insert a new
+preference, then there is no need anymore to update the
+templates for this new preference. all is done in a
+flexy:foreach loop
+
+cheers
+
+mick
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		correct fk constraints for items in mysql
+<strong>body</strong>:		also update Item::delete() when deleting cascade does
+the job php is doing now.
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		move $GLOBALS['_SGL']['TRUSTED_IPS'] from constants.php
+<strong>body</strong>:		make it GUI configurable
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		when an error occurs, disable 'left/right columns' option
+<strong>body</strong>:		remove 'Enable left/right columns' option
+
+
+<hr><strong>submitter:</strong>	rbenea
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Admin URI in Add/Edit module not complete
+<strong>body</strong>:		If I want to add/edit a module, in the Admin URI field,
+I am prompted with a list with the modules names.
+
+For example for the module 'shop', I can select only
+'shop' from the list, but the actual admin file is
+shopAdminMgr.php.
+
+Something like the add/edit pages in navigator module
+should be  done.
+
+
+<hr><strong>submitter:</strong>	rbenea
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		block assignment is case sensitive
+<strong>body</strong>:		If I have a block to be shown for /shop/shopadmin/ it
+will not be shown for /shop/shopAdmin/ . In section
+table is declared /shop/shopadmin
+
+
+
+
+
+<hr><strong>submitter:</strong>	miccool
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Make content of meta tags editable
+<strong>body</strong>:		Hello seagul developpers
+
+It would be nice if the content of meta tags can be
+edited for  the administrator.
+
+For example I want to change the copyright or the
+ROBOTS or add a new meta tag like keywords.
+
+This can be either saved into the database or in a
+config file.
+
+Cheers
+
+Mick
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		supply translation strings for error messages
+<strong>body</strong>:		in accordance with Lorenzo's patch.
+
+
+<hr><strong>submitter:</strong>	nobody
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		messages type error/info/?
+<strong>body</strong>:		Give messages div a different class depending of type 
+error/info/? then it is possible to show them in different 
+colors. red for errors or yellow for info. 
+
+
+<hr><strong>submitter:</strong>	dizmo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Admin has ability to change author
+<strong>body</strong>:		Drop-down select for admin to choose new author.
+
+
+<hr><strong>submitter:</strong>	werner_krauss
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		label/name/title incsistency
+<strong>body</strong>:		There are inconsistencies all over seagull with the
+label, name, &amp; title.
+
+It'd be nice if they were all switched to 1
+
+e.g. in navigation-&gt;category-&gt;reorder: the category
+"name" is called "label". why?
+
+I prefer:
+- name for "naming" of things (like categories, block
+(-&gt; block class/ filename...))
+- title for things that go to output (block title,
+article title, category title etc)
+
+NB: please move this strings ONLY to defautl
+translation, not (as now) to every module's translation
+seperately.
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		admin email to be notified of new registrations
+<strong>body</strong>:		so they can be activated
+
+
+<hr><strong>submitter:</strong>	miccool
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		User preferences during registration
+<strong>body</strong>:		Hello seagull
+
+This request concerns the user preferences during
+registration. Let's imagine a preference called
+"newsletter" which can have 0 or 1 as a value. 0 means
+no newsletter.
+
+So, during registration a visitor can enter all user
+attributes. It would be nice if the user can define
+this preference "newsletter" at registration and set it
+to 1 is desired.
+
+This means that some user preferences should be able to
+be set when the new user is created.
+
+A possible solution:
+Add a new column to table preference: A flag which
+indicated whether this preference may be edited during
+registration. For example "set_on_register".
+
+And the manager, when loading the register page,
+automagically loads all preferences with this flag on
+on the registration page too.
+
+And when inserting the new user into database also
+these edited preferences should be inserted as new user
+preferences.
+
+I think, this is important. So users can declare at
+registration to subscribe for newsletters!
+
+Cheers Mick
+
+
+<hr><strong>submitter:</strong>	johdah
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		svg2image Output method
+<strong>body</strong>:		Output method to create images for menus, headers etc.
+available from html templates.
+
+
+
+
+<hr><strong>submitter:</strong>	werner_krauss
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		localisation during installation
+<strong>body</strong>:		- choose language for installer first (so wizard is
+translated, too)
+- this language is default language in user-&gt;prefs
+(including timezone etc...)
+
+
+<hr><strong>submitter:</strong>	werner_krauss
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		MS Word import for article mgr
+<strong>body</strong>:		as seen at sgl roadmap:
+
+http://stage.phpkitchen.com/index.php/publisher/articleview/frmArticleID/6/staticId/50/
+
+note: this function is built in wysiwyg editors.
+fckedit has this!
+
+same possible for spellchecker... dunno if fck, but
+htmlarea has a plugin for that.
+
+werner
+
+
+<hr><strong>submitter:</strong>	krabu
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Need to be able to backdate articles
+<strong>body</strong>:		Valid-from date should allow for at least one year back
+(eg 2004) -  otherwise backdating articles is a bit 
+painful/impossible, especially at the beginning of the year
+
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		clean up array blank filtering
+<strong>body</strong>:		change code with array_filter hack:
+
+    $aPath = explode('/', $path);
+    $aWithoutBlanks = array_filter($aPath, 'strlen');
+
+to
+
+$path = preg_split('@[\W]+@', $path, -1,
+PREG_SPLIT_NO_EMPTY);
+
+write test
+
+
+<hr><strong>submitter:</strong>	werner_krauss
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		admin part of gb module
+<strong>body</strong>:		add admin section if guestbook doesn't become an item
+for publisher...
+
+
+<hr><strong>submitter:</strong>	werner_krauss
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		FAQ extension
+<strong>body</strong>:		Following functions for FAQ-Module would be great:
+
+ - make "subareas" or categories via nestedSet
+
+so i can order the faqs like:
+1: seagull faq
+1.1 why seagull
+1.2 why pear
+1.3 modules
+1.3.1 why faq
+1.3.2 how can i add this?
+2: foobar
+2.1: foo
+2.2: bar
+
+etc ;)
+
+  - maybe a "disable"/"enable" per entrie is useful if
+i want some questions temporary not to show but i don't
+want to delete them.
+
+  - use the css pseudo attribute "target" for linking
+to the answers. works not in every browser yet, but i
+think it's nice for where it works and not that
+important that it really must work everywhere.
+ 
+see:
+http://www.htmldog.com/articles/suckerfish/target/
+good example:
+http://www.htmldog.com/ptg/archives/000051.php#comment1
+
+just some ideas, maybe something useful ;)
+
+werner
+
+
+<hr><strong>submitter:</strong>	sotto
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		help providing system
+<strong>body</strong>:		I'm thinking a help-system would be nice in seagull.
+This way, module-writers only have to write their 
+help-text (multi-lingual?), and it would be easy to show in 
+the template.
+
+
+<hr><strong>submitter:</strong>	werner_krauss
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Multilingual Content
+<strong>body</strong>:		As described often before in the ML, now i just start
+this tracker for conservating my ideas:
+
+It would really be great, if SGL could produce real
+multi-lingual sites, so the _content_ of a site is in
+different languages.
+
+so every module has to be added this functionality.
+
+for publisher:
+
+my dreams are:
+
+store a "template" or sceleton of the article in db
+where placeholders for text are. this template contains:
+ - layout
+ - pics (alt- and title-textes may be placeholders, too)
+ - some content that is same in every language, e.g. prices
+
+(i really don't want to change pics, prices etc. in
+more than one destination if my client want's me to
+update his site!)
+
+now i have a system where i can add the content (and
+translations) for this placeholders
+
+this system has the advantage, that my translator can
+make the translation of the article online.
+
+maybe every translation of this article can be switched
+"disabled|enabled|archive"...
+
+same for other content related modules.
+
+
+maybe PEAR:Translation2 is a good help for that.
+
+werner
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		introduce more advanced file-parsing for docMgr, eg, MP3, EX
+<strong>body</strong>:		improve flexibility for file storage
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		detect MSN status and ICQ status 
+<strong>body</strong>:		(http://byting.mirrors.phpclasses.org/browse/package/1524.html)
+
+
+<hr><strong>submitter:</strong>	werner_krauss
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		make link connector for fck
+<strong>body</strong>:		for better fckeditor integration in sgl:
+
+similar to image browser, there can be an link-browser
+that generates sgl-links.
+
+so a link to another article could be easier.
+
+
+<hr><strong>submitter:</strong>	sbaturzio
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		username with dots
+<strong>body</strong>:		Actually it isn't possible to enter username with dots
+inside as separator. 
+IMHO will be useful enter username like
+firstname.surname or similar.
+
+
+
+<hr><strong>submitter:</strong>	vermutas
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		"could not get class name" needs more user-friendly screen
+<strong>body</strong>:		If I go to let's 
+say "http://localhost/seagull/index.php/faq1/", I got 
+empty page with error "could not get class name".
+If I go 
+to "http://localhost/seagull/index.php/faq/action/add1/" it 
+says "The specified method, add1 does not exist".
+I think at least it should load whole page and 
+say "Content not found", or redirect to default page, or 
+could be anything else, but not empty page with 
+message.
+
+
+<hr><strong>submitter:</strong>	riccardom
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		sgl-blocks-middle-nocols incompatible w/vertical navigation
+<strong>body</strong>:		Hi!
+
+The problems is simple but scary. We can't use
+sgl-blocks-middle-nocols with a vertical navigation
+menu because the menu is placed in left block, which is
+not displayed. You can see it in the navigation module.
+
+cheers,
+rm
+
+
+<hr><strong>submitter:</strong>	miccool
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Admin can manage enquiry types
+<strong>body</strong>:		Admin should be able to manage enquiry types. And if
+there are no enquiry types, the combo box doesn't appear.
+
+Question: should enquiry types be stored in the database?
+
+Cheers
+
+Mick
+
+
+<hr><strong>submitter:</strong>	miccool
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Edit preferences not user friendly
+<strong>body</strong>:		The page for editing my own preferences is not very
+user friendly.
+
+*** Date format ***
+What means BR? What if the user doesn't know the
+difference between UK and FR date format?
+
+I think, it's better to display the format behind the
+abbrevation, for example:
+
+UK (dd/mm/yy)
+US (mm/dd/yy)
+FR (...)
+BR (...)
+
+*** Session timeout ***
+
+The string values 1 hour, 3 hours and so on should be
+language independent. When for example chaning to
+German, it's still English :(
+
+*** Locale ***
+
+Please put a combo box! A normal user don't know how to
+type the locale for German. DE_de or what? Or for the
+French region of Switzerland? How?
+
+Any suggestions / ideas?
+
+Cheers
+
+Mick
+
+
+<hr><strong>submitter:</strong>	miccool
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		View and analyze login data
+<strong>body</strong>:		Let's add a new module in the Module Manager called
+"Logins".
+
+There the data from table login is displayed. This may
+be interesting for administrators to view the logins
+with all its details.
+
+Further we can add some analysing functions like: which
+user agent is used most? Which charset is acceptes
+most? Which user does the most login (is very active)?
+
+Cheers
+
+Mick
+
+
+<hr><strong>submitter:</strong>	miccool
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Better .htaccess
+<strong>body</strong>:		Let's add some more lines in the htacces.dist:
+
+AddType image/x-icon .ico
+(for favicon support)
+
+#stop email collectors
+RewriteCond %{HTTP_USER_AGENT} Wget [OR] 
+RewriteCond %{HTTP_USER_AGENT} CherryPickerSE [OR] 
+RewriteCond %{HTTP_USER_AGENT} CherryPickerElite [OR] 
+RewriteCond %{HTTP_USER_AGENT} EmailCollector [OR] 
+RewriteCond %{HTTP_USER_AGENT} EmailSiphon [OR] 
+RewriteCond %{HTTP_USER_AGENT} EmailWolf [OR] 
+RewriteCond %{HTTP_USER_AGENT} ExtractorPro 
+RewriteRule ^.*$ X.html [L]
+(for stopping spammers)
+
+ErrorDocument 403 /flea/action/403/
+ErrorDocument 404 /flea/action/404/
+ErrorDocument 500 /flea/action/500/
+(let's do the error pages with seagull too for example
+with a FleaManager)
+
+What do you think?
+
+Mick
+
+
+<hr><strong>submitter:</strong>	rbenea
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Better .htaccess and FleaManager
+<strong>body</strong>:		1. Seagull could handle 403/404/500 errors
+
+404 is simple. It's the "could not get class name" a
+redirect to a static 404.html is an idea
+500 when you get a fatal error in PEAR Error class
+
+Here we ca use articles (so the page is editable from
+Publisher) and export/save them to static files to
+www/404.html for example. 
+
+2. of the users who's config allows for .htaccess mods,
+many will not have mod_rewrite compiled into their setup
+
+Here we can have two .htaccess files (one with
+mod_rewrite one without) or one with the mod_rewrite
+lines commented 
+
+
+<hr><strong>submitter:</strong>	miccool
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Javascript messages
+<strong>body</strong>:		Please make the alerts and other messages in javascript
+language independent!
+
+
+<hr><strong>submitter:</strong>	johdah
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Presentation Module
+<strong>body</strong>:		It would be nice to manage the presentation layer
+through a structureMgr and a styleMgr in a presentation
+module.
+In the structureMgr it could be possible to choose no
+of columns, place blocks/divs etc and in the styleMgr
+choose colors, fonts etc.
+
+
+<hr><strong>submitter:</strong>	lgammo
+<strong>status</strong>:		Open
+<strong>type</strong>:		Feature Requests
+<strong>title</strong>:		Left and right block selective caching! 
+<strong>body</strong>:		I have been experimenting with enabling caching on my
+site. It greatly improves page rendering speed. In
+some instances, the difference is dramatic.
+
+However, I have a problem with the architecture of
+block caching. Perhaps, I am misunderstanding it. So
+apologies in advance. :)
+
+It seems that the blocks are cached per role and per
+page. In other words, I understand that you share the
+cache between users with the same role.
+
+Worse, suppose I have blocks that need to be updated
+at different frequencies than other blocks. For
+example, I could use the random message block to
+display a site tip every N impressions, or every
+impression, or every 10 minutes, whatever. If I have
+caching on, and the cache life is, say, a day, then I
+cannot do that.
+
+So, I am thinking I require the following
+capabilities. I am wondering if other people have
+thoughts on their usefulness to them.
+
+1. Caching specification should be per block. The
+block is cached separately from other blocks.
+
+2. The specification should indicate whether it is
+cached per role, per user, or for everyone.
+
+3. The specification should also indicate the criteria
+for invaliding the cache. E.g., time, impressions,
+database query, API call (see #4).
+
+4. There should be an API for invalidating the cache
+for a specific block (by role, or by user id).
+
+5. The current caching regimen should be preserved for
+backward compatibility. I.e., any changes to core
+code, should not require people to fix their sites.
+
+Anyway, apologies for the random thoughts. I would
+appreciate you thoughts (random or otherwise). :)
+
+Thanks,
+
+Louay
+
+
+<hr><strong>submitter:</strong>	miccool
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		Obfuscate doesn't work with Umlauts
+<strong>body</strong>:		When there is an email address with Umlauts like ä ö ü
+then the obfuscate method in String.php doesn't work
+and returns an empty string.
+
+For example the email address info@kita-rössli.ch - the
+method returns an empty string.
+
+Not very nice. I don't know why. Maybye a problem with
+the charset during the bin2hex translation?
+
+I hope someone can solve this problem, it's really
+important!
+
+Thanks
+
+Mick
+
+
+<hr><strong>submitter:</strong>	werner_krauss
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		sgl homepage: contacts: layout broken
+<strong>body</strong>:		http://seagull.phpkitchen.com/index.php/messaging/contact/
+
+when going to "contacts" the layout is broken:
+
+&lt;!-- middle column --&gt;
+&lt;div id="sgl-blocks-middle-leftcol"&gt;
+
+
+which appears BELOW the left block...
+
+
+
+
+<hr><strong>submitter:</strong>	open-haus
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		Second level navigation does not work in Opera
+<strong>body</strong>:		Hello CSS specialists,
+
+the SglDefault_TwoLevel.css does not work for SimpleNav
+in Opera. 
+
+Tested on Opera 7 using Windows and Opera 8.02 using
+Linux (KDE).
+
+Instead of displaying the sub menu items next to each
+other they are listed beneath each other making them
+unusuable when blocks are enabled.
+
+A fix would be lovely. Thank you.
+
+
+<hr><strong>submitter:</strong>	werner_krauss
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		perm:detect and add scans all module dirs
+<strong>body</strong>:		detect and add scans all module dirs, not only the
+installed modules.
+
+if i try to add a perm of a not installed module i get
+a mysql-error, cause module-id is missing.
+
+
+<hr><strong>submitter:</strong>	werner_krauss
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		cannod add admin page in moduleMgr
+<strong>body</strong>:		if the admin uri is NOT [module]Mgr, you cannot add the
+admin page in modules section.
+
+we need some functionality like in navigation for
+adding module/class/action for admin page.
+
+werner
+
+
+<hr><strong>submitter:</strong>	jacdx
+<strong>status</strong>:		Deleted
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		_summary action of ArticleBrowser is broken
+<strong>body</strong>:		This was posted to the list a couple of days ago:
+
+On a clean CVS install from yesterday (and updated just
+now) on
+Win32 Apache 2.0.50, PHP 4.3.7, and PostgreSQL, I'm
+getting "Document
+contains no data" when attempting to view the Articles
+module as
+guest. I logged in to make sure the default article was
+there with
+appropriate permissions (it was). Looking at the CVS
+log for  ArticleBrowser.php, there have been a lot of
+changes over the past week.
+
+[08-Jul-2004 09:22:07] ###############    NEW PAGE RUN
+- REG - ARTICLE BROWSER    ###############
+Jul 08 09:22:07 SGL [debug] sgl_controller::sgl_controller
+Jul 08 09:22:07 SGL [debug] articlebrowser::articlebrowser
+Jul 08 09:22:07 SGL [debug] sgl_controller::go
+Jul 08 09:22:07 SGL [debug] sgl_controller::initpage
+Jul 08 09:22:07 SGL [debug]
+sgl_http_session::sgl_http_session
+Jul 08 09:22:07 SGL [debug] sgl_http_session::exists
+Jul 08 09:22:07 SGL [debug] sgl_controller::_getconfig
+Jul 08 09:22:07 SGL [debug] sgl_controller::_setlanguage
+Jul 08 09:22:07 SGL [debug] sgl_controller::_checksession
+Jul 08 09:22:07 SGL [debug] sgl_controller::_getperms
+Jul 08 09:22:07 SGL [debug] permissionmgr::retrieveallperms
+[08-Jul-2004 09:22:07] perms from db
+Jul 08 09:22:07 SGL [debug] sgl_controller::_setheaders
+Jul 08 09:22:07 SGL [debug] sgl_controller::_setlocale
+Jul 08 16:22:07 SGL [debug] sgl_output::sgl_output
+Jul 08 16:22:07 SGL [debug] articlebrowser::validate
+Jul 08 16:22:07 SGL [debug] publisherbase::maintainstate
+Jul 08 16:22:07 SGL [debug] base::inherit
+Jul 08 16:22:07 SGL [debug] articlebrowser::process
+Jul 08 16:22:07 SGL [debug] articlebrowser::_summary
+Jul 08 16:22:07 SGL [debug]
+articlebrowser::getarticlelistbycatid
+Jul 08 16:22:07 SGL [debug]
+articlebrowser::retrievepaginated
+Jul 08 16:22:07 SGL [debug]
+articlebrowser::getdocumentlistbycatid
+Jul 08 16:22:07 SGL [debug]
+articlebrowser::getarticledetail
+Jul 08 16:22:07 SGL [debug] sgl_controller::_displaypage
+Jul 08 16:22:07 SGL [debug] articlebrowser::display
+Jul 08 16:22:07 SGL [debug] categorymgr::categorymgr
+Jul 08 16:22:07 SGL [debug] categorymgr::getbreadcrumbs
+[08-Jul-2004 16:22:07] nav tabs from db
+Jul 08 16:22:07 SGL [debug] sgl_http_session::getusertype
+Jul 08 16:22:07 SGL [debug] directorynav::init
+Jul 08 16:22:07 SGL [debug] directorynav::getblockcontent
+Jul 08 16:22:07 SGL [debug] menubuilder::menubuilder
+Jul 08 16:22:07 SGL [debug] menubuilder::_factory
+Jul 08 16:22:07 SGL [debug] menu_explorer::menu_explorer
+Jul 08 16:22:07 SGL [debug] categorymgr::categorymgr
+Jul 08 16:22:07 SGL [debug] menubuilder::tohtml
+Jul 08 16:22:07 SGL [debug] base::gettime
+Jul 08 16:22:07 SGL [debug] base::gettime
+Jul 08 16:22:07 SGL [debug] sitenews::tohtml
+[08-Jul-2004 16:22:07] blocks from db
+Jul 08 16:22:07 SGL [debug] sgl_http_session::getusertype
+Jul 08 16:22:07 SGL [debug] sending output to template
+engine
+
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		wizard bug
+<strong>body</strong>:		as described here [1], it is currently not possible to
+use more than one wizard at a time.
+
+[1]
+http://marc.theaimsgroup.com/?l=seagull-general&amp;m=108448448721970&amp;w=2
+
+
+<hr><strong>submitter:</strong>	vermutas
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		Strange document view behavior
+<strong>body</strong>:		I did followowing:
+1. uploaded new image via document manager.
+2. pressed 'view' once - popup window with uploaded 
+image apeared.
+4. i didn't closed this popup window and pressed 'view' 
+second time - and instead of seeing image I saw errors 
+(see attachment).
+5. pressed 'view' once again - image shown ok.
+6. pressed again - error. And so on - every second time I 
+get errors.
+
+I experienced this on Windows XP, Mozilla Firefox 1.0.4.
+Internet Explorer 6 works fine.
+
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		incorrect GET params passed to Perm Mgr :: Detect &amp; Add
+<strong>body</strong>:		in this qs:
+
+http://localhost/seagull/www/index.php/user/permission/action/scanNew/frmPermId/moduleId/
+
+frmPermId is never used, and moduleId never gets a value
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		SGL_Url::makeLink doesn't handle object vars correctly
+<strong>body</strong>:		see
+http://marc.theaimsgroup.com/?l=seagull-general&amp;m=111441378301845&amp;w=2
+
+
+<hr><strong>submitter:</strong>	open-haus
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		Assignment of current section produces faulty nav bar
+<strong>body</strong>:		I have one module containing managers for views and
+edits. If I now  want to order my pages according to
+their functionality, e.g. view and  edit as two
+separate tabs in navigation, both tabs get highlighted.
+
+I broke down the problem to
+modules:navigation:classes:SimpleNav:SimpleNav:getTabsByRid
+section  "} elseif (!isset($exactMatch)) {".
+
+There only some comparison between the baseUri and the
+resourceUri for the currently processed Uri is made but
+there is no check if that makes sense. There is no
+check if the currently processed Uri can be a parent /
+child of our selected baseUri. It just assumes it is
+because the modules / managers match.
+
+I find this to be missing functionality. I am working
+on a patch but so far I had no good idea how to
+implement this - so I wanted to let you folks know.
+
+
+
+<hr><strong>submitter:</strong>	open-haus
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		JavaScript problem in navigation:page
+<strong>body</strong>:		When I created a new page (Page Manager :: Add) and
+choose dynamic pages, the third select list shows
+unwanted values. If there is more than one manager it
+is not problem because the list updates when I switch
+between the managers but if there is only one and I
+save the new page, it links to correct module and
+manager but with wrong parameters.
+
+
+<hr><strong>submitter:</strong>	open-haus
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		Create templates does not do anything
+<strong>body</strong>:		Creating a new module works only half way. The message
+is that everything worked fine but there are no templates.
+
+Correct permissions were set and the stuff in modules
+is created (except some dunmmy files for the
+translations which would be nice, too).
+
+
+<hr><strong>submitter:</strong>	md_massimino
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		can't delete blocks, can't see all blocks, sorting anomaly
+<strong>body</strong>:		Windows 2000, Apache 2, MySQL 4.1.12a-nt, Seagull 0.4.3
+
+I can't delete a block.  When I select the block and
+click delete, I get a screen that says it was deleted,
+but when I go back to the blocks screen, it's still there.
+
+There are no previous and next links to move to the
+next screen of blocks, so I can never see all of the
+blocks that are available.
+
+I get a list of seven blocks when I sort by Name, Title
+or Order, ascending.  I get a list of ten blocks when I
+sort by descending.
+
+When I add a block, I get a blank screen though the
+block is added successfully.
+
+I can edit, enable, and disable the blocks.
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		news items are attached to hard-coded 'sgl' page
+<strong>body</strong>:		these should really be on their own page
+
+
+<hr><strong>submitter:</strong>	rbenea
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		sql parser doesn't work in all environments
+<strong>body</strong>:		So, after a lot of file and then code replacement
+between the old working version and the CVS version, I
+found the problem. It's in the /lib/sgl/Sql.php file at
+line 86, function parseAndExecute:
+
+   The new version (not working):
+           // Check if '--' comment line.  Fixes
+Problem with commented Postgres SQL statements
+           // This avoids printing bogus errors to
+screen when we try to execute a comment only
+           if (preg_match("/^\s*(--)|^\s*#/", $line)) {
+               continue;
+           }
+           $sql .= $line;
+
+   The old version:
+            // Check if '--' comment line.  Fixes
+Problem with commented Postgres SQL statements
+           // This avoids printing bogus errors to
+screen when we try to execute a comment only
+           $line = trim($line);
+           $cmt  = substr($line, 0, 2);
+           if ($cmt == '--' || trim($cmt) == '#') {
+               continue;
+           }
+           $sql .= $line;
+
+   Because my working station is WinXP and the CVS
+download and file edit it's done under XP and the
+server is Linux connected via Samba, I think it's a
+compatibility problem of new line (\n ; \r\n)
+
+   I'll not provide a patch, just replaced with the old
+code, but I hope the somebody will fix the regular
+expression.
+
+Thanks,
+
+
+<hr><strong>submitter:</strong>	demianturner
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		when submitting forms with JS, action variable disappears
+<strong>body</strong>:		this appears to be a bug at the browser level,
+potentially because of the form element attribute
+called 'action' and the property called 'action' conflict.
+
+Radek proposes this fix:
+
+(16:08:12) Radek: Ok I found out the way to omit action
+problem...
+(16:08:45) Radek: you have to give different ids to
+form and to hidden action field
+(16:08:54) Radek: eg:
+document.getElementById('checkoutform').action =
+'removeFromBasket';
+(16:09:57) Radek: and:
+document.getElementById('doAction').value =
+'removeFromBasket';
+(16:10:12) Radek: the first one:
+document.getElementById('checkoutform').action =
+'removeFromBasket.php';
+(16:10:31) Radek: so, maybe it will be helpfull for
+somebody :)
+
+however I think it would be an idea to rename this var
+in the templates to 'doAction' or something similar.
+
+
+
+<hr><strong>submitter:</strong>	werner_krauss
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		translation mgr saves empty strings
+<strong>body</strong>:		values not translated in a form are saved as empty.
+this causes seagull to print an empty string instead of
+the original string.
+
+annoying...
+
+werner
+
+
+<hr><strong>submitter:</strong>	miccool
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		Smileys in from FCK (Newsletter) not displayed
+<strong>body</strong>:		When you insert a smiley in a newsletter (editing with
+FCK) and send it, the receiver doesn't see the smiles.
+The URL in the message source is wrong (there is a
+relative path to the image file but we need an absolute
+path)
+
+cheers
+
+mick
+
+
+<hr><strong>submitter:</strong>	open-haus
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		Dynamic blocks cause error
+<strong>body</strong>:		Creating and activating a dynamic block causes the
+following error:
+
+MESSAGE: Undefined property: content
+TYPE: Notice
+FILE:
+/home/fabio/public_html/Projekte/seagull/trunk/modules/block/classes/blocks/Dynamic1.php
+LINE: 19
+DEBUG INFO:
+
+14 }
+15
+16 function init(&amp;$input)
+17 {
+18 //return $this-&gt;getBlockContent(&amp;$input);
+19 return $input-&gt;content;
+
+20 }
+21
+22 function getBlockContent(&amp;$input) 
+
+
+I tried to track it down but the block generation is
+rather confusing. I ended up in Controller without
+finding the right place.
+
+Version used was trunk from 24th of August.
+
+
+<hr><strong>submitter:</strong>	sbaturzio
+<strong>status</strong>:		Open
+<strong>type</strong>:		Bugs
+<strong>title</strong>:		setLocale change clock into logfile
+<strong>body</strong>:		Not a big problem (setted the bug priority at lowest
+level) but the logfile show different hours after
+_setLocale is called:
+
+set 07 11:45:25 Seagull [debug]
+sgl_http_session-&gt;istimedout:
+set 07 11:45:25 Seagull [debug]
+sgl_controller-&gt;_setheaders:
+set 07 11:45:25 Seagull [debug] sgl_controller-&gt;_setlocale:
+set 07 09:45:25 Seagull [debug] dizionariomgr-&gt;validate:
+set 07 09:45:25 Seagull [debug]
+sgl_controller-&gt;_copyobjectproperties:
+set 07 09:45:25 Seagull [debug] dizionariomgr-&gt;process:
+
+Maybe using a different timezone than GMT (here now we
+use GMT+2) make this problem.
+
+Is it possible use always local time for logfile?
+
+
+
+<hr></pre></body></html>

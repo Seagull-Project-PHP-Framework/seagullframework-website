@@ -1,0 +1,96 @@
+MatsMacBook:~/Sites/clSeagull matu$ svn revert * -R
+Skipped 'AUTH.txt'
+Skipped 'Session_and_DA_UserWithout_Dataobject.diff'
+Reverted 'lib/SGL/Task/Process.php'
+Reverted 'lib/SGL/Session.php'
+Skipped 'makeHeadersAbCompatible.diff'
+Reverted 'modules/user/classes/DA_User.php'
+MatsMacBook:~/Sites/clSeagull matu$ patch -p0 < makeHeadersAbCompatible.diff               
+patching file lib/SGL/Task/Process.php
+MatsMacBook:~/Sites/clSeagull matu$ ab -n100 'http://hpktesting/%7Ematu/clSeagull/www/index.php'
+This is ApacheBench, Version 1.3d <$Revision: 1.73 $> apache-1.3
+Copyright (c) 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Copyright (c) 1998-2002 The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking hpktesting (be patient).....done
+Server Software:        Apache/2.2.2                                       
+Server Hostname:        hpktesting
+Server Port:            80
+
+Document Path:          /%7Ematu/clSeagull/www/index.php
+Document Length:        11439 bytes
+
+Concurrency Level:      1
+Time taken for tests:   19.126 seconds
+Complete requests:      100
+Failed requests:        0
+Broken pipe errors:     0
+Total transferred:      1192400 bytes
+HTML transferred:       1143900 bytes
+Requests per second:    5.23 [#/sec] (mean)
+Time per request:       191.26 [ms] (mean)
+Time per request:       191.26 [ms] (mean, across all concurrent requests)
+Transfer rate:          62.34 [Kbytes/sec] received
+
+Connnection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0     0    0.0      0     0
+Processing:   184   191   23.7    188   425
+Waiting:      184   191   23.7    188   425
+Total:        184   191   23.7    188   425
+
+Percentage of the requests served within a certain time (ms)
+  50%    188
+  66%    189
+  75%    189
+  80%    190
+  90%    192
+  95%    193
+  98%    204
+  99%    425
+ 100%    425 (last request)
+MatsMacBook:~/Sites/clSeagull matu$ patch -p0 < Session_and_DA_UserWithout_Dataobject.diff 
+patching file lib/SGL/Session.php
+patching file modules/user/classes/DA_User.php
+MatsMacBook:~/Sites/clSeagull matu$ ab -n100 'http://hpktesting/%7Ematu/clSeagull/www/index.php'
+This is ApacheBench, Version 1.3d <$Revision: 1.73 $> apache-1.3
+Copyright (c) 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Copyright (c) 1998-2002 The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking hpktesting (be patient).....done
+Server Software:        Apache/2.2.2                                       
+Server Hostname:        hpktesting
+Server Port:            80
+
+Document Path:          /%7Ematu/clSeagull/www/index.php
+Document Length:        11439 bytes
+
+Concurrency Level:      1
+Time taken for tests:   16.823 seconds
+Complete requests:      100
+Failed requests:        0
+Broken pipe errors:     0
+Total transferred:      1192400 bytes
+HTML transferred:       1143900 bytes
+Requests per second:    5.94 [#/sec] (mean)
+Time per request:       168.23 [ms] (mean)
+Time per request:       168.23 [ms] (mean, across all concurrent requests)
+Transfer rate:          70.88 [Kbytes/sec] received
+
+Connnection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0     0    0.0      0     0
+Processing:   163   168    1.5    168   173
+Waiting:      163   168    1.5    168   173
+Total:        163   168    1.5    168   173
+
+Percentage of the requests served within a certain time (ms)
+  50%    168
+  66%    169
+  75%    169
+  80%    170
+  90%    170
+  95%    171
+  98%    173
+  99%    173
+ 100%    173 (last request)
