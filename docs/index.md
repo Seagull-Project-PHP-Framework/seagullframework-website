@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Seagull Framework Docs
+title: Seagull Project Docs
 ---
 
 # General Overview

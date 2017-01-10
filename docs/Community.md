@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Building a TODO list module with Ajax
+title: Seagull Community
 permalink: /Community.html
 ---
 
@@ -8,42 +8,41 @@ permalink: /Community.html
 <!-- Version: 24 -->
 <!-- Last-Modified: 2007/01/08 23:44:16 -->
 <!-- Author: stevenstremciuc -->
-# The Who's Who of Seagull Community
-
-[[Image(sgl\_devs\_venice\_2005.jpg)]]
+# The Seagull Community
+![][image-1]
 
 Here's a bit more info on the people who have made this project possible:
 
-  * [DemianTurner][1] Founder and Maintainer
-  * [AjTarachanowicz][2] Core Developer
+  * [Demian Turner][1] Founder and Maintainer
+  * [Aj Tarachanowicz][2] Core Developer
   * [Andrey Podshivalov][3] Core Developer
-  * [WernerKrauss][4] Docu Maintainer
-  * [MikeWattier][5] Biz Geek
-  * [JulienCasanova][6] UI Guru
-  * [RaresBenea][7] Shop Developer
-  * [PierpaoloToniolo][8] Postgres Maintainer
-  * [TobiasKuckuck][9] Oracle Maintainer
-  * [RadekMaciaszek][10] 
-  * [AndyCrain][11] 
-  * [MihaVrhovnik][12] 
-  * [JacobHanson][13] 
-  * [GerryLachac][14] 
-  * [AdelinoMonteiro][15] 
-  * [HenryJuan][16] 
-  * [PeterCruickshank][17] 
-  * [MattiTahvonen][18] 
-  * [StevenStremciuc][19]
+  * [Werner Krauss][4] Docu Maintainer
+  * [Mike Wattier][5] Biz Geek
+  * [Julien Casanova][6] UI Guru
+  * [Rares Benea][7] Shop Developer
+  * [Pierpaolo Toniolo][8] Postgres Maintainer
+  * [Tobias Kuckuck][9] Oracle Maintainer
+  * [Radek Maciaszek][10] 
+  * [Andy Crain][11] 
+  * [Miha Vrhovnik][12] 
+  * [Jacob Hanson][13] 
+  * [Gerry Lachac][14] 
+  * [Adelino Monteiro][15] 
+  * [Henry Juan][16] 
+  * [Peter Cruickshank][17] 
+  * [Matti Tahvonen][18] 
+  * [Steven Stremciuc][19]
 
-You can also have a look at http://www.frappr.com/seagull or see our [Hackergotchi][20] page.
+You can also have a look at [http://www.frappr.com/seagull][20] or see our [Hackergotchi][21] page.
 
 
 ## Seagull Users
-  * [view full list here][21]
+  * [view full list here][22]
 
 ## See also
 [[SubWiki(Community)]]
 
-and [user contributed modules][22]
+and [user contributed modules][23]
 
 [1]:	/User/DemianTurner.html
 [2]:	/User/AjTarachanowicz.html
@@ -64,6 +63,9 @@ and [user contributed modules][22]
 [17]:	/User/PeterCruickshank.html
 [18]:	/User/MattiTahvonen.html
 [19]:	/User/StevenStremciuc.html
-[20]:	/Community/Hackergotchi.html
-[21]:	/User.html
-[22]:	/General/Modules#UserContributedModules.html
+[20]:	http://www.frappr.com/seagull
+[21]:	/Community/Hackergotchi.html
+[22]:	/User.html
+[23]:	/Modules.html#UserContributedModules.html
+
+[image-1]:	/images/Community/sgl_devs_venice_2005.jpg

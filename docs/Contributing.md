@@ -1,9 +1,16 @@
+---
+layout: page
+title: Contributing to Seagull project
+permalink: /Contributing.html
+---
+
 <!-- Name: Contributing -->
 <!-- Version: 3 -->
 <!-- Last-Modified: 2006/09/20 19:32:59 -->
 <!-- Author: demian -->
 # Contributing to Seagull project
-[[TOC]]
+* TOC
+{:toc}
 
 You want to submit some of your work with the project?
 
@@ -16,7 +23,7 @@ I hear you say: "Hum I know how to create a ticket in Trac, a 10 year old kid kn
 
 Well it's true that it is easy to create a patch. But chances are that an efficient patch will be given more attention than a cheesy one.
 
-First you have to [be registered](http://seagullproject.org/user/register/) to be able to create a ticket.
+First you have to [be registered][1] to be able to create a ticket.
 
 Then when you create the ticket, we ask you include some basic information to help us search through Trac efficiently:
 
@@ -38,44 +45,51 @@ Thanks for sharing with us ;-)
 ## Creating a patch
 First you need to have a fresh working copy of the latest code.
 
-We use Subversion as our versionning tool. If you're new to it or want to check what's the latest code available, check [our SVN page](http://trac.seagullproject.org/wiki/Installation/FromSVN)
+We use Subversion as our versionning tool. If you're new to it or want to check what's the latest code available, check [our SVN page][2]
 
-We want to ensure that code is homogeneous as if it had been written by the same person. So please check our [Coding Standards (CS)](http://trac.seagullproject.org/wiki/Standards/CodingStandards). You may also find usefull to look at other [standards](http://trac.seagullproject.org/wiki/Standards) we follow.
+We want to ensure that code is homogeneous as if it had been written by the same person. So please check our [Coding Standards (CS)][3]. You may also find usefull to look at other [standards][4] we follow.
 
 So, assuming you're in your local copy of Seagull, do a
 
-    $ svn up
+	$ svn up
 Notice the revision number.
 
-Make your changes and see [how to create a patch](http://trac.seagullproject.org/wiki/Code/SubmittingPatches)
+Make your changes and see [how to create a patch][5]
 
 
-    #!html
-    <div style="float:right;width:25%;background:#ffffdd;padding:5px;">
-    <p style="font-weight:bold">Note for Windows users</p>
-    <p>Using Tortoise is fine for updating your working copy, reverting files, visually see which files are modified ...</p>
-    <p>But we recommend you create patches using the subversion command line utility.
-    </div>
+	#!html
+	<div style="float:right;width:25%;background:#ffffdd;padding:5px;">
+	<p style="font-weight:bold">Note for Windows users</p>
+	<p>Using Tortoise is fine for updating your working copy, reverting files, visually see which files are modified ...</p>
+	<p>But we recommend you create patches using the subversion command line utility.
+	</div>
 
 ## What name should I give to my patch?
 
-Well, try to give it a short explicit name. Appending "_revisionNumber" to your file name may help when you want to go back to a previously created patch. But this is not mandatory.
+Well, try to give it a short explicit name. Appending "\_revisionNumber" to your file name may help when you want to go back to a previously created patch. But this is not mandatory.
 
 ## Are Coding Standards Important?
-Coding standards are very important and patches that fail to observe [browser:/trunk/CODING_STANDARDS.txt Seagull CS] will not be accepted.  There is an excellent package available in PEAR called [PHP_CodeSniffer](http://pear.php.net/package/PHP_CodeSniffer/) that can help you learn the standards.
+Coding standards are very important and patches that fail to observe [browser:/trunk/CODING\_STANDARDS.txt Seagull CS] will not be accepted.  There is an excellent package available in PEAR called [PHP\_CodeSniffer][6] that can help you learn the standards.
 
 To install simply run:
 
 
-    $ pear install PHP_CodeSniffer
+	$ pear install PHP_CodeSniffer
 
 Then run the provided script against your code:
 
 
-    $ phpcs /path/to/my/file.php
+	$ phpcs /path/to/my/file.php
 
 ## Uploading Patches to Trac
 
 Now you can go back to the ticket you created (or any ticket you want to submit a patch to) and click on "attach file"
 
 You're done. Thanks again for contributing.
+
+[1]:	http://seagullproject.org/user/register/
+[2]:	http://trac.seagullproject.org/wiki/Installation/FromSVN
+[3]:	http://trac.seagullproject.org/wiki/Standards/CodingStandards
+[4]:	http://trac.seagullproject.org/wiki/Standards
+[5]:	http://trac.seagullproject.org/wiki/Code/SubmittingPatches
+[6]:	http://pear.php.net/package/PHP_CodeSniffer/

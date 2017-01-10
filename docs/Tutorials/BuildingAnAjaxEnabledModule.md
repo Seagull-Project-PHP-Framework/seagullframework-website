@@ -477,8 +477,8 @@ Copy the following code into your new TodoAjaxProvider.php file:
 We won't be outputing Flexy template content for this tutorial, but usage example will follow later.  DB\_DataObject is initialised in the constructor, but will be factored out shortly.  So now it's just a question of grabbing the posted variables, and performing database operations.
 
 ## Creating the addTodo() Ajax Method
-[[Image(debug.png,right)]]As you can see in the above Prototype code, the parameters 'todo' and 'groupId' are sent via post to the AjaxProvider.  So the first thing we need to do is retrieve the params.  We can test what's being retrieved since the javascript callback function 'handlerFunc' outputs the returned Ajax value in a hidden div with an id of 'response'.  This makes for easy debugging, so modify your CSS file by adding the following definition:
-
+![][image-2]
+As you can see in the above Prototype code, the parameters 'todo' and 'groupId' are sent via post to the AjaxProvider.  So the first thing we need to do is retrieve the params.  We can test what's being retrieved since the javascript callback function `handlerFunc` outputs the returned Ajax value in a hidden div with an id of 'response'.  This makes for easy debugging, so modify your CSS file by adding the following definition:
 
 	#response {
 	    line-height: 10px;
@@ -533,7 +533,7 @@ I hope you enjoyed this tutorial and found it useful, and look forward to your f
 ## Download Code
 A few rough corners were smoothed out for the final product which you can download [todo.zip here][14].  There are many areas for improvements including saving the order of the todos and groups, and the state of each item, ie finished or not.  You can also view the results [online][15].
 
-{: align="right"}
+
 
 [1]:	http://www.gregphoto.net/sortable/advanced/
 [2]:	http://www.gregphoto.net/index.php/about/
@@ -552,3 +552,6 @@ A few rough corners were smoothed out for the final product which you can downlo
 [15]:	http://demo.seagullproject.org/index.php/todo/
 
 [image-1]:	/images/module_generator.png
+{: align="right"}
+[image-2]:	/images/Tutorials/BuildingAnAjaxEnabledModule/debug.png 
+{: align="right"}

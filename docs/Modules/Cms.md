@@ -1,29 +1,37 @@
+---
+layout: page
+title: CMS Module
+permalink: /Modules/Cms.html
+---
+
 <!-- Name: Modules/Cms -->
 <!-- Version: 48 -->
 <!-- Last-Modified: 2010/11/12 11:29:50 -->
 <!-- Author: demian -->
 # CMS Module
-[[TOC]]
+* TOC
+{:toc}
 
-    #!html
-    <blockquote class="note">
-    <h3>Download</h3>
-    <p>Version 1.7.2 is available for download here: 
-    <ul>
-     <li><a href="http://dl.dropbox.com/u/370960/Seagull_CMS-1.7.2.zip">Download</a>
-    </ul>
-    </blockquote>
+	#!html
+	<blockquote class="note">
+	<h3>Download</h3>
+	<p>Version 1.7.2 is available for download here: 
+	<ul>
+	 <li><a href="http://dl.dropbox.com/u/370960/Seagull_CMS-1.7.2.zip">Download</a>
+	</ul>
+	</blockquote>
+
 ## Introduction
-Seagull's CMS module allows website owners to create, store and retrieve content quickly and easily. The content data is easily manipulated through the CMS [API](/wiki:Modules/Cms/Api/).
+Seagull's CMS module allows website owners to create, store and retrieve content quickly and easily. The content data is easily manipulated through the CMS [API][1].
 
 A special effort has been made to give website owners greater flexibility when defining content types thus allowing use of the CMS module in many different contexts: to create FAQs, Personal Datasheets, Weather Reports, Recipes, etc.
 
-[[Image(cms_multlang.jpg, nolink)]]
-[[BR]]
-[CMS Multilang screencast (9.1 MB)](http://seagullfiles.phpkitchen.com/screencasts/Seagull-cms-multilang.mov)
+[[Image(cms\_multlang.jpg, nolink)]]
+
+[CMS Multilang screencast (9.1 MB)][2]
 
 ## Features
- * Ajax web interface and [programmatic API](/wiki:Modules/Cms/Api/)
+ * Ajax web interface and [programmatic API][3]
  * Easy to use installation wizard
  * Light footprint, module that runs on Seagull only 153kb
  * Ability to define unlimited content types and instances
@@ -36,31 +44,31 @@ A special effort has been made to give website owners greater flexibility when d
  * Import data from Seagull's Publisher module, from local or remote site
  * Dynamic web search interface, ability to refine by attribute and content meta data
  * Manage navigation, categories and content items, all in multiple versioned languages
- 
-
+	 
 ## Product plan
-The community edition can be freely downloaded and allows access to most of the CMS module's features through an intuitive [API](/wiki:Modules/Cms/Api/).  Standard and Plus versions are also available that allow for greater flexibility in managing your content.  A Pro version is available where you can have access to the source code and modify it freely.  Pro customers will also be granted access to the module's source code repository.
+The community edition can be freely downloaded and allows access to most of the CMS module's features through an intuitive [API][4].  Standard and Plus versions are also available that allow for greater flexibility in managing your content.  A Pro version is available where you can have access to the source code and modify it freely.  Pro customers will also be granted access to the module's source code repository.
 
 The CMS module developers have made most of the module's features available for free to the Seagull community and are committed to improving the product based on community and customer feedback.
 
 ## Demo
-You can try the demo at http://demo.cms.seagullsystems.com/
+You can try the demo at [http://demo.cms.seagullsystems.com/][5]
 
 Or a preview of our new version with improved UI: http://preview.cms.seagullsystems.com/index.php/user/login/  [user: moderator  password: qwerty, then click on 'admin area' in the top right]
 
 ## Pricing
-|| *Feature* || *Community Edition* || *Standard* || *Plus* || *Pro* ||
-|| Price || FREE || €99 || €399 || €999 ||
-|| Source Code || obfuscated || obfuscated || obfuscated || available ||
-|| Commercial use permitted || yes || yes || yes || yes ||
-|| Access to base [API](/wiki:Modules/Cms/Api/) || yes || yes || yes || yes ||
-|| AJAX interface || yes || yes || yes || yes ||
-|| Import from Publisher|| yes || yes || yes || yes ||
-|| Data Versioning || yes || yes || yes || yes ||
-|| Tags || no || yes || yes || yes ||
-|| Export (XML, PDF) || no || no || yes || yes ||
-|| Multiple Language Support || no || no || yes || yes ||
-|| Web service interface || no || no || yes || yes ||
+|---
+| *Feature* | *Community Edition* | *Standard* | *Plus* | *Pro* |
+| Price | FREE | €99 | €399 | €999 |
+| Source Code | obfuscated | obfuscated | obfuscated | available |
+| Commercial use permitted | yes | yes | yes | yes |
+| Access to base [API][6] | yes | yes | yes | yes |
+| AJAX interface | yes | yes | yes | yes |
+| Import from Publisher| yes | yes | yes | yes |
+| Data Versioning | yes | yes | yes | yes |
+| Tags | no | yes | yes | yes |
+| Export (XML, PDF) | no | no | yes | yes |
+| Multiple Language Support | no | no | yes | yes |
+| Web service interface | no | no | yes | yes |
 
 Standard, Plus and Pro versions come with a 1 year license that includes support and upgrades.
 
@@ -83,7 +91,7 @@ Please execute the provided script in <install-dir>/modules/cms/data
  * svn  updates
    * Update your CMS and Seagull 0.6.x repos
    * Execute the provided script in <install-dir>/modules/cms/data
-   * Add the rebuild task SGL_Task_CmsSetupCheck and rebuild with sample data
+   * Add the rebuild task SGL\_Task\_CmsSetupCheck and rebuild with sample data
 
 ## Usage
 ### To create content
@@ -114,10 +122,9 @@ Please execute the provided script in <install-dir>/modules/cms/data
 ### To request content in a specific language
 Content generated by the CMS is returned in the default language set in the framework Config, which is sometimes referred to as the fallback lang.
 
-If you want to return your content (cms content, navigation, categories) in any version other than the default, use the lang parameter in the request:
+If you want to return your content (CMS content, navigation, categories) in any version other than the default, use the lang parameter in the request:
 
-
-    http://localhost/cms/0.6-bugfix/www/index.php/cms/contentview/frmContentId/2/lang/zh-TW/
+	http://localhost/cms/0.6-bugfix/www/index.php/cms/contentview/frmContentId/2/lang/zh-TW/
 
 ISO 639 language codes are expected, so use 'en' rather than en-utf-8, etc.
 
@@ -127,8 +134,8 @@ See [wiki:Modules/Cms/i18n] for more details.
 
 
 ## Requirements
- * requires >= PHP 5.2, MySQL >= 4.1
- * requires a working install of latest Seagull (>= 0.6.6), preferably with PHP installed as mod_php
+ * requires \>= PHP 5.2, MySQL \>= 4.1
+ * requires a working install of latest Seagull (\>= 0.6.6), preferably with PHP installed as mod\_php
  * currently AJAX works well for all modern browsers
  * not compatible with the Publisher module, this must be uninstalled if you have it enabled  
  * depends on the Media and Translation modules being installed.  The Media module requires the GD extension for full image transformation functionality
@@ -139,6 +146,12 @@ See [wiki:Modules/Cms/i18n] for more details.
 A: No, it will work in a standard PHP installation.
 
 *Q: I think I found a problem, what should I do?* [[BR]]
-A: Please report the issue to the forum or [Seagull mailing list](http://groups.google.co.uk/group/seagull_general?hl=en).
+A: Please report the issue to the forum or [Seagull mailing list][7].
 
-[[AddComment]]
+[1]:	/Modules/Cms/Api.html
+[2]:	/files/screencasts/Seagull-cms-multilang.mov
+[3]:	/Modules/Cms/Api.html
+[4]:	/Modules/Cms/Api.html
+[5]:	http://demo.cms.seagullsystems.com/
+[6]:	/wiki:Modules/Cms/Api/
+[7]:	http://groups.google.co.uk/group/seagull_general?hl=en
