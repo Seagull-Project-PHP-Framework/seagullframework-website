@@ -13,11 +13,12 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: maintainer
+title: Seagull Project
 email: demian@seagullproject.org
 description: > # this means to ignore newlines until "baseurl:"
-  Seagull Project is a PHP framework with CMS components.  Launched in 2003, 
-  when CVS was the big thing, it is still actively used today.
+  Seagull Project is a PHP framework with CMS components.  Launched in 2003 
+  back when CVS was the big thing, it still sees some use today but is mostly in retirement.
+show_downloads: true
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: seagullphp
@@ -25,10 +26,13 @@ github_username:  demianturner
 
 # Build settings
 markdown: kramdown
-#theme: jekyll-theme-hacker
-theme: minima
+theme: jekyll-theme-cayman
+#theme: minima
 gems:
   - jekyll-feed
 exclude:
   - Gemfile
   - Gemfile.lock
+  
+github.is_project_page: true
+github.repository_url: "https://github.com/demianturner/SeagullProject"

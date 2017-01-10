@@ -494,7 +494,6 @@ When you make the Ajax request, which results from the 'Add Todo' button being c
 
 So the TodoAjaxProvider::addTodo() method is going to be very simple: we'll retrieve the post params, and save them as a DataObject.  The code looks like this:
 
-
 	    function addTodo()
 	    {
 	        $todoTxt = SGL_Request::singleton()->get('todo');
@@ -526,13 +525,13 @@ In this tutorial we covered the following aspects of the Seagull framework:
  * learning about the rebuilding the application environment
  * adding custom javascript and CSS files to a manager
  * creating and saving navigation, default and sample data
- * using DB\_DataObject to query the database
- * Using Scriptaculous and Prototype to integrate Ajax and web 2.0 effects
+ * using `DB_DataObject` to query the database
+ * Using `Scriptaculous` and `Prototype` to integrate Ajax and web 2.0 effects
 
 I hope you enjoyed this tutorial and found it useful, and look forward to your feedback.
 
 ## Download Code
-A few rough corners were smoothed out for the final product which you can download [attachment:todo.zip here].  There are many areas for improvements including saving the order of the todos and groups, and the state of each item, ie finished or not.  You can also view the results [online][14].
+A few rough corners were smoothed out for the final product which you can download [todo.zip here][14].  There are many areas for improvements including saving the order of the todos and groups, and the state of each item, ie finished or not.  You can also view the results [online][15].
 
 {: align="right"}
 
@@ -549,6 +548,7 @@ A few rough corners were smoothed out for the final product which you can downlo
 [11]:	http://getfirebug.com/
 [12]:	/Tutorials/BuildingAnAjaxEnabledModule/Css.html
 [13]:	http://pear.php.net/package/DB_DataObject/
-[14]:	http://demo.seagullproject.org/index.php/todo/
+[14]:	/images/Tutorials/BuildingAnAjaxEnabledModule/todo.zip
+[15]:	http://demo.seagullproject.org/index.php/todo/
 
 [image-1]:	/images/module_generator.png

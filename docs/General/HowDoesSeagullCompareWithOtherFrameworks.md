@@ -20,9 +20,10 @@ permalink: /General/HowDoesSeagullCompareWithOtherFrameworks.html
  * stable API and extensive documentation, easy for developers to learn and be productive with
 
 ## More Info
- * http://phpkitchen.com/2005/01/php-frameworks/
- * [bjornblog: list of PHP frameworks][3]
+ * [http://phpkitchen.com/2005/01/php-frameworks/][3]
+ * [bjornblog: list of PHP frameworks][4]
 
-[1]:	/wiki:General/InTheNews/
+[1]:	/General/InTheNews.html
 [2]:	http://www.seagullsystems.com/
-[3]:	http://bie.no/blog/computers/software-engineering/php/2006/02/php-frameworks-that-i-have-on-my-to-checkout-list/
+[3]:	http://phpkitchen.com/2005/01/php-frameworks/
+[4]:	http://bie.no/blog/computers/software-engineering/php/2006/02/php-frameworks-that-i-have-on-my-to-checkout-list/

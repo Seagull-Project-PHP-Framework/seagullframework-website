@@ -30,9 +30,9 @@ In the modules directory, create a folder called _helloworld_, and in it, create
 	|   |   |-- [classes]
 	|   |   |-- [data]
 	|   |   `-- [templates]
-The first file we are going to create is a class that will _manage_ the HelloWorld request, so let's call it _HelloWorldMgr.php_. In fact, all functionality which groups together a number of similar actions that display/modify data of a given type, occurs in classes called Managers. For example, if you want to create the functionality to add, edit and delete FAQs, the code will be managed in a file called FaqMgr.php, with _Mgr_ being the standard shorthand for _Manager_. If this sounds to you like a Controller, you're absolutely right, and at some point in the near future managers may be renamed to controllers.
+The first file we are going to create is a class that will _manage_ the HelloWorld request, so let's call it _HelloWorldMgr.php_. In fact, all functionality which groups together a number of similar actions that display/modify data of a given type, occurs in classes called Managers. For example, if you want to create the functionality to add, edit and delete FAQs, the code will be managed in a file called `FaqMgr.php`, with _Mgr_ being the standard shorthand for _Manager_. If this sounds to you like a Controller, you're absolutely right, and at some point in the near future managers may be renamed to controllers.
 
-Create the file HelloWorldMgr.php in the classes folder, and in it create a class definition for HelloWorldMgr, extending SGL\_Manager 
+Create the file HelloWorldMgr.php in the classes folder, and in it create a class definition for `HelloWorldMgr`, extending `SGL_Manager` 
 
 	<?php
 	class HelloWorldMgr extends SGL_Manager
@@ -127,7 +127,7 @@ In the templates directory now create a file called _helloWorld.html_, your modu
 	|   |   |   `-- helloWorld.html
 	|   |   `-- conf.ini
 
-Within the file add a single variable, in Flexy all variables need to be surrounded by curly braces:
+Within the file add a single variable, in `Flexy` all variables need to be surrounded by curly braces:
 
 	{testVariable}
 
@@ -153,11 +153,11 @@ And the finished results should look like this:
 ![][image-2]
 
 ## Download Code
-You can download the code from this tutorial [attachment:tutorial-1.tar.gz here].
+You can download the code from this tutorial [here][1].
 
 ## Further Reading
 Next time we will cover more techniques to get better flexibility out of your module:
- * [handling multiple actions][1]
+ * [handling multiple actions][2]
  * validating request data
  * requiring authentication
  * checking for perms
@@ -168,9 +168,8 @@ Next time we will cover more techniques to get better flexibility out of your mo
  * using a Data Access layer
  * using Seagull libraries
 
-[[AddComment]]
-
-[1]:	/wiki:Tutorials/WorkingWithActions/
+[1]:	/images/Tutorials/HelloWorld/tutorial-1.tar.gz
+[2]:	/Tutorials/WorkingWithActions.html
 
 [image-1]:	/files/images/files.png
 [image-2]:	/files/images/helloWorld.png

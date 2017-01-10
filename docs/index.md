@@ -4,7 +4,7 @@ title: Seagull Framework Docs
 ---
 
 # General Overview
-Why a framework might be of interest, the future of Seagull, License Information and Target Audience, News and Talks relating to Seagull.
+Why a framework might be of interest, an overview of Seagull, license information and target audience, news and talks relating to Seagull.
 
 - [Seagull features][1]
 - [Frameworks comparison][2]
