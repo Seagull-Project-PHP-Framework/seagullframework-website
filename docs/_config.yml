@@ -33,6 +33,3 @@ gems:
 exclude:
   - Gemfile
   - Gemfile.lock
-  
-github.is_project_page: true
-github.repository_url: "https://github.com/demianturner/SeagullProject"
