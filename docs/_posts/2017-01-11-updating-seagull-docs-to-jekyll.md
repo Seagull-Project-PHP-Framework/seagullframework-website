@@ -15,7 +15,7 @@ You need to install this and run it instead of the `jekyll` gem.
 
 After this you’ll need to run `bundle update`.
 
-## Addressing Github Jekyll Bug
+## Addressing Github Jekyll Foibles
 Every md file in this repo has a 4 line comment at the top, this was added at the time of the last export (years ago).  You must add a blank line after the last comment line or the markdown that follows will not be parsed correctly.
 
 ## Page Layouts
@@ -52,6 +52,9 @@ Start with
 
 ## Lists
 Local Jekyll will parse a list fine however Jekyll running on Github will not create list items unless you have a blank line before the start of your list.
+
+## Headers
+Same goes for headers, unbeknownst to me you’re supposed to put a blank line between headers, i.e. if you have an h2 right under an h3.  None of my long list of other MD apps require this.
 
 ## Gotchas
 The characters `{{{` or `}}}` will cause a Jekyll parse error and kill the whole site, please make sure you remove these. They are used for escaping code so preferably use two single apostrophes instead.
