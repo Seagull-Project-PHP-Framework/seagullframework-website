@@ -16,6 +16,7 @@ Why a framework might be of interest, an overview of Seagull, license informatio
 
 ## Installation
 Where to download Seagull from, how to install, requirements and backwards compatibility.
+
 - [Minimum requirements][8]
 - [Download][9]
 - [Installing Seagull][10]
@@ -28,6 +29,7 @@ Where to download Seagull from, how to install, requirements and backwards compa
 
 ## Main Concepts
 Learn about the main concepts behind developing a project with Seagull.
+
 - [Introduction][17]
 - [Modules, managers and controllers][18]
 - [Validate, process, display][19]
@@ -35,6 +37,7 @@ Learn about the main concepts behind developing a project with Seagull.
 
 ## Tutorials
 Various tutorials to assist you while learning Seagull.
+
 - Development Tutorials
 	- [Hello World][21]
 	- [Working With Actions][22]
@@ -45,6 +48,7 @@ Various tutorials to assist you while learning Seagull.
 
 ## Community
 Meet the community of developers, translators and maintainers, find out more about mailing list etiquette and see a list of sites powered by Seagull.
+
 - [Community][26]
 - [Modules][27]
 - [Plugins][28]
