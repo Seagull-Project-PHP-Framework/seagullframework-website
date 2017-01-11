@@ -8,8 +8,8 @@ permalink: /General/TargetAudience.html
 <!-- Version: 4 -->
 <!-- Last-Modified: 2006/04/02 02:33:29 -->
 <!-- Author: demian -->
-# Target Audience
 
+# Target Audience
 Seagull will work best for you if you are an intermediate PHP developer with at least 1-2 years experience and a good exposure to OO concepts.  
 
 Less experienced users should also be able to use only the admin screens to manage the data in an app once it's setup, without knowledge of the internals.
