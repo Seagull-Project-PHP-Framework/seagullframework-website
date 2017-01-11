@@ -130,7 +130,7 @@ ISO 639 language codes are expected, so use 'en' rather than en-utf-8, etc.
 
 For pretty URLs use Seagull routes to hide the parameters.
 
-See [wiki:Modules/Cms/i18n] for more details.
+See [/Modules/Cms/i18n][7] for more details.
 
 
 ## Requirements
@@ -146,7 +146,7 @@ See [wiki:Modules/Cms/i18n] for more details.
 A: No, it will work in a standard PHP installation.
 
 *Q: I think I found a problem, what should I do?* [[BR]]
-A: Please report the issue to the forum or [Seagull mailing list][7].
+A: Please report the issue to the forum or [Seagull mailing list][8].
 
 [1]:	/Modules/Cms/Api.html
 [2]:	/files/screencasts/Seagull-cms-multilang.mov
@@ -154,4 +154,5 @@ A: Please report the issue to the forum or [Seagull mailing list][7].
 [4]:	/Modules/Cms/Api.html
 [5]:	http://demo.cms.seagullsystems.com/
 [6]:	/wiki:Modules/Cms/Api/
-[7]:	http://groups.google.co.uk/group/seagull_general?hl=en
+[7]:	/Modules/Cms/i18n.html
+[8]:	http://groups.google.co.uk/group/seagull_general?hl=en
