@@ -31,12 +31,16 @@ Answering 'yes' to one or more of these points indicates you could probably bene
 There have also been some interesting comments in PHP circles recently on the use of frameworks:
 
 > Because it's useful to get standard foundations, the same way to build an app. It may be harder at the beginning but then everyone speaks the same language. It's a reason why Java is popular.
+>  
 > -- a Sitepoint reader asking why bother with frameworks
 
 
-> The result of this framework is that 10-20% of the total code for a project is application specific. giving a huge reduction in code size, and improving readability and maintainability considerably._ > --  Alan Knowles discussion of his Flexy framework
+> The result of this framework is that 10-20% of the total code for a project is application specific. giving a huge reduction in code size, and improving readability and maintainability considerably.
+>  
+> --  Alan Knowles discussion of his Flexy framework
 
 >  * “Hello, world” examples do not help build real apps
 >  * Most developers did not wish to deal with low level server functionality
 >  * Many people building web apps were newcomers to [insert programming lang here], as well as newcomers to the web
+>  
 > --  Craig R. McClanahan, creator of Struts
