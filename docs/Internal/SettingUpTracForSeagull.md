@@ -2,6 +2,7 @@
 <!-- Version: 3 -->
 <!-- Last-Modified: 2005/11/22 04:00:02 -->
 <!-- Author: aj -->
+
 Copy & Paste the blow commands in to trac-admin to setup a project that uses seagull.
 
 component remove component1
@@ -30,13 +31,13 @@ priority remove minor
 
 priority remove trivial
 
-permission remove anonymous TICKET_CREATE
+permission remove anonymous TICKET\_CREATE
 
-permission remove anonymous TICKET_MODIFY
+permission remove anonymous TICKET\_MODIFY
 
-permission remove anonymous WIKI_CREATE
+permission remove anonymous WIKI\_CREATE
 
-permission remove anonymous WIKI_MODIFY
+permission remove anonymous WIKI\_MODIFY
 
 priority add highest
 
@@ -140,12 +141,12 @@ component add 'Not Categorized' somebody
 
 component add 'Theme - Default' somebody
 
-permission add authenticated TICKET_CREATE
+permission add authenticated TICKET\_CREATE
 
-permission add authenticated TICKET_MODIFY
+permission add authenticated TICKET\_MODIFY
 
-permission add authenticated WIKI_CREATE
+permission add authenticated WIKI\_CREATE
 
-permission add authenticated WIKI_DELETE
+permission add authenticated WIKI\_DELETE
 
-permission add authenticated WIKI_MODIFY
+permission add authenticated WIKI\_MODIFY

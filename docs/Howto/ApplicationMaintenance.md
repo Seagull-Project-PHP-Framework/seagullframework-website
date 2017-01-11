@@ -2,7 +2,8 @@
 <!-- Version: 2 -->
 <!-- Last-Modified: 2006/11/30 15:55:27 -->
 <!-- Author: demian -->
-= Maintaining Your Seagull Apps = 
+
+# Maintaining Your Seagull Apps
 ## Overview
 There are a number of useful tools included in the default module for maitaining Seagull apps.
 

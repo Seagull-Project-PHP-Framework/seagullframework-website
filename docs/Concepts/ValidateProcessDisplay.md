@@ -8,6 +8,7 @@ permalink: /Concepts/ValidateProcessDisplay.html
 <!-- Version: 3 -->
 <!-- Last-Modified: 2006/04/01 23:32:25 -->
 <!-- Author: demian -->
+
 # Validate Process Display workflow
 
 The validate/process/display workflow used in Seagull simply means that all data that passes through the system must be processed by the following methods:

@@ -2,8 +2,10 @@
 <!-- Version: 9 -->
 <!-- Last-Modified: 2008/11/26 16:29:09 -->
 <!-- Author: demian -->
+
 # Working With Modules
-[[TOC]]
+* TOC
+{:toc}
 
 in progress ..
 
@@ -47,11 +49,11 @@ Adapted from : http://fr.php.net/manual/fr/function.symlink.php#56654
 A schematic for data deps in task loading:
 
 
-    1) default data -> modules IDs, perms/roles
-    2) sample data -> whatever u like, just to populate model for demo purposes
-    3) custom data -> data specific for your app, in most cases all you need to extend svn base code
-    4) navigation -> requires roles IDs, module IDs (created in 1)
-    5) block data -> requires section/page IDs, roles IDs (created in above)
+	1) default data -> modules IDs, perms/roles
+	2) sample data -> whatever u like, just to populate model for demo purposes
+	3) custom data -> data specific for your app, in most cases all you need to extend svn base code
+	4) navigation -> requires roles IDs, module IDs (created in 1)
+	5) block data -> requires section/page IDs, roles IDs (created in above)
 
 ## Module initialisation
 If a file named init.php is discovered in the root of your module, it will be loaded on every request whether the specific module is requested or not.
@@ -62,11 +64,11 @@ Eg, the CMS init file might define some constants that are required in Foo modul
 During the rebuild process it is possible to add custom tasks to the queue.  An example of where this might be useful is when you need to setup stored procedures, views and functions in your database.  You'd probably want to execute an SQL file directly as PEAR has problems with the delimeter syntax.  Try the following:
 
  1. create a custom task that will get read in as long as it appears in an init.php file located in the root of your custom module
- 1. have the task invoke mysql directly with a shell_exec(), passing in the path to your SQL file
+ 1. have the task invoke mysql directly with a shell\_exec(), passing in the path to your SQL file
  1. add the name of your task to 
 
 
-    $conf['site']['customRebuildTasks']
+	$conf['site']['customRebuildTasks']
 
 
 ## Tests

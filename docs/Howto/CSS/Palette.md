@@ -2,9 +2,12 @@
 <!-- Version: 2 -->
 <!-- Last-Modified: 2006/11/30 15:50:41 -->
 <!-- Author: demian -->
+
 # About the CSS Palette
-_Please note: This is for versions 0.5 and higher, not for 0.4.x releases_
-[[TOC]]
+> Please note: This is for versions 0.5 and higher, not for 0.4.x releases
+
+* TOC
+{:toc}
 
 
 The aim of this page is documenting the work on a standard seagull palette.
@@ -24,50 +27,50 @@ Currently we have 21 unique colours (white excluded), MS and GNOME 30, KDE 42.
 
 ### seagull palette:
 
-    $primary               = '!#99cc00'; '' lime green[[BR]]
-    $primaryLight          = '#bbe713'; '' light green[[BR]]
-    $primaryText           = '#e6ffa2'; '' pale white for text on lime green[[BR]]
-    $primaryTextLight      = '#ffffff'; '' white[[BR]]
-    $secondaryLight        = '#e5f1ff'; '' baby blue[[BR]]
-    $secondary             = '!#9dcdfe'; '' blue[[BR]]
-    $secondaryMedium       = '!#3399ff'; '' medium blue[[BR]]
-    $secondaryDark         = '!#184a84'; '' dark blue[[BR]]
-    $tertiary              = '#d9d9d9'; '' normal gray[[BR]]
-    $tertiaryLight         = '#efefef'; '' light gray[[BR]]
-    $tertiaryMedium        = '#bcbcbc'; '' medium gray[[BR]]
-    $tertiaryDark          = '!#999999'; '' dark gray[[BR]]
-    $tertiaryDarker        = '!#666666'; '' darker gray[[BR]]
-
-    $blocksBorderBody      = $tertiaryMedium;[[BR]]
-    $blocksBorderTitle     = $tertiaryMedium;[[BR]]
-    $blocksBackgroundBody  = $tertiaryLight;[[BR]]
-    $blocksBackgroundTitle = $primary;[[BR]]
-    $blocksColorBody       = $secondaryDark;[[BR]]
-    $blocksColorTitle      = $primaryText;[[BR]]
-
-    $tableRowLight         = $tertiaryLight;[[BR]]
-    $tableRowDark          = $tertiary;[[BR]]
-
-    $sectionHeaderBackground      = $tertiary;[[BR]]
-    $sectionHeaderColor           = $secondaryDark;[[BR]]
-    $colHeaderBackground          = $tertiaryLight;[[BR]]
-    $colHeaderColor               = $secondaryDark;[[BR]]
-    $navigatorBackground          = $tertiaryDarker;[[BR]]
-    $navigatorColor               = $tertiaryMedium;[[BR]]
-    
-    $forApproval = '#ff0000';[[BR]]
-    $approved    = '#ff9933';[[BR]]
-    $published   = '#!00cc00';[[BR]]
-    $archived    = '#!909090';[[BR]]
-
-    $error		= '#ffcc00';[[BR]]
-    $errorLight		= '#ffff99';[[BR]]
-    $errorDark		= '#ff9600';[[BR]]
-    $errorText		= $secondaryDark;[[BR]]
-    $errorTextLight	= '#ffffcc';[[BR]]
-    $errorTextMedium    = '#ff0000';[[BR]]
-    
-    $buttonBorderColors      = '#ffffff #!333333 #!333333 #ffffff';
+	$primary               = '!#99cc00'; '' lime green[[BR]]
+	$primaryLight          = '#bbe713'; '' light green[[BR]]
+	$primaryText           = '#e6ffa2'; '' pale white for text on lime green[[BR]]
+	$primaryTextLight      = '#ffffff'; '' white[[BR]]
+	$secondaryLight        = '#e5f1ff'; '' baby blue[[BR]]
+	$secondary             = '!#9dcdfe'; '' blue[[BR]]
+	$secondaryMedium       = '!#3399ff'; '' medium blue[[BR]]
+	$secondaryDark         = '!#184a84'; '' dark blue[[BR]]
+	$tertiary              = '#d9d9d9'; '' normal gray[[BR]]
+	$tertiaryLight         = '#efefef'; '' light gray[[BR]]
+	$tertiaryMedium        = '#bcbcbc'; '' medium gray[[BR]]
+	$tertiaryDark          = '!#999999'; '' dark gray[[BR]]
+	$tertiaryDarker        = '!#666666'; '' darker gray[[BR]]
+	
+	$blocksBorderBody      = $tertiaryMedium;[[BR]]
+	$blocksBorderTitle     = $tertiaryMedium;[[BR]]
+	$blocksBackgroundBody  = $tertiaryLight;[[BR]]
+	$blocksBackgroundTitle = $primary;[[BR]]
+	$blocksColorBody       = $secondaryDark;[[BR]]
+	$blocksColorTitle      = $primaryText;[[BR]]
+	
+	$tableRowLight         = $tertiaryLight;[[BR]]
+	$tableRowDark          = $tertiary;[[BR]]
+	
+	$sectionHeaderBackground      = $tertiary;[[BR]]
+	$sectionHeaderColor           = $secondaryDark;[[BR]]
+	$colHeaderBackground          = $tertiaryLight;[[BR]]
+	$colHeaderColor               = $secondaryDark;[[BR]]
+	$navigatorBackground          = $tertiaryDarker;[[BR]]
+	$navigatorColor               = $tertiaryMedium;[[BR]]
+	
+	$forApproval = '#ff0000';[[BR]]
+	$approved    = '#ff9933';[[BR]]
+	$published   = '#!00cc00';[[BR]]
+	$archived    = '#!909090';[[BR]]
+	
+	$error      = '#ffcc00';[[BR]]
+	$errorLight     = '#ffff99';[[BR]]
+	$errorDark      = '#ff9600';[[BR]]
+	$errorText      = $secondaryDark;[[BR]]
+	$errorTextLight = '#ffffcc';[[BR]]
+	$errorTextMedium    = '#ff0000';[[BR]]
+	
+	$buttonBorderColors      = '#ffffff #!333333 #!333333 #ffffff';
 
 ### all:
 
@@ -77,19 +80,19 @@ body
 
 ### header:
 
-#sgl-header
+# sgl-header
   * background-color: $primary
 
-#sgl-header-left
+# sgl-header-left
   * color: $primaryTextLight
 
-#sgl-header-right
+# sgl-header-right
   * color: $primaryTextLight
 
-#sgl-header-right a
+# sgl-header-right a
   * color: $primaryTextLight
 
-#sgl-header-right #headerLogAction
+# sgl-header-right #headerLogAction
   * border-color: $buttonBorderColors
   * background-color: $primaryLight
 
@@ -99,7 +102,7 @@ th
   * color: $primaryTextLight
   * background-color: $tertiaryMedium
 
-#imRead
+# imRead
   * background-color: $tertiaryMedium
 
 .sgl-row-light

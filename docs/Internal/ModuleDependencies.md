@@ -2,8 +2,8 @@
 <!-- Version: 3 -->
 <!-- Last-Modified: 2006/02/09 02:40:00 -->
 <!-- Author: aj -->
-# Modules dependencies - Seagull 0.4.0 CVS 2004/11/15
 
+# Modules dependencies - Seagull 0.4.0 CVS 2004/11/15
 
 *TODO: Create DSM (http://www.lattix.com/technology/whatisdsm.htm)*
 
@@ -40,28 +40,26 @@ The *maintenance* module is too an important one, and should be kept.
   * _lib/pear/Pager/Pager.php_
   * _lib/pear/PEAR.php_
   * _lib/pear/System.php_
-                   
 #### Tables used
   * block
-  * block_assignment
+  * block\_assignment
   * category
   * item
-  * item_type
-  * item_type_mapping
-  * item_addition
-  * log_table (only used for Log_sqlite class, when logging to an sqlite table)
+  * item\_type
+  * item\_type\_mapping
+  * item\_addition
+  * log\_table (only used for Log\_sqlite class, when logging to an sqlite table)
   * session
-  * table_lock (used by modules for SGL_NestedSet)
+  * table\_lock (used by modules for SGL\_NestedSet)
   * user
 
 
 ## block module
 #### External Modules
   * _lib/pear/HTML/QuickForm.php_
-                   
 #### Tables used
   * block
-  * block_assignment
+  * block\_assignment
   * section
 
 *Each block in _modules\block\classes\blocks_ has its own dependencies (eg.: navigation - _DirectoryNav.php_ requires _modules/navigation/classes/MenuBuilder.php_)*
@@ -73,9 +71,8 @@ The *maintenance* module is too an important one, and should be kept.
 
 ====  External Modules  ==== 
   * _lib/pear/Validate.php_
-                   
 #### Tables used
-  * contact_us
+  * contact\_us
   * usr
 
 
@@ -83,13 +80,12 @@ The *maintenance* module is too an important one, and should be kept.
 #### External Modules
   * _lib/pear/Config.php_
   * _lib/pear/Validate.php_
-                   
 #### Tables used
   * module
   * permission
 
-=> TODO : Handle correctly '$conf['navigation']['driver']', '$conf['navigation']['stylesheet']' and '$conf['navigation']['enabled']'
-=> In DefaultMgr, '_showNews' action possible only if 'publisher' module is installed ?
+=\> TODO : Handle correctly '$conf['navigation']['driver']', '$conf['navigation']['stylesheet']' and '$conf['navigation']['enabled']'
+=\> In DefaultMgr, '\_showNews' action possible only if 'publisher' module is installed ?
 
 
 ## documentor module
@@ -116,7 +112,6 @@ The *maintenance* module is too an important one, and should be kept.
   * _lib/pear/Config.php_
   * _lib/pear/System.php_
   * _lib/pear/DB/DataObject/Generator.php_ 
-                   
 #### Tables used
   * sequence
 
@@ -126,10 +121,9 @@ The *maintenance* module is too an important one, and should be kept.
   * _lib/pear/Mail.php_
   * _lib/pear/Mail/mime.php_
   * _lib/pear/Net/UserAgent/Detect.php_
-                   
 #### Tables used
   * contact
-  * instant_message
+  * instant\_message
   * usr
 
 
@@ -141,16 +135,15 @@ The *maintenance* module is too an important one, and should be kept.
 #### External Modules
   * _lib/pear/Cache/Lite.php_
   * _lib/pear/Config.php_
-                   
 #### Tables used
   * item
-  * item_addition
-  * item_type
-  * item_type_mapping
+  * item\_addition
+  * item\_type
+  * item\_type\_mapping
   * section
-  * table_lock (SGL_NestedSet)
+  * table\_lock (SGL\_NestedSet)
 
-*Only files in _module/navigation/classes/menu_/ need 'publisher' module *
+*Only files in _module/navigation/classes/menu_/ need 'publisher' module *
 
 
 ## newsletter module
@@ -174,21 +167,20 @@ The *maintenance* module is too an important one, and should be kept.
   * _lib/pear/HTML/Tree.php_
   * _lib/pear/System.php_
   * _lib/other/Zip.php_
-                   
 #### Tables used
   * category
   * document
-  * document_type
+  * document\_type
   * item
-  * item_addition
-  * item_type
-  * item_type_mapping
+  * item\_addition
+  * item\_type
+  * item\_type\_mapping
   * usr
 
 
 ## randommsg module
 #### Tables used
-  * rndmsg_message
+  * rndmsg\_message
 
 
 ## user module
@@ -200,19 +192,18 @@ The *maintenance* module is too an important one, and should be kept.
   * _lib/pear/Validate.php_
   * _lib/pear/Text/Password.php_
   * _lib/pear/System.php_
-                   
 #### Tables used
   * item
   * login
   * module
-  * org_preference
+  * org\_preference
   * organisation
-  * organisation_type
+  * organisation\_type
   * permission.php
   * preference
   * role
-  * role_permission
-  * table_lock (SGL_NestedSet)
-  * user_permission
-  * user_preference
+  * role\_permission
+  * table\_lock (SGL\_NestedSet)
+  * user\_permission
+  * user\_preference
   * usr

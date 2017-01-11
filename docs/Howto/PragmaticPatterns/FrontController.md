@@ -8,6 +8,7 @@ permalink: /Howto/PragmaticPatterns/FrontController.html
 <!-- Version: 3 -->
 <!-- Last-Modified: 2006/04/02 17:07:49 -->
 <!-- Author: demian -->
+
 # Front Controller
 * TOC
 {:toc}
@@ -15,7 +16,7 @@ permalink: /Howto/PragmaticPatterns/FrontController.html
 ## Overview
 The front controller is responsible for 
  * initialising the Seagull environment
- * intialising the Request object
+ * initialising the Request object
  * building a filter chain 
  * and passing the request through the chain to its eventual target
 

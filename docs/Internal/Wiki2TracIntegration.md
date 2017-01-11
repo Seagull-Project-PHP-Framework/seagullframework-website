@@ -2,6 +2,7 @@
 <!-- Version: 24 -->
 <!-- Last-Modified: 2006/12/31 00:31:52 -->
 <!-- Author: demian -->
+
 # A short Howto look over freshly imported wiki pages
 
   1. Choose a cluster to look through
@@ -15,7 +16,7 @@
 every page should start with a H1 heading:
 
 
-    = Heading = (Be sure to make sure there is a space before and after the heading.)
+	= Heading = (Be sure to make sure there is a space before and after the heading.)
 so some (very old) pages headings have to be reorganized.
 
 the content of this H1-heading is a short "preview" in the subwiki makro (automatic overview list of a cluster)
@@ -24,7 +25,7 @@ the content of this H1-heading is a short "preview" in the subwiki makro (automa
 Add a Table Of Contents if needed:
 
 
-    [[TOC]]
+	[[TOC]]
 
 ## Code Blocks
 Automatic converting could also have damaged some code blocks. In doubt copy them manualy from the old wacko page http://seagull.phpkitchen.com/docs/
@@ -33,9 +34,8 @@ Automatic converting could also have damaged some code blocks. In doubt copy the
 
 ### Wiki Link
 
-    [wiki:Internal/Wiki2TracIntegration]
+	[wiki:Internal/Wiki2TracIntegration]
 
 ### Displaying URL without a link
 
-    !http://trac.seagullproject.org
-
+	!http://trac.seagullproject.org

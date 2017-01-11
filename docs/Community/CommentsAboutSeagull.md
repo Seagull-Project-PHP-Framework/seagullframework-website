@@ -1,8 +1,15 @@
+---
+layout: page
+title: How to setup a Virtual Host in Apache
+permalink: /Community/CommentsAboutSeagull.html
+---
+
 <!-- Name: Community/CommentsAboutSeagull -->
 <!-- Version: 12 -->
 <!-- Last-Modified: 2007/09/19 09:28:37 -->
 <!-- Author: lazsea -->
-## Comments about Seagull PHP Framework
+
+# Comments about Seagull PHP Framework
 
 Thank you very much for this wonderful framework. It's really excellent and one of the most useful software I have ever worked with. 
 
@@ -14,20 +21,20 @@ The major advantage is its CMS functionality, other Frameworks don't offer such 
 
  -- Solon, Cyprus (Jul 2007)
 
-----
+---- 
 
 
 I was 2 months into creating my own framework when I found Seagull. Upon discovery I tossed my framework in the recycle bin and after examining Seagulls' code I empty the recycle bin.
 
  -- Laszlo Horvath, Serbia (Feb 2007)
 
-----
+---- 
 
 I would just like to say that in 5 years of using various !Frameworks/CMSs, Seagull is one of the most cleanly programmed I have ever encountered.  Thank you for your hard work.
 
  -- Chris Dwyer, Canada (May 2006)
 
-----
+---- 
 
 First of all I'd like to thank you for wonderful framework. Finally, I 
 found a solution I've been trying to implement myself for months.
@@ -40,12 +47,12 @@ to learn how the framework is structured and how it works.
 
  -- Dmitry Lakachauskis, Latvia (Mar 2006)
 
-----
+---- 
 
-Guys, this is definitely my frame work~!!! A frame work with a friendly community which answers questions within hours?!?! Modern programming, PHP 5 ready?!?! Just what i was searching for!!! (Too many '!?' Sorry, but this is the best thing that happened to me for a long time :D )
+Guys, this is definitely my frame work\~!!! A frame work with a friendly community which answers questions within hours?!?! Modern programming, PHP 5 ready?!?! Just what i was searching for!!! (Too many '!?' Sorry, but this is the best thing that happened to me for a long time :D )
  -- Georg, Austria (April 2005)
 
-----
+---- 
 
 Having to create an e-commerce Web site with little PHP experience, I searched for a good framework to take over low level tasks like security, user management, DB access, etc.
 
@@ -61,13 +68,13 @@ The source code is clear, consistent and well written, it is a pleasure to hack 
 
 Of course, it is not perfect: its permission management, while powerful, is too heavy and need some improvement. Due mostly to Flexy limitations, Seagull still has the MVC layers a bit blurred with some HTML code hard-coded in the core. But this framework is actively developed by lot of good coders and evolves quickly, so I think these issues will be resolved soon.
 
-I must say I don't regret my choice of Seagull. I was able to start quickly, the doc. on the Wiki is clear and quite complete and the mailing list is very helpful. Flexy has some limitations but it is easy to learn and enforces the MVC model. Idem for DB_DataObjects. I also like the original way Seagull manages URLs in a search engine friendly way.
+I must say I don't regret my choice of Seagull. I was able to start quickly, the doc. on the Wiki is clear and quite complete and the mailing list is very helpful. Flexy has some limitations but it is easy to learn and enforces the MVC model. Idem for DB\_DataObjects. I also like the original way Seagull manages URLs in a search engine friendly way.
 
 Your mileage and needs may vary but it is a framework worth to consider in a final choice.
 
  -- Philippe Lhoste, France (Nov 2005)
 
-----
+---- 
 
 I've released first version of a Contact Relationship Management Tool based on Seagull. I've changed some implementation details of the framework but I keeped the fundamental architecture.
 

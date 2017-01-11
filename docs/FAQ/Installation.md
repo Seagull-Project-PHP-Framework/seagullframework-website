@@ -2,8 +2,11 @@
 <!-- Version: 9 -->
 <!-- Last-Modified: 2006/05/24 11:57:18 -->
 <!-- Author: werner -->
+
 # Installation
-[[TOC]]
+* TOC
+{:toc}
+
 [[SubWiki(FAQ)]]
 
 ## Which package to choose?
@@ -28,19 +31,19 @@ Yes, it does. In doubt have a look at the /KnownIssues section.
 Yes. But it can cause problems with the front controller and search friendly urls. So change in your _conf.ini_ file:
 
 
-    frontScriptName=index.php?
+	frontScriptName=index.php?
 
 ## Does it work with PHP as CGI?
 See above "Does it work with IIS?"...
 
-## I get error messages like 'cannot include file @include_path@' etc...
+## I get error messages like 'cannot include file @include\_path@' etc...
 The above error 
 results from manually trying to install the .tgz from *item 2* (PEAR installable).  The directive:
 
-        include_path='.;@PEAR-DIR@'
+	    include_path='.;@PEAR-DIR@'
 
 is something ONLY the PEAR installer understands, what it's doing is rewriting 
-constants.php and assigning PEAR's ENV php_dir var to the include_path.
+constants.php and assigning PEAR's ENV php\_dir var to the include\_path.
 
 ## 404 errors when accessing modules
 www.mysite.com/www/index.php/user/login gives me a 404 error on Apache 2
@@ -48,23 +51,23 @@ www.mysite.com/www/index.php/user/login gives me a 404 error on Apache 2
 
 If you're running Apache 2, you need to have
 
-    AcceptPathInfo on
+	AcceptPathInfo on
 set in the _/www_ directory.
 
 It can go into _.htaccess_ files - see http://httpd.apache.org/docs-2.0/mod/core.html
 
 If you don't have access to the apache configuration or the .htaccess file you can change the front controller script name in your installation's _conf.ini_ file:
 
-    frontScriptName=index.php?
+	frontScriptName=index.php?
 
-## what's the difference between mysql_SGL and mysql drivers?
-The mysql_SGL driver puts all the sequence IDs in one table, the mysql driver creates 1 sequence table per table you add, this is the default behaviour of PEAR sequence emulation.  The latter choice is better for performance, but you end up with double the tables.
+## what's the difference between mysql\_SGL and mysql drivers?
+The mysql\_SGL driver puts all the sequence IDs in one table, the mysql driver creates 1 sequence table per table you add, this is the default behaviour of PEAR sequence emulation.  The latter choice is better for performance, but you end up with double the tables.
 
 ## How can i install an additional module?
 Put all modules you want to install in the _/modules/_ directory and run this script in commandline:
 
 
-    $ php etc/envRebuild.php
+	$ php etc/envRebuild.php
 
 This rebuilds all your data from the SQL files in the modules.
 

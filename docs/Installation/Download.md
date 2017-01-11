@@ -1,12 +1,21 @@
+---
+layout: page
+title: Downloading Seagull
+permalink: /Installation/Download.html
+---
+
 <!-- Name: Installation/Download -->
 <!-- Version: 4 -->
 <!-- Last-Modified: 2006/03/11 14:52:14 -->
 <!-- Author: demian -->
-## Downloading Seagull
 
-There are currently 4 ways to download Seagull:
+# Downloading Seagull
+There are currently 3 ways to download Seagull:
 
-  * Get the latest Package from [Souceforge](http://sourceforge.net/projects/seagull/)
-  * Get Seagull using [Pear Package Manager](/wiki:Installation/UsingThePearPackageManager/)
-  * Get Seagull from [SVN](/wiki:Installation/FromSVN/)
-  * Get a Seagull machine #637
+  * Get the latest Package from [Sourceforge][1]
+  * Get Seagull using [Pear Package Manager][2]
+  * Get Seagull from [SVN][3]
+
+[1]:	http://sourceforge.net/projects/seagull/
+[2]:	/Installation/UsingThePearPackageManager.html
+[3]:	/Installation/FromSVN.html

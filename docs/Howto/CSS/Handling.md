@@ -2,9 +2,10 @@
 <!-- Version: 3 -->
 <!-- Last-Modified: 2007/02/14 15:53:08 -->
 <!-- Author: demian -->
-# How Seagull handles CSS
 
-[[TOC]]
+# How Seagull handles CSS
+* TOC
+{:toc}
 
 ## Intro
 
@@ -37,36 +38,36 @@ Then we have some helpers like the error class that set the colour to red which 
 At last, in the eye candy camp we have the "simulate a button" effect in CSS, you could see it in action in the login/logout button.
 
 ## Navigation menu stylesheets
-Seagull permits you to flawlessly add navigation menus stylesheets. Navigation menus are coded as standard unordered lists. The code is pretty straightforward, you can see as an example SglDefault_Twolevel.css and SglDefault_Multilevel.css for horizontal menus and SglListamaticSubtle.css for a vertical one. The only helper Seagull provides is a .current class to the current page path elements.
+Seagull permits you to flawlessly add navigation menus stylesheets. Navigation menus are coded as standard unordered lists. The code is pretty straightforward, you can see as an example SglDefault\_Twolevel.css and SglDefault\_Multilevel.css for horizontal menus and SglListamaticSubtle.css for a vertical one. The only helper Seagull provides is a .current class to the current page path elements.
 
 ## Module specific CSS
 
 You can load CSS for a specific module by creating a file named after the module in www/themes/default/css. For example if you wanted to load CSS only for the Faq module you would create the file faq.php in www/themes/default/css.
  
- * *Note:* as of version 0.6.2 of Seagull you can use SGL_Output#addCssFile('myFile.css') to dynamically add a CSS file on a manager or action-specific basis
+ * *Note:* as of version 0.6.2 of Seagull you can use SGL\_Output#addCssFile('myFile.css') to dynamically add a CSS file on a manager or action-specific basis
 
 
 
-        function _cmd_list(&$input, &$output)
-        {
-            SGL::logMessage(null, PEAR_LOG_DEBUG);
-    
-            $output->addCssFile('foomgr-myaction.css');
-        }
+		function _cmd_list(&$input, &$output)
+		{
+		    SGL::logMessage(null, PEAR_LOG_DEBUG);
+		
+		    $output->addCssFile('foomgr-myaction.css');
+		}
 
  * *Note:* as of version 0.6.2 of Seagull you can reinstate the dynamically loaded CSS file if you supply it as a post param in your forms.  eg:
 
 
 
-    <form id="foo">
-        <fieldset class="hide">
-            <input type="hidden" name="redirMod" value="default" />
-            <input type="hidden" name="redirMgr" value="service" />
-            <input type="hidden" name="redirTpl" value="serviceDetail.html" />
-            <input type="hidden" name="contentId" value="{contentId}" />
-            <input type="hidden" name="cssFile" value="foomgr-myaction.css" />
-        </fieldset>
-    </form>
+	<form id="foo">
+	    <fieldset class="hide">
+	        <input type="hidden" name="redirMod" value="default" />
+	        <input type="hidden" name="redirMgr" value="service" />
+	        <input type="hidden" name="redirTpl" value="serviceDetail.html" />
+	        <input type="hidden" name="contentId" value="{contentId}" />
+	        <input type="hidden" name="cssFile" value="foomgr-myaction.css" />
+	    </fieldset>
+	</form>
 
 As long as the param name is 'cssFile' it will get automatically re-added to $output if validation fails.
 
@@ -84,15 +85,15 @@ Coding standards are pretty simple:
 
 i.e.:
 
-    $primaryTextLight      = '#ffffff'; // white
-    
-    #sgl-header-right a {
-        padding: 0 5px;
-        text-decoration: none;
-        color: <?php echo $primaryTextLight ?>;
-    }
-    #sgl-header-right a:hover {
-        text-decoration: underline;
-    }
+	$primaryTextLight      = '#ffffff'; // white
+	
+	#sgl-header-right a {
+	    padding: 0 5px;
+	    text-decoration: none;
+	    color: <?php echo $primaryTextLight ?>;
+	}
+	#sgl-header-right a:hover {
+	    text-decoration: underline;
+	}
 
 [[AddComment]]

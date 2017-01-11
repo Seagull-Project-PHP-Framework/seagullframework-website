@@ -8,6 +8,7 @@ permalink: /Tutorials/WorkingWithActions.html
 <!-- Version: 20 -->
 <!-- Last-Modified: 2007/04/05 10:00:39 -->
 <!-- Author: bjorn -->
+
 # 2. Working With Actions
 >  requires \>= Seagull 0.6.0
 

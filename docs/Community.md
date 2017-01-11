@@ -8,6 +8,7 @@ permalink: /Community.html
 <!-- Version: 24 -->
 <!-- Last-Modified: 2007/01/08 23:44:16 -->
 <!-- Author: stevenstremciuc -->
+
 # The Seagull Community
 ![][image-1]
 

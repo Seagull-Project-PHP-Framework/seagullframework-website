@@ -2,8 +2,11 @@
 <!-- Version: 4 -->
 <!-- Last-Modified: 2006/03/29 00:58:09 -->
 <!-- Author: demian -->
+
 # Internationalisation and Localisation
-[[TOC]]
+* TOC
+{:toc}
+
 [[SubWiki(FAQ)]]
 ## Which languages are supported?
 See /TranslatingModules for a list of supported languages.
@@ -23,4 +26,6 @@ See the sample article of your (?SGL == Seagull?) install for how this is done p
 The current navigation-module doesn't support multilingual menus. This may be fixed in a future release.
 
 ## How do I display Canadian provinces?
-The data files for Canadian provinces are available [here](http://seagullfiles.phpkitchen.com/contrib/canadianProvinces.zip).
+The data files for Canadian provinces are available [here][1].
+
+[1]:	http://seagullfiles.phpkitchen.com/contrib/canadianProvinces.zip

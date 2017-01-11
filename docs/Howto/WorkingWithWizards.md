@@ -2,6 +2,7 @@
 <!-- Version: 5 -->
 <!-- Last-Modified: 2007/06/12 16:29:06 -->
 <!-- Author: lyric -->
+
 # Working with Wizards
 
 FIXME: Malaney to update
@@ -12,14 +13,14 @@ Thanks to [wiki:User/TobiasKuckuck] for the following.  Note: Wizard functionali
 In the docs/developer/exaples/modules/wizard the menu to jump to an arbitrary wizard step is  already included. Additional to this I added the following features in my project:
 
 the wizard always runs in a popup window without the default 
-navigation with help from a special navigation driver. In _toHtml the 
+navigation with help from a special navigation driver. In \_toHtml the 
 following code ensures this:
 
 
-    // cover $url with windowOpen if uri contains string 'Wiz'
-    if (strstr($section->resource_uri,'Wiz'] {
-         $url = 'javascript:openWindow(\'' . $url . '\');';
-    }
+	// cover $url with windowOpen if uri contains string 'Wiz'
+	if (strstr($section->resource_uri,'Wiz'] {
+	     $url = 'javascript:openWindow(\'' . $url . '\');';
+	}
 
 I used templates and action methods in the same way the other modules 
 do. Besides some special methods in nearly every step there are the 
@@ -30,21 +31,21 @@ wizard with the required action variables. Below you find the required
 code for the manager calling the first wizard step:
 
 
-    // set action and actionId for editing, etc.
-    SGL_Session::set('action',$req->get('action'];
-    SGL_Session::set('actionId',$req->get('actionId'];
+	// set action and actionId for editing, etc.
+	SGL_Session::set('action',$req->get('action'];
+	SGL_Session::set('actionId',$req->get('actionId'];
 
 In the first step these session variables will be used to determine, if a 
 special action should be performed:
 
 
-    //set special action and usrId
-    if (SGL_Session::get('action'] {
-         $defaultAction = SGL_Session::get('action');
-         $input->usrId = SGL_Session::get('actionId');
-         SGL_Session::remove('action');
-         SGL_Session::remove('actionId');
-    }
+	//set special action and usrId
+	if (SGL_Session::get('action'] {
+	     $defaultAction = SGL_Session::get('action');
+	     $input->usrId = SGL_Session::get('actionId');
+	     SGL_Session::remove('action');
+	     SGL_Session::remove('actionId');
+	}
 
 Every step saves its data in the database before switching to another 
 step. If the user exits the wizard prior to completing all steps, he is 
@@ -65,43 +66,41 @@ timeout ensures the lock reset after 30 minutes:
 example for locking a row in method "edit":
 
 
-    $user = & new DataObjects_Usr();
-    $user->autocommit();
-    
-    // Lock Table
-    // check action
-    // if action = view => don't lock table
-    if ($output->action != "view") {
-       require_once SGL_LIB_DIR . '/other/LockDB.php';
-       // instatiate LockDB-class
-       $lockDB = new LockDB($user->getDatabaseConnection(];
-       $lockOn = $lockDB->setLock($conf['table']['user'],$input->usrId);
-    }
-    
-    if ($lockOn) {
-       // direct call, no data in session
-       // get user data
-       $user->get($input->usrId);
-       $output->candidate = $user;
-       $output->candidate->date_of_birth = SGL_Date::stringToArray($user->date_of_birth);
-    } else {
-       $output->template = 'doc2Blank.html';
-       SGL::raiseMsg('table is locked');
-    }
-    $user->commit();
+	$user = & new DataObjects_Usr();
+	$user->autocommit();
+	
+	// Lock Table
+	// check action
+	// if action = view => don't lock table
+	if ($output->action != "view") {
+	   require_once SGL_LIB_DIR . '/other/LockDB.php';
+	   // instatiate LockDB-class
+	   $lockDB = new LockDB($user->getDatabaseConnection(];
+	   $lockOn = $lockDB->setLock($conf['table']['user'],$input->usrId);
+	}
+	
+	if ($lockOn) {
+	   // direct call, no data in session
+	   // get user data
+	   $user->get($input->usrId);
+	   $output->candidate = $user;
+	   $output->candidate->date_of_birth = SGL_Date::stringToArray($user->date_of_birth);
+	} else {
+	   $output->template = 'doc2Blank.html';
+	   SGL::raiseMsg('table is locked');
+	}
+	$user->commit();
 
 example for unlocking a row:
 
 
-    // Unlock Table table_lock
-    require_once SGL_LIB_DIR . '/other/LockDB.php';
-    $dbh = &SGL_DB::singleton();
-    $dbh->autocommit();
-    
-    // instatiate LockDB-class
-    $lockDB = new LockDB($dbh);
-    $lockOff = 
-    $lockDB->releaseLock($conf['table']['user'],$output->candidate->usr_id);
-    $dbh->commit();
-
-[[AddComment]]
+	// Unlock Table table_lock
+	require_once SGL_LIB_DIR . '/other/LockDB.php';
+	$dbh = &SGL_DB::singleton();
+	$dbh->autocommit();
+	
+	// instatiate LockDB-class
+	$lockDB = new LockDB($dbh);
+	$lockOff = 
+	$lockDB->releaseLock($conf['table']['user'],$output->candidate->usr_id);
+	$dbh->commit();

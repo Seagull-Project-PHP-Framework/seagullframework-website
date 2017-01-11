@@ -2,6 +2,7 @@
 <!-- Version: 7 -->
 <!-- Last-Modified: 2006/12/31 00:35:01 -->
 <!-- Author: demian -->
+
 # Market Segmentation
 [[TOC]]
 [[Image(http://seagullfiles.phpkitchen.com/images/marketSegments.png)]]
@@ -45,4 +46,6 @@ These are your eight basic participant groups in a web application framework. I 
 
 In conclusion, the original question *How do I motivate my Devs to pump out tons of code?* I feel can be answered: By accurate identification of the demands coupled with proper delegation and application of one's resources towards said demands.
 
--- [Mike Wattier](/wiki:User/MikeWattier/)
+-- [Mike Wattier][1]
+
+[1]:	/wiki:User/MikeWattier/

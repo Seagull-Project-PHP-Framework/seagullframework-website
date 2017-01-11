@@ -2,6 +2,7 @@
 <!-- Version: 2 -->
 <!-- Last-Modified: 2005/11/10 20:12:36 -->
 <!-- Author: werner -->
+
 # Changing Navigations Look and Feel
 
 Seagull currently allows popup menus. The menus now are fully standards-compliant XHTML plus CSS. 

@@ -2,13 +2,12 @@
 <!-- Version: 4 -->
 <!-- Last-Modified: 2007/07/02 17:47:13 -->
 <!-- Author: demian -->
+
 # Getting SGL to work with MaxDB
 
-I wrote a DB-Wrapper for the PEAR-Odbc-Database-Driver called maxdb_SGL, it will be available soon.......
+I wrote a DB-Wrapper for the PEAR-Odbc-Database-Driver called maxdb\_SGL, it will be available soon.......
 
-## Reserved Words for !MaxDB
-
-
+## Reserved Words for MaxDB
 || *Reserved in !MaxDB* || *Context of usage in !MaxDB* || *!MySQL counterpart* ||
 || `@` || May prefix identifier, like '@table' || Not allowed ||
 || `ADDDATE()` || SQL function || `ADDDATE()`; new in !MySQL version 4.1.1 ||
@@ -44,7 +43,7 @@ I wrote a DB-Wrapper for the PEAR-Odbc-Database-Driver called maxdb_SGL, it will
 || `LENGTH()` || SQL function || `LENGTH()`; identical syntax, but slightly different implementation ||
 || `LFILL()` || SQL function || Nothing comparable ||
 || `LIKE` || Comparisons || `LIKE`; but the extended `LIKE` !MaxDB provides rather[[BR]]resembles the !MySQL `REGEX` ||
-|| `LIKE` wildcards || !MaxDB supports '%', '_', 'ctrl+underline', 'ctrl+up arrow', '*', and '?'[[BR]]as wildcards in a `LIKE` comparison || !MySQL supports '%', and '_' as wildcards in a `LIKE` comparison ||
+|| `LIKE` wildcards || !MaxDB supports '%', '_', 'ctrl+underline', 'ctrl+up arrow', '\*', and '?'[[BR]]as wildcards in a `LIKE` comparison || !MySQL supports '%', and '_' as wildcards in a `LIKE` comparison ||
 || `LPAD()` || SQL function || `LPAD()`; slightly different implementation ||
 || `LTRIM()` || SQL function || `LTRIM()`; slightly different implementation ||
 || `MAKEDATE()` || SQL function || `MAKEDATE()`; new in !MySQL version 4.1.1 ||
@@ -89,12 +88,14 @@ You have to modify the `SGL_DB::singleton()`, if you want to use all PEAR object
 
 Insert the line after the fetchmode setting:
 
-    $conn->setFetchMode(DB_FETCHMODE_OBJECT);
-    $conn->setFetchMode('portability', DB_PORTABILITY_LOWERCASE);
+	$conn->setFetchMode(DB_FETCHMODE_OBJECT);
+	$conn->setFetchMode('portability', DB_PORTABILITY_LOWERCASE);
 
 This option is tested for !MySQL, !PostgreSQL and !MaxDB and works fine.
 
-If you need more information use the PEAR docs [here](http://pear.php.net/manual/en/package.database.db.intro-portability.php)
+If you need more information use the PEAR docs [here][1]
 
 ## Next Step (OLD)
 You have to replace all COALESCE-Functions in the SQL-Statements with the VALUE-Function, because VALUE() is the alias for COALESCE().
+
+[1]:	http://pear.php.net/manual/en/package.database.db.intro-portability.php

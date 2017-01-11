@@ -8,6 +8,7 @@ permalink: /Concepts/Introduction.html
 <!-- Version: 3 -->
 <!-- Last-Modified: 2006/07/11 23:33:20 -->
 <!-- Author: demian -->
+
 # Seagull Concepts
 ## Introduction
 The Seagull project is a set of classes and suggested development approach that aims to make writing programs faster and easier.  The belief is that by providing a methodology, and the tools required to handle arbitrary resources and workflow demands, the programmer can dedicate more time and energy to solving the key problems at hand, whether they are refining algorithms, imposing domain-specific logic, creating an attractive and user-friendly user interface, and so on.

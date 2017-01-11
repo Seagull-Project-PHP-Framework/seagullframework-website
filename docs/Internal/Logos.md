@@ -2,9 +2,10 @@
 <!-- Version: 2 -->
 <!-- Last-Modified: 2006/12/31 00:35:52 -->
 <!-- Author: demian -->
+
 # Logos Submitted for Seagull Site
 
-First Draft of Torsten Kraft @ www.hallstatt.net : http://www.hallstatt.net/temp/seagull_logo_small.jpg
+First Draft of Torsten Kraft @ www.hallstatt.net : http://www.hallstatt.net/temp/seagull\_logo\_small.jpg
 
 Series 1 by Ed Pentelow : http://seagullfiles.phpkitchen.com/images/seagull.jpg
 

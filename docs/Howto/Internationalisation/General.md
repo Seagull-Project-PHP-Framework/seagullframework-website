@@ -2,16 +2,18 @@
 <!-- Version: 8 -->
 <!-- Last-Modified: 2009/03/04 10:52:36 -->
 <!-- Author: demian -->
-= Internationalisation Overview = 
-[[TOC]]
- * [Start](/wiki:Howto/Internationalisation/)
- * [General overview](/wiki:Howto/Internationalisation/General/)
- * [How to setup the environment](/wiki:Howto/Internationalisation/TechSetup/)
- * [Best practices](/wiki:Howto/Internationalisation/TranslationBestPractices/)
- * [How to convert your Seagull site to utf-8](/wiki:Howto/Internationalisation/ConvertingSeagullSitesToUtf8/)
- * [RTL support](/wiki:Howto/Internationalisation/HebrewAndRtlLanguages/)
- * [Submitting translations](/wiki:Howto/Internationalisation/SubmittingTranslations/)
 
+# Internationalisation Overview
+* TOC
+{:toc}
+
+ - [Start][1]
+ - [General overview][2]
+ - [How to setup the environment][3]
+ - [Best practices][4]
+ - [How to convert your Seagull site to utf-8][5]
+ - [RTL support][6]
+ - [Submitting translations][7]
 ## Intro
 With the new translation module in 0.6.3 developers have a range of tools at their disposal for many aspects of internationalising a website/application.  This module focusing on translating interface elements, not content.  News articles would be considered content and their translation is in the domain of CMS tools.
 
@@ -34,16 +36,16 @@ When you are version controlling a project, and perhaps have a translation team 
 ## Customise the language set your app uses
 Create an init.php file in the root of your project's main module, this will be loaded on every request, even if your module is not specified in the request.  In the init.php file you can customise the app's language list with code similar to the following:
 
-    <?php
-    $GLOBALS['_SGL']['LANGUAGE'] = array(
-        'af-utf-8'      => array('af|afrikaans', 'afrikaans-utf-8', 'af'),
-        'ar-utf-8'      => array('ar|arabic', 'arabic-utf-8', 'ar'),
-        'en-utf-8'      => array('en([-_][[:alpha:]]{2})?|english', 'english-utf-8','en'),
-        'de-utf-8'      => array('de([-_][[:alpha:]]{2})?|german',  'german-utf-8', 'de'),
-        'es-utf-8'      => array('es([-_][[:alpha:]]{2})?|spanish', 'spanish-utf-8','es'),
-        'fr-utf-8'      => array('fr([-_][[:alpha:]]{2})?|french',  'french-utf-8', 'fr'),
-        );
-    ?>
+	<?php
+	$GLOBALS['_SGL']['LANGUAGE'] = array(
+	    'af-utf-8'      => array('af|afrikaans', 'afrikaans-utf-8', 'af'),
+	    'ar-utf-8'      => array('ar|arabic', 'arabic-utf-8', 'ar'),
+	    'en-utf-8'      => array('en([-_][[:alpha:]]{2})?|english', 'english-utf-8','en'),
+	    'de-utf-8'      => array('de([-_][[:alpha:]]{2})?|german',  'german-utf-8', 'de'),
+	    'es-utf-8'      => array('es([-_][[:alpha:]]{2})?|spanish', 'spanish-utf-8','es'),
+	    'fr-utf-8'      => array('fr([-_][[:alpha:]]{2})?|french',  'french-utf-8', 'fr'),
+	    );
+	?>
 
 ## Show percent complete translation stats for only your app's modules
 When you use the admin interface to edit the config settings for the Translation module, note the "onlyModules" element.  If you don't want the "percent complete" stats to report on, eg, admin modules, just provide a comma separated list of modules you want included in the results.
@@ -52,10 +54,10 @@ When you use the admin interface to edit the config settings for the Translation
 We've also built functionality into the Translation module so the front end of your site will only list the completed translations, however translators can work on new ones in the back end. To enable new backend translation languages, simply list then against the key 'extraLanguages', ie
 
 
-                      ;  key      | name    | file name
-                      ;  ----------------------------------
-    extraLanguages   =; "hi-utf-8 : hindi   : hindi-utf-8,
-                      ;  ru-utf-8 : russian : russian-utf-8"
+	                  ;  key      | name    | file name
+	                  ;  ----------------------------------
+	extraLanguages   =; "hi-utf-8 : hindi   : hindi-utf-8,
+	                  ;  ru-utf-8 : russian : russian-utf-8"
 
 ## Master file is not editable by web interface
 This strategy works well because often in team environments multiple users will edit the master file which can result in undesired modifications in translated (slave) files.  For best results assign one reliable member of your development team the responsibility for maintaining the master file.
@@ -64,17 +66,17 @@ This strategy works well because often in team environments multiple users will 
 The following pseudo array elements are converted to category headers and comments in the web interface:
 
 
-    $defaultWords['__SGL_CATEGORY_category_name'] = 'This is my category name';
-    $defaultWords['aMonths']['01'] = 'January';
-    $defaultWords['aMonths']['02'] = 'February';
-    $defaultWords['__SGL_COMMENT_example'] = 'here is a comment example';
+	$defaultWords['__SGL_CATEGORY_category_name'] = 'This is my category name';
+	$defaultWords['aMonths']['01'] = 'January';
+	$defaultWords['aMonths']['02'] = 'February';
+	$defaultWords['__SGL_COMMENT_example'] = 'here is a comment example';
 
 ## Translation changes tracked
 
 
-    $words['__SGL_UPDATED_BY'] = 'foo';
-    $words['__SGL_UPDATED_BY_ID'] = '10';
-    $words['__SGL_LAST_UPDATED'] = '2007-08-24 10:03:55';
+	$words['__SGL_UPDATED_BY'] = 'foo';
+	$words['__SGL_UPDATED_BY_ID'] = '10';
+	$words['__SGL_LAST_UPDATED'] = '2007-08-24 10:03:55';
 
 ## Converting translate method calls to lowercase
 It's much easier if all your master English keys are in lowercase.  If you have access to the TextMate editor there are only 2 steps to do this:
@@ -83,7 +85,15 @@ It's much easier if all your master English keys are in lowercase.  If you have 
  1. run a regex over your template files, again in TextMate
 
 
-    Search : {translate\(#(.*)#\)}
+	Search : {translate\(\#(.\*)\#\)}
 
 
-    Replace : {translate\(#\L\1\E#\)}
+	Replace : {translate\(\\#\L\1\E\\#\)}
+
+[1]:	/Howto/Internationalisation.html
+[2]:	/Howto/Internationalisation/General.html
+[3]:	/Howto/Internationalisation/TechSetup.html
+[4]:	/Howto/Internationalisation/TranslationBestPractices.html
+[5]:	/Howto/Internationalisation/ConvertingSeagullSitesToUtf8.html
+[6]:	/Howto/Internationalisation/HebrewAndRtlLanguages.html
+[7]:	/Howto/Internationalisation/SubmittingTranslations.html

@@ -8,6 +8,7 @@ permalink: /Tutorials/CreatingASimpleSite.html
 <!-- Version: 28 -->
 <!-- Last-Modified: 2008/04/28 11:24:20 -->
 <!-- Author: demian -->
+
 # Creating a simple site
 * TOC
 {:toc}

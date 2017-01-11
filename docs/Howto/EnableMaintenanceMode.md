@@ -2,14 +2,17 @@
 <!-- Version: 1 -->
 <!-- Last-Modified: 2007/07/02 17:57:47 -->
 <!-- Author: demian -->
+
 # Maintenance mode
-[[TOC]]
+* TOC
+{:toc}
+
 ## Requirements
- * >= Seagull 0.6.3
+>  * = Seagull 0.6.3
 
 ## How to enable Maintenance mode
  * login as admin
- * select General -> Configuration
+ * select General -\> Configuration
  * set 'Maintenance mode' to Yes
  * set and admin secret key that will allow you to enter a URL parameter to bypass the maintenance mode screen
    * eg, set 'Admin key' to 'foo'
@@ -22,7 +25,7 @@ Maintenance mode is now activated.
 ## How to disable Maintenance mode
  * enter any Seagull URL and pass your secret key as the value of the parameter 'adminKey'
 
-    http://foo.example.com/index.php?adminKey=foo
+	http://foo.example.com/index.php?adminKey=foo
  * you will now see the default Seagull screen, and can login using the standard form
 
 ## Problems

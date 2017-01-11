@@ -8,6 +8,7 @@ permalink: /Installation.html
 <!-- Version: 26 -->
 <!-- Last-Modified: 2007/10/06 21:46:15 -->
 <!-- Author: osde8info -->
+
 # Installing Seagull
 
 * TOC

@@ -8,6 +8,7 @@ permalink: /Howto/Navigation/WorkingWithCategories.html
 <!-- Version: 3 -->
 <!-- Last-Modified: 2006/08/09 15:30:05 -->
 <!-- Author: demian -->
+
 # Working with Categories
 * TOC
 {:toc}

@@ -8,6 +8,7 @@ permalink: /Concepts/CoreLibs.html
 <!-- Version: 4 -->
 <!-- Last-Modified: 2006/04/02 02:28:19 -->
 <!-- Author: demian -->
+
 # Library Organisation in Seagull
 * TOC
 {:toc}

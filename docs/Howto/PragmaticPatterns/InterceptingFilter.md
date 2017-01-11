@@ -8,6 +8,7 @@ permalink: /Howto/PragmaticPatterns/InterceptingFilter.html
 <!-- Version: 7 -->
 <!-- Last-Modified: 2006/11/15 17:21:13 -->
 <!-- Author: demian -->
+
 # Intercepting Filter
 * TOC
 {:toc}

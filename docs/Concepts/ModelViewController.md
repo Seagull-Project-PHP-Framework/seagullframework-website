@@ -8,6 +8,7 @@ permalink: /Concepts/ModelViewController.html
 <!-- Version: 2 -->
 <!-- Last-Modified: 2005/11/15 00:42:14 -->
 <!-- Author: demian -->
+
 # Model View Controller
 ![][image-1]
 

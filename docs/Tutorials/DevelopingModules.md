@@ -8,6 +8,7 @@ permalink: /Tutorials/DevelopingModules.html
 <!-- Version: 1 -->
 <!-- Last-Modified: 2006/06/06 02:54:10 -->
 <!-- Author: demian -->
+
 # Developing Modules
 ## Overview
 There are a few tricks that will help speed up developing new modules:

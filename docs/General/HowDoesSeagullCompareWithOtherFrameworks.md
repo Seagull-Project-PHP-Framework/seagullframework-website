@@ -8,6 +8,7 @@ permalink: /General/HowDoesSeagullCompareWithOtherFrameworks.html
 <!-- Version: 6 -->
 <!-- Last-Modified: 2008/08/09 01:36:09 -->
 <!-- Author: demian -->
+
 # How Does Seagull Compare With Other Frameworks?
 ## Overview
  * It's been around since 2001 and on SF since 2003

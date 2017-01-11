@@ -8,6 +8,7 @@ permalink: /Howto/PragmaticPatterns/Observers.html
 <!-- Version: 4 -->
 <!-- Last-Modified: 2007/02/14 15:47:04 -->
 <!-- Author: openhaus -->
+
 # Setting up Subject/Observer Relationships
 * TOC
 {:toc}

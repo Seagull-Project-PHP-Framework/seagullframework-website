@@ -8,6 +8,7 @@ permalink: /Internal/PrepareSeagullAsPearPackage.html
 <!-- Version: 6 -->
 <!-- Last-Modified: 2006/08/29 12:32:13 -->
 <!-- Author: aj -->
+
 # Preparing PEAR Packages
 One of the formats Seagull is currently available in is as a PEAR package.  For more info on how to install PEAR packages see [Using the PEAR package manager][1].
 
