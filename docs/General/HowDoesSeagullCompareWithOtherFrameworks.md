@@ -11,6 +11,7 @@ permalink: /General/HowDoesSeagullCompareWithOtherFrameworks.html
 
 # How Does Seagull Compare With Other Frameworks?
 ## Overview
+
  * It's been around since 2001 and on SF since 2003
  * It's supported by a large developer community (400 registered users)
  * Extensive coverage in [all the PHP press][1]
