@@ -2,7 +2,7 @@
 <!-- Version: 1 -->
 <!-- Last-Modified: 2006/02/20 15:58:11 -->
 <!-- Author: werner -->
-<!-- Status: Updated -->
+<!-- Status: In Progress -->
 
 # Possible Structure for a series of tutorials
 
