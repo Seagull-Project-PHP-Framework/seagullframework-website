@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>query</key>
+	<dict>
+		<key>conditions</key>
+		<array>
+			<dict>
+				<key>comparison</key>
+				<integer>0</integer>
+				<key>conditionType</key>
+				<string>DateSearch</string>
+				<key>difference</key>
+				<dict>
+					<key>day</key>
+					<integer>1000</integer>
+				</dict>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+		</array>
+		<key>options</key>
+		<array/>
+		<key>requireAll</key>
+		<false/>
+	</dict>
+	<key>resolutionData</key>
+	<dict>
+		<key>query</key>
+		<real>506253337.31648701</real>
+	</dict>
+	<key>storeFormatVersion</key>
+	<integer>1</integer>
+	<key>versioning</key>
+	<dict>
+		<key>query</key>
+		<dict>
+			<key>91ad7eba2f1d920f6ead8dcdec11aad6bf9ca36985a1c9ab247424095dbe2d20</key>
+			<integer>5</integer>
+		</dict>
+	</dict>
+</dict>
+</plist>
