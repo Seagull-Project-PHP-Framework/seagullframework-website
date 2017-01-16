@@ -2,6 +2,7 @@
 <!-- Version: 2 -->
 <!-- Last-Modified: 2007/05/26 09:58:52 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Ajax Requests and Responses
 * TOC

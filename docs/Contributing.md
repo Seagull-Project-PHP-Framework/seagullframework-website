@@ -8,6 +8,7 @@ permalink: /Contributing.html
 <!-- Version: 3 -->
 <!-- Last-Modified: 2006/09/20 19:32:59 -->
 <!-- Author: demian -->
+<!-- Status: In Progress -->
 
 # Contributing to Seagull project
 * TOC

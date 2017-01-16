@@ -3,6 +3,8 @@ layout: page
 title: Seagull Project Docs
 ---
 
+<!-- Status: In Progress -->
+
 # General Overview
 Why a framework might be of interest, an overview of Seagull, license information and target audience, news and talks relating to Seagull.
 

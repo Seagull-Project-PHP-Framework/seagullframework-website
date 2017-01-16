@@ -7,6 +7,7 @@ permalink: /Howto/JavaScriptAndCssImprovements.html
 <!-- Version: 3 -->
 <!-- Last-Modified: 2008/01/23 16:49:31 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # CSS and Javascript reorganisation and optimisation
 > since Seagull 0.6.3

@@ -8,6 +8,7 @@ permalink: /Installation/SettingUpOnCpanel.html
 <!-- Version: 2 -->
 <!-- Last-Modified: 2007/01/02 15:37:03 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Setting up on a host running Cpanel
 * TOC

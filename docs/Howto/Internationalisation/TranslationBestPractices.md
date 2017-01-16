@@ -1,7 +1,14 @@
+---
+layout: page
+title: Translation Best Practices
+permalink: /Howto/Internationalisation/TranslationBestPractices.html
+---
+
 <!-- Name: Howto/Internationalisation/TranslationBestPractices -->
 <!-- Version: 5 -->
 <!-- Last-Modified: 2009/03/04 10:52:00 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Translation Best Practices
 * TOC

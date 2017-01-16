@@ -8,6 +8,7 @@ permalink: /Tutorials/CreatingASimpleSite.html
 <!-- Version: 28 -->
 <!-- Last-Modified: 2008/04/28 11:24:20 -->
 <!-- Author: demian -->
+<!-- Status: In Progress -->
 
 # Creating a simple site
 * TOC
@@ -94,7 +95,7 @@ To install such a module
 
 For sake of this tutorial we install the _publisher_ module. After clicking on the green plus sign you see it in the list of installed modules, including more info about the module and the navigation item added to the admin menu.
 
-== Create a few Content Pages == 
+## Create a few Content Pages
 To create pages like 'about us' or 'our products' you need to do the following
   * login to the admin section
   * choose _Publishing_ from the left hand menu

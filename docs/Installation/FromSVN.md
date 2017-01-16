@@ -8,6 +8,7 @@ permalink: /Installation/FromSVN.html
 <!-- Version: 37 -->
 <!-- Last-Modified: 2008/10/20 16:32:23 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Subversion
 * TOC
@@ -243,25 +244,36 @@ This will close #10 and #12, and add a note to #12.
 ## SVN Programs
 
   * Command line client for all systems:
-	* [http://subversion.tigris.org/ Subversion at Tigris.org]
+	* [Subversion][2] at Tigris.org
 	* type `svn` in your console
   * Windows XP/2k:
-	* [http://tortoisesvn.tigris.org/ TortoiseSVN] - Integrates with shell (Windows Explorer)
+	* [TortoiseSVN][3] - Integrates with shell (Windows Explorer)
   * All Windows:
-	* [http://rapidsvn.tigris.org/ RapidSVN] - wxWidgets based. Lacks some doc.
-	* [http://winmerge.sourceforge.net/ WinMerge] - Very good diff viewer.
+	* [RapidSVN][4] - wxWidgets based. Lacks some doc.
+	* [WinMerge][5] - Very good diff viewer.
   * Linux
-	* [http://rapidsvn.tigris.org/ RapidSVN] - wxWidgets based. Lacks some doc.
-	* [http://meld.sourceforge.net/ Meld] - Good diff viewer. End of page lists some others graphical diff clients, [http://kdiff3.sourceforge.net/ Kdiff3] is good too, also Kompare from the [http://kde.org KDE SDK]
-	* [http://de.kde-apps.org/content/show.php?content=26589 kdesvn] - Uses its own svn libs
+	* [RapidSVN][6] - wxWidgets based. Lacks some doc.
+	* [Meld][7] - Good diff viewer. End of page lists some others graphical diff clients, [Kdiff3][8] is good too, also Kompare from the [KDE][9] SDK
+	* [kdesvn][10] - Uses its own svn libs
   * Mac
-	* [http://www.lachoseinteractive.net/en/community/subversion/svnx/features/ Svn X]
-	* [http://wiki.ehow.com/Install-Subversion-on-Mac-OS-X Installing svn]
-
+	* [Svn X][11]
+	* [Installing svn][12]
 
 ## See also
- * http://svn.collab.net/repos/svn/trunk/doc/user/cvs-crossover-guide.html
-* [svn reference][2]
+ * [http://svn.collab.net/repos/svn/trunk/doc/user/cvs-crossover-guide.html][13]
+* [svn reference][14]
 
 [1]:	/Code/SubmittingPatches.html
-[2]:	/files/svn-refcard.pdf "SVN Reference"
+[2]:	http://subversion.tigris.org/
+[3]:	http://tortoisesvn.tigris.org/
+[4]:	http://rapidsvn.tigris.org
+[5]:	http://winmerge.sourceforge.net/
+[6]:	http://rapidsvn.tigris.org/
+[7]:	http://meld.sourceforge.net
+[8]:	http://kdiff3.sourceforge.net/
+[9]:	http://kde.org
+[10]:	http://de.kde-apps.org/content/show.php?content=26589
+[11]:	http://www.lachoseinteractive.net/en/community/subversion/svnx/features/
+[12]:	http://wiki.ehow.com/Install-Subversion-on-Mac-OS-X
+[13]:	http://svn.collab.net/repos/svn/trunk/doc/user/cvs-crossover-guide.html
+[14]:	/files/svn-refcard.pdf "SVN Reference"

@@ -2,6 +2,7 @@
 <!-- Version: 16 -->
 <!-- Last-Modified: 2008/12/16 14:05:41 -->
 <!-- Author: kanji78 -->
+<!-- Status: Original -->
 
 # Ajax auto completion
 * TOC
@@ -134,8 +135,6 @@ Though it is the actual core of SGL's AJAX handling, the provider is everything 
 All the provider does, is generating a list from the DB result and returning it. However, for more complex DB requests it might be appropriate to factor out some stuff into an DAO.
 
 That's it. If the module is complete (don't forget conf.ini and data/) you can register it with SGL and are ready to test it.
-
-[[AddComment]]
 
 [1]:	http://demo.script.aculo.us/ajax/autocompleter
 [2]:	http://script.aculo.us/

@@ -2,6 +2,7 @@
 <!-- Version: 17 -->
 <!-- Last-Modified: 2007/03/29 15:37:25 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Config files
 * TOC
@@ -432,8 +433,5 @@ The $conf array returned typically looks like this:
 	        )
 	
 	)
-
-
-[[AddComment]]
 
 [1]:	http://www.php.net/manual/en/function.parse-ini-file.php

@@ -2,6 +2,7 @@
 <!-- Version: 4 -->
 <!-- Last-Modified: 2006/09/12 19:16:42 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # A typical header at the top of each source file
 

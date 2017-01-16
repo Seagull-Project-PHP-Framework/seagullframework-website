@@ -2,6 +2,7 @@
 <!-- Version: 5 -->
 <!-- Last-Modified: 2006/11/30 15:45:20 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # HTTP Redirects
 ## Overview
@@ -59,5 +60,3 @@ Occasionally you will need to customise the redirects, in which case you can use
 	    }
 
 It is very important to test for errors first, as they must be captured before redirects so they can be output to the screen, if so configured.
-
-[[AddComment]]

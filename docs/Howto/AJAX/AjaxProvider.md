@@ -2,6 +2,7 @@
 <!-- Version: 4 -->
 <!-- Last-Modified: 2007/05/26 10:00:56 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # AJAX Provider
 * TOC

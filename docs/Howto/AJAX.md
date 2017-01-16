@@ -2,6 +2,7 @@
 <!-- Version: 1 -->
 <!-- Last-Modified: 2006/08/30 13:03:53 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # AJAX
 Some tips on integrating AJAX effects into your projects

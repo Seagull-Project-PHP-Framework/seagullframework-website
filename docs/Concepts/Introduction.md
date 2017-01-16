@@ -8,6 +8,7 @@ permalink: /Concepts/Introduction.html
 <!-- Version: 3 -->
 <!-- Last-Modified: 2006/07/11 23:33:20 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Seagull Concepts
 ## Introduction

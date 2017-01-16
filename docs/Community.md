@@ -8,6 +8,7 @@ permalink: /Community.html
 <!-- Version: 24 -->
 <!-- Last-Modified: 2007/01/08 23:44:16 -->
 <!-- Author: stevenstremciuc -->
+<!-- Status: In Progress -->
 
 # The Seagull Community
 ![][image-1]
@@ -35,7 +36,6 @@ Here's a bit more info on the people who have made this project possible:
   * [Steven Stremciuc][19]
 
 You can also have a look at [http://www.frappr.com/seagull][20] or see our [Hackergotchi][21] page.
-
 
 ## Seagull Users
   * [view full list here][22]

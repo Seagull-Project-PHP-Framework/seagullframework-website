@@ -8,6 +8,7 @@ permalink: /Installation/MinimumRequirements.html
 <!-- Version: 6 -->
 <!-- Last-Modified: 2006/12/30 22:37:21 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Minimum Requirements
 To run Seagull you need at least :

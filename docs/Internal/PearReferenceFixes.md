@@ -2,6 +2,7 @@
 <!-- Version: 3 -->
 <!-- Last-Modified: 2005/11/14 00:02:52 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # PEAR Reference Fixes
 

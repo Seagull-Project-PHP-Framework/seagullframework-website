@@ -2,6 +2,7 @@
 <!-- Version: 5 -->
 <!-- Last-Modified: 2007/09/17 23:57:48 -->
 <!-- Author: demian -->
+<!-- Status: In Progress -->
 
 # Performance Tuning
 * TOC
@@ -32,8 +33,6 @@ If you want to use Seagull in a professional setting or for a heavy traffic site
   * [Turck MMCache][3]
   * [ionCube PHP Accelerator][4]
   * [Zend Optimiser][5]
-
-[[AddComment]]
 
 [1]:	http://eaccelerator.net/
 [2]:	http://apc.communityconnect.com/

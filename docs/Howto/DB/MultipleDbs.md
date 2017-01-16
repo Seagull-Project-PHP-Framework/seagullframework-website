@@ -2,6 +2,7 @@
 <!-- Version: 4 -->
 <!-- Last-Modified: 2006/04/15 22:25:46 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # How To Work with Multiple Database Resources
 

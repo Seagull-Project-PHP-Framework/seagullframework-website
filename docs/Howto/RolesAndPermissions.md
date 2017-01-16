@@ -2,6 +2,7 @@
 <!-- Version: 13 -->
 <!-- Last-Modified: 2009/01/10 08:35:45 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Roles and Permissions
 * TOC
@@ -77,7 +78,6 @@ Seagull uses the concept of roles to group permissions together.  Examples of ty
 So, to review:
 
   * *guests*: guests can access any content where the Manager's conf.ini file is set to 
-
 
 	requiresAuth = false
 

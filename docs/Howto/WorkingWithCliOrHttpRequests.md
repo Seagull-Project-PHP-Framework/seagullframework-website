@@ -2,6 +2,7 @@
 <!-- Version: 8 -->
 <!-- Last-Modified: 2007/05/21 17:45:50 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Working with CLI or HTTP Requests
 * TOC
@@ -20,7 +21,7 @@ If Seagull detects a CLI request, a similar initialisation takes place, however 
 	$ php seagull/www/index.php --moduleName=foo --managerName=bar --action=myAction
 
 Arbitrary arguments must be in the form of name =\> value pairs. The 
-value being preceeded by '--' and the value should follow '='.
+value being preceded by '--' and the value should follow '='.
 
 Example 
 
@@ -46,8 +47,6 @@ Example
 	[ImportMgr]
 	requiresAuth=false
 
-[[AddComment]]
-
-[1]:	/wiki:Howto/WorkingWithTheRequestObject/
+[1]:	/Howto/WorkingWithTheRequestObject.html
 [2]:	/wiki:Howto/WorkingWithTheRequestObject/
 [3]:	http://trac.seagullproject.org/ticket/1324

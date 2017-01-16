@@ -2,6 +2,7 @@
 <!-- Version: 16 -->
 <!-- Last-Modified: 2007/10/18 11:12:13 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # URI Management
 * TOC
@@ -238,9 +239,7 @@ You can create URIs in JavaScript, the format is like this:
 or
 
 	var myUri = makeUrl({'module':'mymodule', 'manager':'mymanager', 'action':'myaction', 'param2': 'foo bar'});
-module and action params are mantadory, you can also specify a manager, other 'name':'value' pairs are added to the end of uri
-
-[[AddComment]]
+module and action params are mandatory, you can also specify a manager, other 'name':'value' pairs are added to the end of uri
 
 [1]:	/wiki:Howto/WorkingWithTheRequestObject/
 [2]:	http://api.seagullproject.org/SGL/SGL_Request.html

@@ -2,8 +2,9 @@
 <!-- Version: 24 -->
 <!-- Last-Modified: 2006/12/31 00:31:52 -->
 <!-- Author: demian -->
+<!-- Status: In Progress -->
 
-# A short Howto look over freshly imported wiki pages
+# A short HowTo look over freshly imported wiki pages
 
   1. Choose a cluster to look through
   1. Create the parent page (if it's now in there). A good example is [wiki:Code]
@@ -15,9 +16,8 @@
 
 every page should start with a H1 heading:
 
-
 	= Heading = (Be sure to make sure there is a space before and after the heading.)
-so some (very old) pages headings have to be reorganized.
+so some (very old) pages headings have to be reorganised.
 
 the content of this H1-heading is a short "preview" in the subwiki makro (automatic overview list of a cluster)
 

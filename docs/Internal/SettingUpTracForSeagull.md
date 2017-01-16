@@ -2,6 +2,7 @@
 <!-- Version: 3 -->
 <!-- Last-Modified: 2005/11/22 04:00:02 -->
 <!-- Author: aj -->
+<!-- Status: Original -->
 
 Copy & Paste the blow commands in to trac-admin to setup a project that uses seagull.
 

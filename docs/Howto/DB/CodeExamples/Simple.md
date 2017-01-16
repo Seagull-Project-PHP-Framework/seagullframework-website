@@ -2,6 +2,7 @@
 <!-- Version: 1 -->
 <!-- Last-Modified: 2006/09/12 17:58:07 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # DB
 [[TOC(Code/Examples/DB)]]

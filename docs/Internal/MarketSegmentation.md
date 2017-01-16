@@ -2,6 +2,7 @@
 <!-- Version: 7 -->
 <!-- Last-Modified: 2006/12/31 00:35:01 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Market Segmentation
 [[TOC]]

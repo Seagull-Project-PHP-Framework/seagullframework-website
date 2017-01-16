@@ -8,6 +8,7 @@ permalink: /Installation/UsingThePearPackageManager.html
 <!-- Version: 18 -->
 <!-- Last-Modified: 2007/06/11 22:41:03 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Using The Pear Package Manager
 * TOC
@@ -19,7 +20,7 @@ This method requires basic familiarity with the [PEAR package manager][1] and is
 There are a few requirements:
 
   * You must be running a recent version of PHP 4.3.11 or greater with the base PEAR packages installed
-  * You must use PEAR version 1.4.6 or greater (pear list to check version) after having set your preferred state to devel
+  * You must use PEAR version 1.4.6 or greater (pear list to check version) after having set your preferred state to `devel`
 
 		$ pear config-set preferred_state devel
 		$ pear upgrade-all

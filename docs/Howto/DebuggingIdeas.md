@@ -2,6 +2,7 @@
 <!-- Version: 11 -->
 <!-- Last-Modified: 2007/09/17 23:45:09 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Debugging Ideas
 * TOC

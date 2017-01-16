@@ -2,6 +2,7 @@
 <!-- Version: 2 -->
 <!-- Last-Modified: 2006/10/12 19:35:52 -->
 <!-- Author: jcasanova -->
+<!-- Status: Original -->
 
 # Javascript Tips
 [[SubWiki(Howto/JavaScript)]]

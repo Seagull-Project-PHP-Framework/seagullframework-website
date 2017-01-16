@@ -8,6 +8,7 @@ permalink: /FAQ.html
 <!-- Version: 9 -->
 <!-- Last-Modified: 2006/03/29 00:55:45 -->
 <!-- Author: demian -->
+<!-- Status: In Progress -->
 
 # Frequently Asked Questions
 * TOC
@@ -58,7 +59,6 @@ See Modules/Publisher for more information.
 Go to `lib/SGL/SGL_Item::generateItemOutput()`, and modify the article's dynamic 
 part you want changed, in this case the 'title' case for 'Static Html Article' which is 
 ID 5:
-
 
 	        case 5:                //   template type = static HTML article
 	            switch ($fieldName) {

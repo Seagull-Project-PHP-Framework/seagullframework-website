@@ -2,6 +2,7 @@
 <!-- Version: 3 -->
 <!-- Last-Modified: 2006/12/30 22:38:33 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Getting SGL to work with Oracle
 

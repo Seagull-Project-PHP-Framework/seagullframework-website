@@ -2,6 +2,7 @@
 <!-- Version: 17 -->
 <!-- Last-Modified: 2009/03/04 10:52:18 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # I18N: Internationalisation
 * TOC

@@ -2,13 +2,13 @@
 <!-- Version: 2 -->
 <!-- Last-Modified: 2006/11/30 15:44:42 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Input validation
 * TOC
 {:toc}
 
 ## Getting and cleaning data from request
-
 
 	    $input->from            = $req->get('frmFrom') ? $req->get('frmFrom') : 0;
 	    $input->catID           = $req->get('frmCatID');
@@ -29,7 +29,7 @@
 	    //  request values for save upload
 	    $input->document = (object)$req->get('document');
 
-The following variable cleanup has occured:
+The following variable cleanup has occurred:
 
   * any whitespace stripped
   * default values assigned
@@ -96,5 +96,3 @@ In the $myManager-\>validate($req, &$input) is this code:
 Note: if you use image buttons, ie. \<input type="image"...\>, don't forget to put a value even if you don't use it:
  * if the image is broken, the navigator will display a plain button with the value as face name;
  * if you don't put a value, the trick above just doesn't work...
-
-[[AddComment]]

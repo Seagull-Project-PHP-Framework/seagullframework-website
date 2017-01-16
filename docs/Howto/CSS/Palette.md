@@ -2,6 +2,7 @@
 <!-- Version: 2 -->
 <!-- Last-Modified: 2006/11/30 15:50:41 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # About the CSS Palette
 > Please note: This is for versions 0.5 and higher, not for 0.4.x releases

@@ -8,6 +8,7 @@ permalink: /Installation/SettingUpApacheVirtualHosts.html
 <!-- Version: 2 -->
 <!-- Last-Modified: 2007/01/09 16:51:12 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # How to setup a Virtual Host in Apache
 If you haven't done this before it's easier than you think, in fact only 3 steps are required.

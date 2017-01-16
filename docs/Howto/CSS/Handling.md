@@ -2,6 +2,7 @@
 <!-- Version: 3 -->
 <!-- Last-Modified: 2007/02/14 15:53:08 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # How Seagull handles CSS
 * TOC

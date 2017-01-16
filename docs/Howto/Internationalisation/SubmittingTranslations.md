@@ -1,7 +1,14 @@
+---
+layout: page
+title: How to submit a new translation
+permalink: /Howto/Internationalisation/SubmittingTranslations.html
+---
+
 <!-- Name: Howto/Internationalisation/SubmittingTranslations -->
 <!-- Version: 5 -->
 <!-- Last-Modified: 2009/03/04 10:53:47 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # How to submit a new translation
 * TOC
@@ -25,7 +32,6 @@ Submitting translations is as simple as [wiki:Code/SubmittingPatches].
 	$ svn add newfilename
 
   * then
-
 
 	$ svn diff \> translation.patch
 

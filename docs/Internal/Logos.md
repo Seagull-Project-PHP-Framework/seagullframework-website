@@ -2,6 +2,7 @@
 <!-- Version: 2 -->
 <!-- Last-Modified: 2006/12/31 00:35:52 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Logos Submitted for Seagull Site
 

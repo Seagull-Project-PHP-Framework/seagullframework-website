@@ -8,6 +8,7 @@ permalink: /Tutorials/BuildingAnAjaxEnabledModule.html
 <!-- Version: 12 -->
 <!-- Last-Modified: 2008/04/21 15:15:40 -->
 <!-- Author: demian -->
+<!-- Status: In Progress -->
 
 # Building a TODO list module with Ajax
 > requires \>= Seagull 0.6.2
@@ -423,7 +424,7 @@ So the new resultset now contains dataobjects that look something like this:
 which will be easy to integrate into our templates.
 
 ## Tweaking the Javascript using Scriptaculous
-I modified Peter's code a litte because I wanted each group box to have it's own 'Add Todo' form.  This means users will be able to add todo items directly to the group they want them to appear in, eg, "call plumber" in the "domestic" group.  The new group boxes and add todo widgets were built using Scriptaculous' Builder object.  If you haven't used it yet it's a fairly straightforward DOM builder with a few gotchas.
+I modified Peter's code a little because I wanted each group box to have it's own 'Add Todo' form.  This means users will be able to add todo items directly to the group they want them to appear in, eg, "call plumber" in the "domestic" group.  The new group boxes and add todo widgets were built using Scriptaculous' Builder object.  If you haven't used it yet it's a fairly straightforward DOM builder with a few gotchas.
 
 
 ## Saving the TODOs with Ajax
@@ -431,7 +432,7 @@ This is the easy part - you can use the same syntax in Seagull you'd use in stan
 
 A recent change in Seagull means request headers are now analysed as the SGL\_Request object parses $\_REQUEST and if an Ajax call is detected, a much lighter filter chain of tasks is executed.  No URL aliases are searched for (for alias think keyword: route) as standard Seagull URLs are fine for Ajax calls.  See the code [browser:branches/0.6-bugfix/lib/SGL/FrontController.php#L142 here].
 
-So we just use a typical Prototype Ajax.request() method for the onclick event as follows:
+So we just use a typical Prototype Ajax.request() method for the `onclick` event as follows:
 
 	<input  type="button" 
 	        onClick="
@@ -535,6 +536,9 @@ A few rough corners were smoothed out for the final product which you can downlo
 
 
 
+{: align="right"}
+{: align="right"}
+
 [1]:	http://www.gregphoto.net/sortable/advanced/
 [2]:	http://www.gregphoto.net/index.php/about/
 [3]:	http://script.aculo.us/
@@ -552,6 +556,4 @@ A few rough corners were smoothed out for the final product which you can downlo
 [15]:	http://demo.seagullproject.org/index.php/todo/
 
 [image-1]:	/images/module_generator.png
-{: align="right"}
-[image-2]:	/images/Tutorials/BuildingAnAjaxEnabledModule/debug.png 
-{: align="right"}
+[image-2]:	/images/Tutorials/BuildingAnAjaxEnabledModule/debug.png

@@ -2,6 +2,7 @@
 <!-- Version: 4 -->
 <!-- Last-Modified: 2007/02/14 22:44:46 -->
 <!-- Author: openhaus -->
+<!-- Status: Original -->
 
 # Working with the Request Object
 * TOC
@@ -60,7 +61,5 @@ As parsing can be expensive, URI mappings are cached so each unique URI will not
 
 ## Cool URIs don't change
 Interesting W3C material worth reading on the subject of [good URL construction][1].
-
-[[AddComment]]
 
 [1]:	http://www.w3.org/Provider/Style/URI

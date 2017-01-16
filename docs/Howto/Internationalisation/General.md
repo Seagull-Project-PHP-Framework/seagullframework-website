@@ -1,7 +1,14 @@
+---
+layout: page
+title: Internationalisation Overview
+permalink: /Howto/Internationalisation/General.html
+---
+
 <!-- Name: Howto/Internationalisation/General -->
 <!-- Version: 8 -->
 <!-- Last-Modified: 2009/03/04 10:52:36 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Internationalisation Overview
 * TOC
@@ -86,7 +93,6 @@ It's much easier if all your master English keys are in lowercase.  If you have 
 
 
 	Search : {translate\(\#(.\*)\#\)}
-
 
 	Replace : {translate\(\\#\L\1\E\\#\)}
 

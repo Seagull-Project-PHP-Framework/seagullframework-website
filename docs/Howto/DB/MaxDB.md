@@ -2,6 +2,7 @@
 <!-- Version: 4 -->
 <!-- Last-Modified: 2007/07/02 17:47:13 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Getting SGL to work with MaxDB
 

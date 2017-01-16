@@ -2,6 +2,7 @@
 <!-- Version: 3 -->
 <!-- Last-Modified: 2006/11/30 15:43:42 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Working With Files
 * TOC
@@ -84,7 +85,7 @@ The latter two features are achieved using callback functions, here's an example
 	    }
 	}
 
-== Using PEAR's System::find to search for files==
+## Using PEAR's System::find to search for files
 Searching a folder for files with a certain extension:
 
 
@@ -101,5 +102,3 @@ Searching a folder for files with a certain extension:
 
 ## Writing Files
 The PHP5-only function, file\_put\_contents(), is emulated by Seagull when PHP4 is detected.  This is a handy function for quickly writing output to a file.
-
-[[AddComment]]

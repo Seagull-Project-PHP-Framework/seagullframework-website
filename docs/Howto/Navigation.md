@@ -2,6 +2,7 @@
 <!-- Version: 11 -->
 <!-- Last-Modified: 2007/06/27 16:38:05 -->
 <!-- Author: lyric -->
+<!-- Status: Original -->
 
 # Working with Navigation
 * TOC
@@ -69,8 +70,6 @@ The Seagull section table that the navigation module uses is built with nested s
 ## See Also
 
 [[SubWiki(Howto/Navigation)]]
-
-[[AddComment]]
 
 [1]:	http://www.sitepoint.com/article/hierarchical-data-database
 [2]:	http://www.intelligententerprise.com/001020/celko.jhtml;jsessionid=PHJPZUZQLLB52QSNDLRCKHSCJUNN2JVN?_requestid=880821

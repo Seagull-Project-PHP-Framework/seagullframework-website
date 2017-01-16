@@ -8,6 +8,7 @@ permalink: /Internal/Wiki2Trac.html
 <!-- Version: 4 -->
 <!-- Last-Modified: 2006/03/11 14:34:52 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Wackowiki to Trac Wiki conversion
 * TOC

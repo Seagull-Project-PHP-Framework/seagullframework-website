@@ -2,6 +2,7 @@
 <!-- Version: 5 -->
 <!-- Last-Modified: 2007/06/12 16:29:06 -->
 <!-- Author: lyric -->
+<!-- Status: Original -->
 
 # Working with Wizards
 

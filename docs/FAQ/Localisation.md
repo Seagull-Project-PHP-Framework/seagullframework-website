@@ -2,6 +2,7 @@
 <!-- Version: 4 -->
 <!-- Last-Modified: 2006/03/29 00:58:09 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Internationalisation and Localisation
 * TOC

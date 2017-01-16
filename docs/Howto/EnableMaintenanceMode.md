@@ -2,6 +2,7 @@
 <!-- Version: 1 -->
 <!-- Last-Modified: 2007/07/02 17:57:47 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Maintenance mode
 * TOC

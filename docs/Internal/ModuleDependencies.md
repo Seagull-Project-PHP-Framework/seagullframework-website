@@ -2,12 +2,13 @@
 <!-- Version: 3 -->
 <!-- Last-Modified: 2006/02/09 02:40:00 -->
 <!-- Author: aj -->
+<!-- Status: Original -->
 
 # Modules dependencies - Seagull 0.4.0 CVS 2004/11/15
 
 *TODO: Create DSM (http://www.lattix.com/technology/whatisdsm.htm)*
 
-This page describes the dependencies beetwen Seagull modules.
+This page describes the dependencies between Seagull modules.
 
 [[TOC]]
 

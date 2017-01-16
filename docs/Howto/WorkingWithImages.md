@@ -2,6 +2,7 @@
 <!-- Version: 10 -->
 <!-- Last-Modified: 2007/01/22 11:58:15 -->
 <!-- Author: lakiboy -->
+<!-- Status: Original -->
 
 # Working with images
 * TOC

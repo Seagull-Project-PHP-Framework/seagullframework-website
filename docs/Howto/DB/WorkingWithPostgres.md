@@ -2,6 +2,7 @@
 <!-- Version: 1 -->
 <!-- Last-Modified: 2006/12/30 22:36:40 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Working with Postgres
 * TOC

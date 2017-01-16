@@ -8,6 +8,7 @@ permalink: /Tutorials/BuildingAnAjaxEnabledModule/Javascript.html
 <!-- Version: 1 -->
 <!-- Last-Modified: 2007/01/05 18:09:59 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Example Javascript
 	// todo.js

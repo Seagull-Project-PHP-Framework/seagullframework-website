@@ -2,6 +2,7 @@
 <!-- Version: 5 -->
 <!-- Last-Modified: 2007/04/24 15:28:24 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # PostgreSQL Troubleshooting
 

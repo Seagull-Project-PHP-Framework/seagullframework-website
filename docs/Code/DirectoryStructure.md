@@ -2,6 +2,7 @@
 <!-- Version: 8 -->
 <!-- Last-Modified: 2007/10/27 12:47:42 -->
 <!-- Author: lyric -->
+<!-- Status: Original -->
 
 # The Seagull Directory Structure
 

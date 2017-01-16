@@ -1,7 +1,14 @@
+---
+layout: page
+title: Ho Converting Seagull Sites to Utf-8
+permalink: /Howto/Internationalisation/ConvertingSeagullSitesToUtf8.html
+---
+
 <!-- Name: Howto/Internationalisation/ConvertingSeagullSitesToUtf8 -->
 <!-- Version: 9 -->
 <!-- Last-Modified: 2009/03/04 10:53:12 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Converting Seagull Sites to Utf-8
 * TOC

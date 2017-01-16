@@ -1,7 +1,14 @@
+---
+layout: page
+title: Internationalisation - Tech Setup
+permalink: /Howto/Internationalisation/TechSetup.html
+---
+
 <!-- Name: Howto/Internationalisation/TechSetup -->
 <!-- Version: 3 -->
 <!-- Last-Modified: 2009/03/04 10:52:55 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Internationalisation - Tech Setup
 * TOC
@@ -61,14 +68,15 @@
 	}
  1. edit the config for the translation module and add languages you intend to translate.  The 'onlyModules' key means only these modules will show up in your statistics screen which indicates what percentage of the translation is complete.
 
-	onlyModules="foo,user2"
-	otherDictionaries=
-	extraLanguages="sv-utf-8 : swedish : swedish-utf-8,
-	zh-utf-8 : chinese simplified : chinese\_simplified-utf-8,
-	zhtw-utf-8 : chinese traditional : chinese\_traditional-utf-8,
-	de-utf-8 : german : german-utf-8,
-	es-utf-8 : spanish : spanish-utf-8,
-	fr-utf-8: french : french-utf-8"
+		onlyModules="foo,user2"
+		otherDictionaries=
+		extraLanguages="sv-utf-8 : swedish : swedish-utf-8,
+		zh-utf-8 : chinese simplified : chinese\_simplified-utf-8,
+		zhtw-utf-8 : chinese traditional : chinese\_traditional-utf-8,
+		de-utf-8 : german : german-utf-8,
+		es-utf-8 : spanish : spanish-utf-8,
+		fr-utf-8: french : french-utf-8"
+
  1. ensure "Mark words which were not translated" is set to YES
  1. add the default data that corresponds to your new role, and its perms
  1. rebuild Seagull to activate the new roles, perms and translator users
@@ -76,38 +84,39 @@
  1. if your site uses Ajax, don't forget to add the same task to your Ajax filter chain, also after SGL\_Task\_CreateSession
  1. create a cronjob that updates your languages files every 1/2 hour or so, eg:
 
-	cd /var/www/html/my\_site/translate/trunk;
-	modules=`ls modules`;
-	for module in $modules;
-	do
-		     svn up modules/$module/lang/;
-	done;
-	# updating js language files
-	svn up www/foo/js/Localisation;
+		cd /var/www/html/my\_site/translate/trunk;
+		modules=ls modules;
+		for module in $modules;
+		do
+		 svn up modules/$module/lang/;
+		done;
+		updating js language files
+		svn up www/foo/js/Localisation;
+
  1. create a cronjob that commits the language files and fixes the permissions, also every 1/2 hour or so
 
-	# !/bin/bash
-	WEBROOT=/var/www/html/my\_site/translate/trunk
-	PHP=/usr/bin/php
-	cd $WEBROOT;
-	chmod 777 www/foo/js/Localisation/\*.js;
-	# syncing js translation files
-	$PHP $WEBROOT/www/index.php \\
+		!/bin/bash
+		WEBROOT=/var/www/html/my\_site/translate/trunk
+		PHP=/usr/bin/php
+		cd $WEBROOT;
+		chmod 777 www/foo/js/Localisation/\*.js;
+		syncing js translation files
+		$PHP $WEBROOT/www/index.php \
 		--moduleName=translation --managerName=jstranslation \
 		--action=createFiles --targetModule=foo --modulesToScan= foo,user2
-	# listing files to be committed
-	moduleLangFiles='modules';
-	jslangFiles='www/foo/js/Localisation';
-	# committing
-	svn ci -m "automated commit for translation - module lang files" $moduleLangFiles;
-	svn ci -m "automated commit for translation - js lang files" $jslangFiles;
-	# setting correct permissions
-	modules="foo user2";
-	for module in $modules;
-	do
-		    chmod 777 modules/$module/lang/*.php;
-		    chmod 777 modules/$module/lang/email/*.php;
-	done;
+		listing files to be committed
+		moduleLangFiles='modules';
+		jslangFiles='www/foo/js/Localisation';
+		committing
+		svn ci -m "automated commit for translation - module lang files" $moduleLangFiles;
+		svn ci -m "automated commit for translation - js lang files" $jslangFiles;
+		setting correct permissions
+		modules="foo user2";
+		for module in $modules;
+		do
+		chmod 777 modules/$module/lang/*.php;
+		chmod 777 modules/$module/lang/email/*.php;
+		done;
 
 
 [1]:	/Howto/Internationalisation.html

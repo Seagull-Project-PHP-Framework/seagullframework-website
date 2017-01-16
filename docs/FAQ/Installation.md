@@ -2,6 +2,7 @@
 <!-- Version: 9 -->
 <!-- Last-Modified: 2006/05/24 11:57:18 -->
 <!-- Author: werner -->
+<!-- Status: Original -->
 
 # Installation
 * TOC

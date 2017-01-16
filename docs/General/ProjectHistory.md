@@ -8,6 +8,7 @@ permalink: /General/ProjectHistory.html
 <!-- Version: 2 -->
 <!-- Last-Modified: 2006/02/26 13:42:57 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # History of the Seagull Project
 The Seagull project was launched on [Sourceforge][1] on 2003–10–14, after about 2 years of private development.  

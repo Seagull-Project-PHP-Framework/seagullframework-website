@@ -8,6 +8,7 @@ permalink: /Tutorials/BuildingAnAjaxEnabledModule/Navigation.html
 <!-- Version: 1 -->
 <!-- Last-Modified: 2007/01/05 18:06:30 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Example Navigation
 	<?php

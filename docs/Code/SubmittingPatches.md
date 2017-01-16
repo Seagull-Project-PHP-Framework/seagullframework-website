@@ -2,6 +2,7 @@
 <!-- Version: 16 -->
 <!-- Last-Modified: 2007/04/17 17:12:39 -->
 <!-- Author: lyric -->
+<!-- Status: In Progress -->
 
 * TOC
 {:toc}
@@ -141,7 +142,7 @@ If you want to add a patch to your existing Seagull installation use either the 
 
 to test, then remove the `--dry-run` if no errors are reported.
 
-[1]:	/wiki:User/DemianTurner/
+[1]:	/User/DemianTurner.html
 [2]:	http://trac.seagullproject.org/
 [3]:	http://trac.seagullproject.org/report/6
 [4]:	http://trac.seagullproject.org/newticket

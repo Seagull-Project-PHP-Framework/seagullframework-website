@@ -8,6 +8,7 @@ permalink: /Tutorials/BuildingAnAjaxEnabledModule/Template.html
 <!-- Version: 1 -->
 <!-- Last-Modified: 2007/01/05 18:12:45 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Example Template
 	<h1 class="pageTitle">TODO Manager</h1>

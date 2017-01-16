@@ -8,6 +8,7 @@ permalink: /General/FrameworkFeatures.html
 <!-- Version: 6 -->
 <!-- Last-Modified: 2006/12/31 01:53:48 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Framework Features
 See the Seagull site [homepage][1] or the detailed [features page][2] for more info.

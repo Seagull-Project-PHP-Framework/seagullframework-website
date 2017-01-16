@@ -8,6 +8,7 @@ permalink: /Tutorials/BuildingAnAjaxEnabledModule/Css.html
 <!-- Version: 1 -->
 <!-- Last-Modified: 2007/01/05 18:16:20 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Example CSS
 

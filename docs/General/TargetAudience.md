@@ -8,6 +8,7 @@ permalink: /General/TargetAudience.html
 <!-- Version: 4 -->
 <!-- Last-Modified: 2006/04/02 02:33:29 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Target Audience
 Seagull will work best for you if you are an intermediate PHP developer with at least 1-2 years experience and a good exposure to OO concepts.  

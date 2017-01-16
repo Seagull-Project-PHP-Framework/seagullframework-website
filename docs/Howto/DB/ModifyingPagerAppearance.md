@@ -2,6 +2,7 @@
 <!-- Version: 1 -->
 <!-- Last-Modified: 2006/03/29 02:09:40 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Modifying the Appearance of the Pager
 

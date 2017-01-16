@@ -2,6 +2,7 @@
 <!-- Version: 5 -->
 <!-- Last-Modified: 2009/07/28 10:48:45 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Working With Entities
 * TOC

@@ -2,6 +2,7 @@
 <!-- Version: 12 -->
 <!-- Last-Modified: 2006/11/30 15:48:13 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # dojo
 * TOC

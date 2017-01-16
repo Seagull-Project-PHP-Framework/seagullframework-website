@@ -2,6 +2,7 @@
 <!-- Version: 6 -->
 <!-- Last-Modified: 2007/04/05 11:29:39 -->
 <!-- Author: bjorn -->
+<!-- Status: In Progress -->
 
 # Logging
 * TOC
@@ -21,7 +22,6 @@
 
   * Examples:
 
-
 		SGL::logMessage('I went here', PEAR_LOG_DEBUG);
 		SGL::logMessage(null, PEAR_LOG_DEBUG); // Just record date/level/class/function
 		SGL::logMessage('Parameter foo is set to  ' . $foo);  // Record at INFO level
@@ -29,12 +29,10 @@ Note that __CLASS__ and __FUNCTION__ are actually automatically set and output b
 
 Sample output:
 
-
 	Aug 26 14:50:47 Seagull [debug] sgl_controller->_displaypage:
 
 ## Managing the logfile
 As a general hint:  If you are running/managing a \*nix system, you can use logrotate tot control your logfiles: 
-
 
 
 	Logrotate.conf:
@@ -59,7 +57,6 @@ As a general hint:  If you are running/managing a \*nix system, you can use logr
 Create a file named 'seagull' in logrotate.d containing:
 
 
-
 	/var/log/php_log.txt {
 	    missingok
 	    notifempty
@@ -72,5 +69,3 @@ See [wiki:Howto/DebuggingIdeas] for more information.
 
 #### Comment by aj on Thu Mar  8 15:51:15 2007
 Note: If your log file grows over 2GB on Apache 1.3.x it will cause a white page to display.
-
-[[AddComment]]

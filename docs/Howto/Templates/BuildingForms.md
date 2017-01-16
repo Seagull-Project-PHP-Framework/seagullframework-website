@@ -8,16 +8,14 @@
 {:toc}
 
 ## Important Note
-When you create a form in your template and you're using the default Flexy template engine, if you want any dynamic values, ie using any of the conventions listed below, the form element must contain the "flexy:ignore" attribute, ie
+When you create a form in your template and you're using the default Flexy template engine, if you want any dynamic values, ie using any of the conventions listed below, the form element must contain the `flexy:ignore` attribute, ie
 
 
 	<form name="myName" id="myId" flexy:ignore>
 
 ## HTML select boxes
 
-
 	$aOptions = array(1 => 'news', 2 => 'travel', 3 => 'commentary');
-	
 	
 	<select name="category">
 	        {generateSelect(aOptions):h}
@@ -89,7 +87,6 @@ Adding a Wysiwyg editor is a two-liner:
 
 in your manager class:
 
-
 	$output->wysiwyg = true;
 
 in your template:
@@ -98,6 +95,6 @@ in your template:
 	    {event.text}
 	</textarea>
 
-note: the class of the textarea must be wysiwyg. It's automatically replaced by the editor. See also: Howto/Templates/IntegrateWYSIWYG
+note: the class of the `textarea` must be `wysiwyg`. It's automatically replaced by the editor.  See also: [Howto/Templates/IntegrateWYSIWYG][1]
 
-[[AddComment]]
+[1]:	/Howto/Templates/IntegrateWYSIWYG.html

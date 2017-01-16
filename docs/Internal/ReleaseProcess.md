@@ -2,6 +2,7 @@
 <!-- Version: 14 -->
 <!-- Last-Modified: 2006/04/09 16:08:08 -->
 <!-- Author: aj -->
+<!-- Status: In Progress -->
 
 # Release Process
 * TOC
@@ -84,4 +85,4 @@ Seagull PHP Framework ist ein objektorientiertes, auf PEAR-Klassen basierendes M
 Flexibilität aus.
  
 
-[1]:	/wiki:PressRelease/0.6.0RC1/
+[1]:	/PressRelease/0.6.0RC1.html

@@ -2,6 +2,7 @@
 <!-- Version: 8 -->
 <!-- Last-Modified: 2007/11/08 15:40:24 -->
 <!-- Author: lyric -->
+<!-- Status: Original -->
 
 # Ajax Integration
 * TOC

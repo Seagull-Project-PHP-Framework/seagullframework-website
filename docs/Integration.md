@@ -2,6 +2,7 @@
 <!-- Version: 4 -->
 <!-- Last-Modified: 2006/04/02 03:18:12 -->
 <!-- Author: demian -->
+<!-- Status: In Progress -->
 
 # Integrating 3rd party applications into Seagull
 

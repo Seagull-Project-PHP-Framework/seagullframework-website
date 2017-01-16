@@ -2,8 +2,10 @@
 <!-- Version: 5 -->
 <!-- Last-Modified: 2006/11/30 15:38:13 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Handing Errors
+
 ## Overview
 Seagull provides some flexible tools and a number of configuration options to help you handle errors in your application.
 
@@ -37,7 +39,5 @@ Seagull provides some flexible tools and a number of configuration options to he
 
 		SGL::raiseError('Cannot connect to DB, check your credentials, exiting ...',
 		    SGL_ERROR_DBFAILURE, PEAR_ERROR_DIE);
-
-[[AddComment]]
 
 [1]:	http://api.seagullproject.org/SGL/SGL_Error.html

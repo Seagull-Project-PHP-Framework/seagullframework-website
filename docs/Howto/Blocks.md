@@ -2,6 +2,7 @@
 <!-- Version: 26 -->
 <!-- Last-Modified: 2007/07/18 10:35:11 -->
 <!-- Author: demian -->
+<!-- Status: In Progress -->
 
 # Working with Blocks 
 * TOC
@@ -250,5 +251,5 @@ or define it in a init.php file in the root of any of your custom modules, ie
 
 
 
-[1]:	/wiki:Howto/Blocks#Anexampleofactivatinganexistingblock/
+[1]:	/Howto/Blocks.html#Anexampleofactivatinganexistingblock
 [2]:	/wiki:Howto/Blocks#Activatinganexistingblock/

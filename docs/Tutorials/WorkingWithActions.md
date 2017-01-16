@@ -8,6 +8,7 @@ permalink: /Tutorials/WorkingWithActions.html
 <!-- Version: 20 -->
 <!-- Last-Modified: 2007/04/05 10:00:39 -->
 <!-- Author: bjorn -->
+<!-- Status: Updated -->
 
 # 2. Working With Actions
 >  requires \>= Seagull 0.6.0
@@ -172,7 +173,7 @@ For this we need two action methods, our existing \_\_cmd\_sayGoodBye()\_ and an
 	?>
 
 What we have done is the following:
- 1. we now have two action methods, \_\_cmd\_sayHello()\_ and \_\_cmd\_sayGoodBye()\_
+ 1. we now have two action methods, `_cmd_sayHello()` and `_cmd_sayGoodBye()`
  1. each method has a corresponding mapping in the _$this-\>\_aActionsMapping_ hash in the constructor
  1. in _validate()_, a default action is set if none is detected from the request
  1. the hard-coded _Hello World_ is removed from _$output-\>testVariable_ and the new variable $output-\>word will contain the value to be changed by the request
@@ -196,10 +197,10 @@ And the finished results should look like this:
 ![][image-1]
 
 ## Conclusion
-In this tutorial you have learned how to create a basic Manager class, various actions methods, URI mapping and a simple template.  Stay tuned for future installments where will introduce more techniques for working with Seagull.
+In this tutorial you have learned how to create a basic Manager class, various actions methods, URI mapping and a simple template.  Stay tuned for future instalments where will introduce more techniques for working with Seagull.
 
 ## Download Code
-You can download the code from this tutorial [attachment:tutorial-2.tar.gz here].
+You can download the code from this tutorial [here][5].
 
 #### Comment by bjorn on Thu Apr  5 04:00:39 2007
 If you'd like to add id's or other information to the links it can be done this way in the template:
@@ -210,11 +211,10 @@ In this example 'campaignId' has a value in the template and the link will be:
 
 http://mydomain.com/index.php/campaign/action/edit/frmCampaignID/2/
 
-[[AddComment]]
-
-[1]:	/wiki:Tutorials/HelloWorld/
+[1]:	/Tutorials/HelloWorld.html
 [2]:	http://php.net/manual/en/language.oop.constructor.php
 [3]:	http://php.net/manual/en/language.oop5.decon.php
 [4]:	http://php.net/manual/en/language.references.pass.php
+[5]:	/images/Tutorials/WorkingWithActions/tutorial-2.tar.gz
 
 [image-1]:	/files/images/goodbyeWorld.png

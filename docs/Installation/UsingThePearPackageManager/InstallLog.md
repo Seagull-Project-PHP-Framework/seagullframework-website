@@ -2,6 +2,7 @@
 <!-- Version: 2 -->
 <!-- Last-Modified: 2007/06/11 15:20:55 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Install Log
 The PEAR dependency solving typically looks like this:

@@ -8,6 +8,7 @@ permalink: /General/Talks.html
 <!-- Version: 6 -->
 <!-- Last-Modified: 2006/12/31 01:21:43 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Various Seagull Talks and Presentations
 

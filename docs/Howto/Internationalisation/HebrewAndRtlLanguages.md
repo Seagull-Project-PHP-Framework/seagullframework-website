@@ -1,7 +1,14 @@
+---
+layout: page
+title: Hebrew and RTL Languages
+permalink: /Howto/Internationalisation/HebrewAndRtlLanguages.html
+---
+
 <!-- Name: Howto/Internationalisation/HebrewAndRtlLanguages -->
 <!-- Version: 8 -->
 <!-- Last-Modified: 2009/03/04 10:53:31 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Hebrew and RTL Languages
 * TOC

@@ -2,6 +2,7 @@
 <!-- Version: 2 -->
 <!-- Last-Modified: 2006/12/01 18:43:34 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Working With Templates
 

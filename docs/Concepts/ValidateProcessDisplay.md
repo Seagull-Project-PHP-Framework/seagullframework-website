@@ -8,6 +8,7 @@ permalink: /Concepts/ValidateProcessDisplay.html
 <!-- Version: 3 -->
 <!-- Last-Modified: 2006/04/01 23:32:25 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Validate Process Display workflow
 

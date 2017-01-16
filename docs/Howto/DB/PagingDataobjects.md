@@ -2,6 +2,7 @@
 <!-- Version: 2 -->
 <!-- Last-Modified: 2006/09/08 18:32:53 -->
 <!-- Author: demian -->
+<!-- Status: Original -->
 
 # Paginating dataobjects
 * TOC

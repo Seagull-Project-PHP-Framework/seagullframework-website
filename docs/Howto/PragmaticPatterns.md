@@ -8,6 +8,7 @@ permalink: /Howto/PragmaticPatterns.html
 <!-- Version: 1 -->
 <!-- Last-Modified: 2006/04/02 17:06:10 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Pragmatic Patterns
 How to increase your productivity using selected design patterns.

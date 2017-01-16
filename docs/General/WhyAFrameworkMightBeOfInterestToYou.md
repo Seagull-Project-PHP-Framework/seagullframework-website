@@ -8,6 +8,7 @@ permalink: /General/WhyAFrameworkMightBeOfInterestToYou.html
 <!-- Version: 6 -->
 <!-- Last-Modified: 2006/07/03 21:45:12 -->
 <!-- Author: lakiboy -->
+<!-- Status: Updated -->
 
 # Why A Framework Might Be Of Interest To You
 If you answer 'yes' to any of the following questions, you could probably benefit from using a framework in your next project:

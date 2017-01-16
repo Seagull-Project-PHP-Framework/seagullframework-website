@@ -8,6 +8,7 @@ permalink: /Installation/Download.html
 <!-- Version: 4 -->
 <!-- Last-Modified: 2006/03/11 14:52:14 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
 
 # Downloading Seagull
 There are currently 3 ways to download Seagull:

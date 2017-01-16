@@ -8,6 +8,7 @@ permalink: /Tutorials/HelloWorld.html
 <!-- Version: 36 -->
 <!-- Last-Modified: 2008/03/04 19:30:55 -->
 <!-- Author: spaycegirl -->
+<!-- Status: Updated -->
 
 # 1. Creating A Simple Module to Display "Hello World"
 > requires \>= Seagull 0.6.0
