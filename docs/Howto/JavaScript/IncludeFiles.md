@@ -47,5 +47,3 @@ This will add the files _js/PageView.js_ and _js/packaging.js_ to the <head> ele
 
 ## See Also
 [[SubWiki(Howto/JavaScript)]]
-
-[[AddComment]]

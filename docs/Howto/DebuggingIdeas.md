@@ -226,7 +226,7 @@ There are different tools for testing an PHP application, e.g.:
   * [SimpleTest][3]
   * [PEAR::PHPUnit][4] and this [PEAR::PHPUnit homepage][5]
   * [phpt][6]
-	 
+	  
 #### Tutorials / Articles about (Unit)Testing:
 
   * Printed Article in [german PHP Magazin][7] (03/2003)
@@ -238,8 +238,6 @@ There are different tools for testing an PHP application, e.g.:
  * http://www.openqa.org/selenium/
 
 There is also an Eclipse plugin called Solex (http://solex.sourceforge.net/) with the same functionality but the ability to apply extraction and replacement rules.
-
-[[AddComment]]
 
 [1]:	http://www.mingw.org/msys.shtml
 [2]:	http://ophilipp.free.fr/op_tail.htm

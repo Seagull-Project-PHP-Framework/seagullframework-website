@@ -99,7 +99,6 @@ To take advantage of advanced locale handling go to Config screen and choose:
 
 This integrates Seagull with PEAR's [I18Nv2][3] library, an example of usage:
 
-
 	$locale =& SGL_Locale::singleton();
 	
 	echo $locale->formatCurrency(2000,I18Nv2_CURRENCY_LOCAL);

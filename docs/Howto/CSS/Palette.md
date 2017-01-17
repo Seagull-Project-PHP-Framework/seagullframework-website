@@ -276,5 +276,3 @@ legend
 span.tipOwner span.tipText
   * border-color: $buttonBorderColors
   * background-color: $tertiaryLight
-
-[[AddComment]]

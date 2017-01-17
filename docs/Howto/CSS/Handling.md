@@ -13,6 +13,7 @@
 Seagull CSS stylesheets are written as PHP files.  That is, rather than having a file named _stylesheet.css_, you have a file named _stylesheet.php_.
 
 This offers several advantages over a normal CSS file:
+
   * Ability to do PHP variable substitutions that can be used in the actual css code.
   * Ability to modify simple colour scheme variables, ie, primary/secondary/tertiary colours, and quickly effect an overall colour scheme change.
   * Ability to sniff the browser-agent string and customise CSS code (if you desire).
@@ -96,5 +97,3 @@ i.e.:
 	#sgl-header-right a:hover {
 	    text-decoration: underline;
 	}
-
-[[AddComment]]

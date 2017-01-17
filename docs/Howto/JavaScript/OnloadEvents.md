@@ -60,6 +60,4 @@ You may require some event handlers to happen for every page of your site. Some 
 ## See Also
 [[SubWiki(Howto/JavaScript)]]
 
-[[AddComment]]
-
 [1]:	http://dean.edwards.name/weblog/2006/06/again/

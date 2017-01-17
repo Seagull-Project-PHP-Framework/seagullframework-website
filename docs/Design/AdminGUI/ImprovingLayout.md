@@ -4,7 +4,7 @@
 <!-- Author: lakiboy -->
 ## STATUS: ONGOING
 
-# Improving Admin Backend Layout, i.e. default_admin theme
+# Improving Admin Backend Layout, i.e. default\_admin theme
 
 ## Overview
 
@@ -19,7 +19,7 @@ Two models are often opposed in naming our css elements (classes and ids) :
  * structural naming
  * presentational naming
 
-See [http://www.stuffandnonsense.co.uk/archives/whats_in_a_name.html]
+See [http://www.stuffandnonsense.co.uk/archives/whats\_in\_a\_name.html]
 and [http://meyerweb.com/eric/thoughts/2004/06/26/structural-naming/]
 
 Basically structural naming is giving a name as per the meaning of your element within your web page (e.g. branding, navigation, additionalInformation, ...) whereas presentational naming establishes a relationship between the name and the style you want to give it (e.g. topNavigation, header, leftBar, ...) or even worse (leftGreenBar, topRedTitle). The latter is completely useless as you would lose the benefit of reusable css rules.
@@ -42,29 +42,28 @@ Finally we'll identify some generic CSS elements usefull to display some informa
 
 
 ## Main Structure
-As a starter, from [http://www.stuffandnonsense.co.uk/archives/whats_in_a_name.html]
+As a starter, from [http://www.stuffandnonsense.co.uk/archives/whats\_in\_a\_name.html]
 
-Also see [http://www.stuffandnonsense.co.uk/archives/whats_in_a_name_pt2.html]
+Also see [http://www.stuffandnonsense.co.uk/archives/whats\_in\_a\_name\_pt2.html]
 
 
-    So what should we name our elements?
-    
-    Here are my suggestions for main structural divs
-    
-        * Container div: container
-        * Header or banner div: header
-        * Main or global navigation div: main-nav
-        * Left or right side columns: sidebar-a, sidebar-b
-        * Content div: content
-        * Footer div: footer
-    
-    And for other page elements
-    
-        * Sub-navigation list: sub-nav
-        * Search: search
-        * Search results: search-results
-        * Copyright information: copyright
-    
+	So what should we name our elements?
+	
+	Here are my suggestions for main structural divs
+	
+	    * Container div: container
+	    * Header or banner div: header
+	    * Main or global navigation div: main-nav
+	    * Left or right side columns: sidebar-a, sidebar-b
+	    * Content div: content
+	    * Footer div: footer
+	
+	And for other page elements
+	
+	    * Sub-navigation list: sub-nav
+	    * Search: search
+	    * Search results: search-results
+	    * Copyright information: copyright
 
 
 ## Default Rules For Tags
@@ -116,5 +115,3 @@ What about wrappers? Very often we have to wrap page elements to give it unique 
  * etc.
 
 Regarding suggested names for main structural divs. _header_ is pure presentational naming as well as _footer_. There is a possibility to replace them with _brandinding_ and _copyright_ accordingly. But to be honest I personally like first variant more.
-
-[[AddComment]]

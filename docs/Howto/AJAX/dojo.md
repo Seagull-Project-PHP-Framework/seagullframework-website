@@ -51,8 +51,6 @@ Next, we need to modify our add() and edit() methods to use the masterFeed.html 
 
 ## Submitting Froms via XmlHttpRequest
 
-[[AddComment]]
-
 [1]:	http://manual.dojotoolkit.org/index.html#widgets
 [2]:	http://manual.dojotoolkit.org/WikiHome/DojoDotBook/Book29
 [3]:	http://manual.dojotoolkit.org/WikiHome/DojoDotBook/Book29

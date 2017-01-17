@@ -1,14 +1,26 @@
+---
+layout: page
+title: Integrating Templates Engines
+permalink: /Integration/TemplateEngines.html
+---
+
 <!-- Name: Integration/TemplateEngines -->
 <!-- Version: 3 -->
 <!-- Last-Modified: 2006/11/30 15:53:49 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
+
 # Integrating Templates Engines
 
 Seagull is structured so it's easy to integrate the template engine of your choice.  Currently implemented are:
- * [Flexy](/wiki:Howto/Templates/) (default)
- * [Smarty](/wiki:Howto/Templates/Smarty/)
- * [Savant2](/wiki:Howto/Templates/Savant/)
 
-Also see the [wiki:Howto/Templates] section.
+ * [Flexy][1] (default)
+ * [Smarty][2]
+ * [Savant2][3]
 
-[[AddComment]]
+Also see the [Howto/Templates][4] section.
+
+[1]:	/wiki:Howto/Templates/
+[2]:	/wiki:Howto/Templates/Smarty/
+[3]:	/wiki:Howto/Templates/Savant/
+[4]:	Howto/Templates.html

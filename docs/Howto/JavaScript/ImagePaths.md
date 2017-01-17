@@ -35,5 +35,3 @@ If you have some specific module images located in <moduleName>/www/images simpl
 
 ## See Also
 [[SubWiki(Howto/JavaScript)]]
-
-[[AddComment]]

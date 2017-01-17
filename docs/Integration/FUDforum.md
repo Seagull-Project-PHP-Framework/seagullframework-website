@@ -86,7 +86,7 @@ is handled through the Seagull site.
 	if (!defined('__request\_timestamp__')) {
 		define('__request_timestamp__', time());
 	}
-	 
+	  
  * replicate your Seagull user table to fud26\_users or equivalent
  * as you've setup FUD in the normal way, keep the two user records that it created for you: 1 for anonymous user, 2 for admin
  * after those records insert all your Seagull users, *not including* Seagull anon or admin records
@@ -125,6 +125,3 @@ is handled through the Seagull site.
 -- Demian Turner
 
 *NOTE:* target integration is for fudforum 2.7.4
-
-
-[[AddComment]]
