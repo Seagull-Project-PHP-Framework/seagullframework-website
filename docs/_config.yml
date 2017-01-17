@@ -36,5 +36,9 @@ exclude:
   - Gemfile
   - Gemfile.lock
   
-  # Outputting
+# Outputting
 permalink:  /blog/:year/:month/:day/:title.html
+
+# Analytics
+google_analytics: UA-435749-1
+

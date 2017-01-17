@@ -55,7 +55,7 @@ permalink: /Internal/Wiki2Trac.html
 
 |---
 |Table of Contents|""[[TOC]]""|""[TOC]""|
-|Subwiki / Tree|""{{tree  root="/Internal" style="ul" nomark="1"}}""|nothing similar yet. [SubWiki] should do this job...|
+|Subwiki / Tree|""tree  root="/Internal" style="ul" nomark="1"""|nothing similar yet. [SubWiki] should do this job...|
 
 
 
@@ -65,14 +65,14 @@ see also: [http://trac.seagullproject.org/wiki/WikiProcessors][5]
 
 seems like formatters for IRC or email are missing in trac
 
-## Converting 
+## Converting
 I think we need to follow these steps:
   * write a script to export each wacko wiki page from DB to !PageName.txt
   * run another script converting each !WackoWiki.txt -\> !TracWiki.txt
-	* todo: images, '', 
+	* todo: images, '',
   * run trac import commandline tool on dir
 
-## export from wacko 
+## export from wacko
 you can easily export a single wiki page or a whole cluster (unfortunately not the whole wiki) 
 
 [http://seagull.phpkitchen.com/docs/wakka.php?wakka=Internal/export.xml][6]
@@ -94,10 +94,10 @@ wiki dump \<directory\>                              Export all wiki pages to fi
 wiki load \<directory\>                              Import all wiki pages from directory
 wiki upgrade                                       Upgrade default wiki pages to current version
 
-## Drawbacks 
+## Drawbacks
 We have many ways of formatting in wacko, guess not all can be converted with a single script
 
-## First Script 
+## First Script
 This is a php-cli program. Save an export.xml file to disk and pass it to the program.
 
 e.g. type `php wacko2trac.php -f=export.xml`
