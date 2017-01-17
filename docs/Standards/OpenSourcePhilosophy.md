@@ -2,8 +2,11 @@
 <!-- Version: 1 -->
 <!-- Last-Modified: 2006/12/31 00:12:15 -->
 <!-- Author: demian -->
+<!-- Status: Updated -->
+
 # Open Source Philosophy
-[[TOC]]
+* TOC
+{:toc}
 
 ## Bazaar Style
 From Eric Raymond's The Cathedral and the Bazaar: Linus Torvalds's style of development - release early and often, delegate everything you can, be open to the point of promiscuity 
@@ -29,7 +32,7 @@ To specifically imply 'for zero price.'
 Refers to the users' freedom to run, copy, distribute, study, change and improve the software. More precisely, it refers to three levels of freedom: 
 
  * The freedom to study how the program works and adapt it to your needs. 
- * The freedom to redistribute copies so you can share with your neighbor. 
+ * The freedom to redistribute copies so you can share with your neighbour. 
  * The freedom to improve the program, and release your improvements to the public, so that the whole community benefits. 
 
 
@@ -46,11 +49,11 @@ General Public License, usually referring to the GNU GPL.
 
 
 ## Monopolist
-The point of view that favors proprietary software development due to the implicit financial advantages. Dubbed 'monopolost' since the code is controlled and edited by only one source. 
+The point of view that favours proprietary software development due to the implicit financial advantages. Dubbed 'monopolost' since the code is controlled and edited by only one source. 
 
 
 ## Non-Monopolist
-The point of view that favors open source software development due to advantages in information collaboration and the bazaar style of development. 
+The point of view that favours open source software development due to advantages in information collaboration and the bazaar style of development. 
 
 
 ## Noosphere
@@ -60,13 +63,13 @@ A term modelled after "atmosphere" and biosphere" signifying (a) the space occup
 
 
 ## Open Source Software
-Software distributed that not only allows free access to the source code, but also free redistribution of the original and of derived works. It further entails that no discrimination against persons, groups or any field of endeavor is permissable. 
+Software distributed that not only allows free access to the source code, but also free redistribution of the original and of derived works. It further entails that no discrimination against persons, groups or any field of endeavour is permissible. 
 
 
 ## Piracy
 Relating to the illegal use and distribution of proprietary software. According to Richard Stallman software companies that refer to software piracy would imply that illegal copying is ethically equivalent to attacking ships on the high seas, kidnapping and murdering the people on them. 
 
-Stallman remarks that neutral terms such as "prohibited copying" or "unauthorized copying" or even a positive term such as sharing information with your neighbor could be used as a substitute. 
+Stallman remarks that neutral terms such as "prohibited copying" or "unauthorised copying" or even a positive term such as sharing information with your neighbour could be used as a substitute. 
 
 
 ## POV(s)

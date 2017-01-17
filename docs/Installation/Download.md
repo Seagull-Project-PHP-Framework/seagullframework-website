@@ -13,7 +13,7 @@ permalink: /Installation/Download.html
 # Downloading Seagull
 There are currently 3 ways to download Seagull:
 
-  * Get the latest Package from [Sourceforge][1]
+  * Get the latest Package from [SourceForge][1]
   * Get Seagull using [Pear Package Manager][2]
   * Get Seagull from [SVN][3]
 

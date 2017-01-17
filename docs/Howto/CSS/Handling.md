@@ -15,8 +15,8 @@ Seagull CSS stylesheets are written as PHP files.  That is, rather than having a
 This offers several advantages over a normal CSS file:
   * Ability to do PHP variable substitutions that can be used in the actual css code.
   * Ability to modify simple colour scheme variables, ie, primary/secondary/tertiary colours, and quickly effect an overall colour scheme change.
-  * Ability to sniff the browser-agent string and customize CSS code (if you desire).
-  * Provides these advantages without adding processing overhead or increasing bandwidth utilization (see explanation below).
+  * Ability to sniff the browser-agent string and customise CSS code (if you desire).
+  * Provides these advantages without adding processing overhead or increasing bandwidth utilisation (see explanation below).
 
 Effectively the stylesheet.php behaves just like a typical stylesheet.css because of added logic for checking 'Last-Modified' headers.  All files served by Apache have a 'Last-Modified' timestamp header.  This information is echoed back to Apache on subsequent requests by the client browser.  For subsequent requests, the php script verifies that the css file hasn't been modified since the last time it provided the file to the client, and simply responds with the 'HTTP/1.x 304 Not Modified' header (which tells the client browser to use the already cached copy).  If the stylesheet has been modified, the new version of the file is served to the client.
 
@@ -32,7 +32,7 @@ Plus you can load a specific stylesheet, for only the module you are actually us
 
 ## Defaults, eye candy
 
-We have centered and borderless tables as default, so you don't have to pollute the html code with border="0", align="center" ,cell{padding,spacing} stuff everywhere.
+We have centred and borderless tables as default, so you don't have to pollute the html code with border="0", align="center" ,cell{padding,spacing} stuff everywhere.
 
 Then we have some helpers like the error class that set the colour to red which could save you from the style="color: red" or style="color: #ff0000" ugliness. We have three classes full, wide and narrow which sets: 100%, 90% and 60% so you can save some width="foo" and use them. Images are borderless by default.
 

@@ -2,7 +2,9 @@
 <!-- Version: 3 -->
 <!-- Last-Modified: 2005/11/15 15:31:06 -->
 <!-- Author: aj -->
-[[TOC]]
+
+* TOC
+{:toc}
 
 ## Random Message Module
 
@@ -24,8 +26,10 @@ _Create your quotes *before* you activate a quote block!_
 
 ## Block Manager
 
-You can create a block (using the [Block Manager](/wiki:Modules/Block/)) with a random message using _RndMsgBlock_ in the `name` field of the block.
+You can create a block (using the [Block Manager][1]) with a random message using _RndMsgBlock_ in the `name` field of the block.
 
 (Another way to use the random quotes is to add a custom function (just copy the functionality from the random-message-block) which you use in your templates.)
 
-_Note: Unless there is at least one quote in the database, you currently get some nasty-looking PHP errors when you try creating a _RndMsgBlock_ block._
+_Note: Unless there is at least one quote in the database, you currently get some nasty-looking PHP errors when you try creating a _RndMsgBlock\_ block.\_
+
+[1]:	/wiki:Modules/Block/

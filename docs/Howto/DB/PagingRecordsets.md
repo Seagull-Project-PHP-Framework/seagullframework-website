@@ -8,8 +8,7 @@
 
 Here is an example of paging recordsets:
 
-In your manager:  
-
+In your manager:
 
 	    $query = "SELECT preference_id, name, default_value FROM {$conf['table']['preference']}";
 	    $limit = $_SESSION['aPrefs']['resPerPage'];

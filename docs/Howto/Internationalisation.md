@@ -1,32 +1,30 @@
+---
+layout: page
+title: I18N: Internationalisation
+permalink: /Howto/Internationalisation.html
+---
+
 <!-- Name: Howto/Internationalisation -->
 <!-- Version: 17 -->
 <!-- Last-Modified: 2009/03/04 10:52:18 -->
 <!-- Author: demian -->
-<!-- Status: Original -->
+<!-- Status: Updated -->
 
 # I18N: Internationalisation
 * TOC
 {:toc}
 
- * [Start][1]
- * [General overview][2]
- * [How to setup the environment][3]
- * [Best practices][4]
- * [How to convert your Seagull site to utf-8][5]
- * [RTL support][6]
- * [Submitting translations][7]
-
-Seagull makes it easy to translate the application GUI. See also: Howto/Internationalisation/TranslatingModules. Admins can customise the presentation time/date/numerical formats based on their customer's locale, ie, geographic location.
+Seagull makes it easy to translate the application GUI. See also: [Howto/Internationalisation/TranslatingModules][1]. Admins can customise the presentation time/date/numerical formats based on their customer's locale, ie, geographic location.
 
 ## Supported Languages
 
-[wiki:Community/Maintainers/Translations]
+[Community/Maintainers/Translations][2]
 
 The current language designation is held in a session variable and can be switched on a page-by-page or session basis.
 
-## Non-english sites
+## Non-English Sites
 
-If you want to use a czech language pack czech-iso-8859-2 instead of default english then
+If you want to use a Czech language pack `czech-iso-8859-2` instead of default english then
 
   *  just for you: login as a member, edit your profile, and set Czech as your interface language
   *  for all users: login as an admin and select General -\> Config, then choose the 'translation' tab and set the fallback language to Czech.
@@ -54,11 +52,12 @@ All translatable strings are stored in easy to manage language files, containing
 	        'Answers' => 'Antworten',
 	    );
 
-You will find these files in the lang folder of each module, where the filename is [language\_name]-[encoding].php
+You will find these files in the lang folder of each module, where the filename is `[language_name]-[encoding].php`
 
 The language files locations:
-  * module-specific: /modules/your-module-name/lang/
-  * default: /modules/default/lang
+
+  * module-specific: `/modules/your-module-name/lang/`
+  * default: `/modules/default/lang`
 The default language file is loaded on every request, so if you have common strings that appear within many modules, put them here.
 
 ## Switching Language with Request Params
@@ -91,14 +90,14 @@ for variables passed to $output and
 for text in templates (e.g. for the GUI)
 
 ## Locale
-By default Seagull will provide basic PHP locale functionality, ie, you can call PHP functions in your code like strftime() and they will  be modified by the set locale.
+By default Seagull will provide basic PHP locale functionality, ie, you can call PHP functions in your code like `strftime()` and they will  be modified by the set locale.
 
 To take advantage of advanced locale handling go to Config screen and choose:
 
 
 	General Site Options -> Extended locale support -> On
 
-This integrates Seagull with PEAR's [I18Nv2][8] library, an example of usage:
+This integrates Seagull with PEAR's [I18Nv2][3] library, an example of usage:
 
 
 	$locale =& SGL_Locale::singleton();
@@ -106,23 +105,36 @@ This integrates Seagull with PEAR's [I18Nv2][8] library, an example of usage:
 	echo $locale->formatCurrency(2000,I18Nv2_CURRENCY_LOCAL);
 	echo $locale->formatDate(time());
 
-See [source:/trunk/lib/SGL/Locale.php] for the implementation.
+See [gitlink:/trunk/lib/SGL/Locale.php] for the implementation.
 
 In Config, 'localeCategory' is configurable, it's set to LC\_ALL by default although European users will want to change this where supplying a ',' for the decimal separator causes calculation probs (use LC\_TIME)
 
 ## Timezone hack
 Good timezone hack info here:
 
-http://www.geeklog.net/forum/viewtopic.php?forum=10&showtopic=21232
+[http://www.geeklog.net/forum/viewtopic.php?forum=10&showtopic=21232][4]
 
 ## Translating Navigation
 To get also menus and breadcrumbs translated translations have to be stored in the database.
 
-[1]:	/wiki:Howto/Internationalisation/
-[2]:	/wiki:Howto/Internationalisation/General/
-[3]:	/wiki:Howto/Internationalisation/TechSetup/
-[4]:	/wiki:Howto/Internationalisation/TranslationBestPractices/
-[5]:	/wiki:Howto/Internationalisation/ConvertingSeagullSitesToUtf8/
-[6]:	/wiki:Howto/Internationalisation/HebrewAndRtlLanguages/
-[7]:	/wiki:Howto/Internationalisation/SubmittingTranslations/
-[8]:	http://pear.php.net/package/I18Nv2/
+## Also In This Series
+
+ - [Start][5]
+ - [General overview][6]
+ - [How to setup the environment][7]
+ - [Best practices][8]
+ - [How to convert your Seagull site to utf-8][9]
+ - [RTL support][10]
+ - [Submitting translations][11]
+
+[1]:	/Howto/Internationalisation/TranslatingModules.html
+[2]:	/Community/Maintainers/Translations.html
+[3]:	http://pear.php.net/package/I18Nv2/
+[4]:	http://www.geeklog.net/forum/viewtopic.php?forum=10&showtopic=21232
+[5]:	/Howto/Internationalisation.html
+[6]:	/Howto/Internationalisation/General.html
+[7]:	/Howto/Internationalisation/TechSetup.html
+[8]:	/Howto/Internationalisation/TranslationBestPractices.html
+[9]:	/Howto/Internationalisation/ConvertingSeagullSitesToUtf8.html
+[10]:	/Howto/Internationalisation/HebrewAndRtlLanguages.html
+[11]:	/Howto/Internationalisation/SubmittingTranslations.html

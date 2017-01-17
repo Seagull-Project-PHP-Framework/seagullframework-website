@@ -2,6 +2,7 @@
 <!-- Version: 9 -->
 <!-- Last-Modified: 2006/01/11 18:48:44 -->
 <!-- Author: demian -->
+
 pls see http://trac.seagullproject.org/wiki/RFC/Modules/UriHandling
 
 UrlMgr is the module that tries to implement URL Aliasing and URL Redirection for SGL.
@@ -14,13 +15,12 @@ The 'Src Article' contains links that refer to the same page but with pageTitle,
 
 *Description:*
 The magic takes place in Url.php where we check if the requested URL
-    
 
-    $reqUrl = $this->protocol.'://'.$this->host.$this->path;
+	$reqUrl = $this->protocol.'://'.$this->host.$this->path;
 
-is found in db or not. If it is then we initialize the $pageTitle, $pageDescription and $pageKeywords variables (as they were passed in the URL) with the data from db and they are available like:
+is found in db or not. If it is then we initialise the $pageTitle, $pageDescription and $pageKeywords variables (as they were passed in the URL) with the data from db and they are available like:
 
-    $input->pageTitle = $req->get('pageTitle') 
+	$input->pageTitle = $req->get('pageTitle') 
 This variables can be ignored or overwritten by the user. In this way we can set different keywords for different URLs that refer to the same content (good for SEO) . If 'redirect' is set we redirect to the specified address. If you put in the 'redirect' field a full URL (!http://...) then you'll make a redirect, else just an alias.
 
 If the URL is not found in db then the process continues the normal flow with the original passed URL.
@@ -50,7 +50,7 @@ URL Mgr is using cache so it has minimal impact on exec time.
  * Moved the UrlMgr code as /lib/SGL/UrlParserAliasStrategy.php (Thanks for the examples with the aliases stored as an array)
  * Added the block that allow you to add a link or an article at the current URL
  * Added the 'reference' field so we know what aliases to what items are they related
- * If you add an alias like /this/is/a/nice/path it will be put into categories : this -> is -> a -> nice -> path (one step closer to the navigation tree and site map page)
+ * If you add an alias like /this/is/a/nice/path it will be put into categories : this -\> is -\> a -\> nice -\> path (one step closer to the navigation tree and site map page)
  * Possibility to add URLs in navigation bar.
 1.0 - 29/11/2005
  * Initial features

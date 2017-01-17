@@ -4,10 +4,10 @@
 <!-- Author: werner -->
 
 Hi, my name is Rafael Ferreira Silva, I'm a 23 yeas old PHP programmer who lives in Brazil.
-Few days ago I download Seagull to use it in a project and I fall in love imediatly!
+Few days ago I download Seagull to use it in a project and I fall in love immediately!
 
 I would like to contribute with Seagull Project, helping on translation to Brazilian Portuguese and coding something.
 
-My personal Webiste is http://www.webphp.com.br (yet avaible only in Brazilian Portuguese).
+My personal Website is http://www.webphp.com.br (yet available only in Brazilian Portuguese).
 
 If you need to contact me my e-mail is: rafael (at) webphp.com.br.

@@ -8,19 +8,11 @@ permalink: /Howto/Internationalisation/SubmittingTranslations.html
 <!-- Version: 5 -->
 <!-- Last-Modified: 2009/03/04 10:53:47 -->
 <!-- Author: demian -->
-<!-- Status: Updated -->
+<!-- Status: In Progress -->
 
 # How to submit a new translation
 * TOC
 {:toc}
-
- - [Start][1]
- - [General overview][2]
- - [How to setup the environment][3]
- - [Best practices][4]
- - [How to convert your Seagull site to utf-8][5]
- - [RTL support][6]
- - [Submitting translations][7]
 
 Submitting translations is as simple as [wiki:Code/SubmittingPatches].
 
@@ -36,13 +28,23 @@ Submitting translations is as simple as [wiki:Code/SubmittingPatches].
 	$ svn diff \> translation.patch
 
 
-2. Submit the patch as a new ticket to Seagull's [Trac][8] site. You have to login to do so. Please select the matching category for the translation you are submitting. If there is not a language listed use 'Translation - Other'. This way a new category can be added for that new language.
+2. Submit the patch as a new ticket to Seagull's [Trac][1] site. You have to login to do so. Please select the matching category for the translation you are submitting. If there is not a language listed use 'Translation - Other'. This way a new category can be added for that new language.
 
-[1]:	/Howto/Internationalisation.html
-[2]:	/Howto/Internationalisation/General.html
-[3]:	/Howto/Internationalisation/TechSetup.html
-[4]:	/Howto/Internationalisation/TranslationBestPractices.html
-[5]:	/Howto/Internationalisation/ConvertingSeagullSitesToUtf8.html
-[6]:	/Howto/Internationalisation/HebrewAndRtlLanguages.html
-[7]:	/Howto/Internationalisation/SubmittingTranslations.html
-[8]:	http://trac.seagullproject.org/
+## Also In This Series
+
+ - [Start][2]
+ - [General overview][3]
+ - [How to setup the environment][4]
+ - [Best practices][5]
+ - [How to convert your Seagull site to utf-8][6]
+ - [RTL support][7]
+ - [Submitting translations][8]
+
+[1]:	http://trac.seagullproject.org/
+[2]:	/Howto/Internationalisation.html
+[3]:	/Howto/Internationalisation/General.html
+[4]:	/Howto/Internationalisation/TechSetup.html
+[5]:	/Howto/Internationalisation/TranslationBestPractices.html
+[6]:	/Howto/Internationalisation/ConvertingSeagullSitesToUtf8.html
+[7]:	/Howto/Internationalisation/HebrewAndRtlLanguages.html
+[8]:	/Howto/Internationalisation/SubmittingTranslations.html

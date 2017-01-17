@@ -2,6 +2,7 @@
 <!-- Version: 4 -->
 <!-- Last-Modified: 2006/10/17 09:33:55 -->
 <!-- Author: aj -->
+
 # Monthly Developer Meeting
 
 Seagull has a monthly developer meeting providing a forum where you may voice your opinions and help determine Seagull's path. 

@@ -8,19 +8,11 @@ permalink: /Howto/Internationalisation/TechSetup.html
 <!-- Version: 3 -->
 <!-- Last-Modified: 2009/03/04 10:52:55 -->
 <!-- Author: demian -->
-<!-- Status: Updated -->
+<!-- Status: In Progress -->
 
 # Internationalisation - Tech Setup
 * TOC
 {:toc}
-
- - [Start][1]
- - [General overview][2]
- - [How to setup the environment][3]
- - [Best practices][4]
- - [How to convert your Seagull site to utf-8][5]
- - [RTL support][6]
- - [Submitting translations][7]
 
 ## Overview
  1. it's easiest to translate a Seagull installation if you setup a copy of your live environment on a different host, ie translate.mydomain.com
@@ -118,6 +110,15 @@ permalink: /Howto/Internationalisation/TechSetup.html
 		chmod 777 modules/$module/lang/email/*.php;
 		done;
 
+## Also In This Series
+
+ - [Start][1]
+ - [General overview][2]
+ - [How to setup the environment][3]
+ - [Best practices][4]
+ - [How to convert your Seagull site to utf-8][5]
+ - [RTL support][6]
+ - [Submitting translations][7]
 
 [1]:	/Howto/Internationalisation.html
 [2]:	/Howto/Internationalisation/General.html

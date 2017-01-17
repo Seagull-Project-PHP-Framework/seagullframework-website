@@ -11,7 +11,7 @@ permalink: /General/ProjectHistory.html
 <!-- Status: Updated -->
 
 # History of the Seagull Project
-The Seagull project was launched on [Sourceforge][1] on 2003–10–14, after about 2 years of private development.  
+The Seagull project was launched on [SourceForge][1] on 2003–10–14, after about 2 years of private development.  
 
 [My][2] first experience of a PHP 'framework' from a user point of view was [PHP nuke][3], in 1999.  I was amazed at the time that such an apparently simple tool could create a whole website.  Looking at the code, however, I began searching for alternatives, and the first interesting project I found was [Horde][4].  Experimenting with that codebase was fun and educational, but I wasn't satisfied with the amount of effort required to install the framework, the need for non-standard PHP extensions, etc.
 

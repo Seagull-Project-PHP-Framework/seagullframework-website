@@ -8,19 +8,11 @@ permalink: /Howto/Internationalisation/TranslationBestPractices.html
 <!-- Version: 5 -->
 <!-- Last-Modified: 2009/03/04 10:52:00 -->
 <!-- Author: demian -->
-<!-- Status: Updated -->
+<!-- Status: In Progress -->
 
 # Translation Best Practices
 * TOC
 {:toc}
-
- - [Start][1]
- - [General overview][2]
- - [How to setup the environment][3]
- - [Best practices][4]
- - [How to convert your Seagull site to utf-8][5]
- - [RTL support][6]
- - [Submitting translations][7]
 
 ## Use underscore to separate variable names in translation strings
 
@@ -42,6 +34,16 @@ As each languages behaves differently, e.g.:
 *Note:*
  * member is the name of the variable in the string to be translated
  * userName is the name of the variable whose value comes from the system and will be used in the translation
+
+## Also In This Series
+
+ - [Start][1]
+ - [General overview][2]
+ - [How to setup the environment][3]
+ - [Best practices][4]
+ - [How to convert your Seagull site to utf-8][5]
+ - [RTL support][6]
+ - [Submitting translations][7]
 
 [1]:	/Howto/Internationalisation.html
 [2]:	/Howto/Internationalisation/General.html

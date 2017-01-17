@@ -9,6 +9,7 @@
 {:toc}
 
 ## General
+
   * run tests, run release.sh
   * create and upload seagull pear package to SF
   * compile latest API docs and upload to project page
@@ -18,6 +19,7 @@
 
 
 ### PEAR process
+
  * "pear uninstall seagull"
  * remove last installed version from /var/www/html/tmp\_install/seagull
  * remove /var/www/html/tmp/seagull
@@ -60,6 +62,7 @@
   * http://www.phpn.org
 	 
 ### PHP announcement sites
+
 #### English
   * http://www.phpbuilder.com/news/
   * http://www.phpfreaks.com/submit\_news.php : [/User/MikeWattier Mike]

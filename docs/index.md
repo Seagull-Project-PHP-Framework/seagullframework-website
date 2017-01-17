@@ -38,24 +38,24 @@ Learn about the main concepts behind developing a project with Seagull.
 - [The core libraries of Seagull][20]
 
 ## Tutorials
-Various tutorials to assist you while learning Seagull.
+Various [tutorials][21] to assist you while learning Seagull.
 
 - Development Tutorials
-	- [Hello World][21]
-	- [Working With Actions][22]
-	- [Developing Modules][23]
-	- [Building An Ajax-Enabled Module][24]
+	- [Hello World][22]
+	- [Working With Actions][23]
+	- [Developing Modules][24]
+	- [Building An Ajax-Enabled Module][25]
 - Build A Website Just Using A Browser
-	- [Creating A SimpleSite][25]
+	- [Creating A SimpleSite][26]
 
 ## Community
 Meet the community of developers, translators and maintainers, find out more about mailing list etiquette and see a list of sites powered by Seagull.
 
-- [Community][26]
-- [Modules][27]
-- [Plugins][28]
-- [Integration][29]
-- [Contributing][30]
+- [Community][27]
+- [Modules][28]
+- [Plugins][29]
+- [Integration][30]
+- [Contributing][31]
 
 <!-- not 100% sure about these items, seems badly organised -->
 
@@ -79,13 +79,14 @@ Meet the community of developers, translators and maintainers, find out more abo
 [18]:	/Concepts/ModulesManagersAndControllers.html
 [19]:	/Concepts/ValidateProcessDisplay.html
 [20]:	/Concepts/CoreLibs.html
-[21]:	/Tutorials/HelloWorld.html
-[22]:	/Tutorials/WorkingWithActions.html
-[23]:	/Tutorials/DevelopingModules.html
-[24]:	/Tutorials/BuildingAnAjaxEnabledModule.html
-[25]:	/Tutorials/CreatingASimpleSite.html
-[26]:	/Community.html
-[27]:	/Modules.html
-[28]:	/Plugins.html
-[29]:	/Integration.html
-[30]:	/Contributing.html
+[21]:	/Tutorials.html
+[22]:	/Tutorials/HelloWorld.html
+[23]:	/Tutorials/WorkingWithActions.html
+[24]:	/Tutorials/DevelopingModules.html
+[25]:	/Tutorials/BuildingAnAjaxEnabledModule.html
+[26]:	/Tutorials/CreatingASimpleSite.html
+[27]:	/Community.html
+[28]:	/Modules.html
+[29]:	/Plugins.html
+[30]:	/Integration.html
+[31]:	/Contributing.html

@@ -2,6 +2,7 @@
 <!-- Version: 8 -->
 <!-- Last-Modified: 2005/12/20 19:18:07 -->
 <!-- Author: werner -->
+
 # Look And Feel
 [[SubWiki(RFC/LookAndFeel)]]
 ## General
@@ -24,19 +25,19 @@ In my point of view, a different design for the Backend interface improves users
 
 ## Seagull's Graphical User Interface
 
-If you agree we need a GUI (for all administration tasks' screens e.g. in Publisher/ArticleMgr but not in Publisher/ArticleViewMgr) then we could give it a more professionnal look.
+If you agree we need a GUI (for all administration tasks' screens e.g. in Publisher/ArticleMgr but not in Publisher/ArticleViewMgr) then we could give it a more professional look.
 
-We could also optmize the way usefull information is loaded and displayed in the page.
+We could also optimise the way useful information is loaded and displayed in the page.
 
 ## HTML templates cleanup
 
 A think there is too much use of <table> for structure purposes that needs to replaced by some xHTML/CSS code.
 This way html code is cleaner and easier to modify for graphical folks when you want to change your theme.
-This would also brings two more assets : a standard compliant xHTML code improves search engines indexing and optimization, and reduces size of files.
+This would also brings two more assets : a standard compliant xHTML code improves search engines indexing and optimisation, and reduces size of files.
 
-As per W3C recommendation, <table> structure should only be used for tabular information that needs to be reprensented like that i.e. table tags should only be used to build ... a table.
+As per W3C recommendation, <table> structure should only be used for tabular information that needs to be represented like that i.e. table tags should only be used to build ... a table.
 This implies to better test html rendering on various browsers as some are not so standard compliant, you know from what I'm talking about ;-)
 
 But when using tables to represent information, we could benefit from a Datagrid improvements.
 
-As an exemple is always more explicit I'll put some screenshots to show you and have your comments.
+As an example is always more explicit I'll put some screenshots to show you and have your comments.

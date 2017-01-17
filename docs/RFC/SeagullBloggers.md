@@ -2,6 +2,7 @@
 <!-- Version: 4 -->
 <!-- Last-Modified: 2007/04/20 01:16:58 -->
 <!-- Author: henryjuan -->
+
 # Seagull Bloggers
 ## Setup
 We need to setup a blog aggregator like the one used at planet-php.org to bring together what folks are blogging about Seagull

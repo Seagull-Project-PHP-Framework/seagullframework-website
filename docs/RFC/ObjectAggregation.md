@@ -4,7 +4,8 @@
 <!-- Author: werner -->
 
 The current method of aggregating object for the output class has a few probs:
-  * aggregate_obj_methods() works only in PHP4
-  * the Reflection api stuff from PHP5 fails with a method_exists() call
+
+  * aggregate\_obj\_methods() works only in PHP4
+  * the Reflection api stuff from PHP5 fails with a method\_exists() call
 
 Some interesting ideas over at http://wact.sourceforge.net/index.php/ResolveHandle

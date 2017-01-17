@@ -2,6 +2,7 @@
 <!-- Version: 2 -->
 <!-- Last-Modified: 2007/04/11 11:06:45 -->
 <!-- Author: aj -->
+
 # Planet Seagull
 ## Overview
 We now have http://planet.seagullproject.org/ setup, this aggregates Seagull-related content from the blogosphere.  To get yourself added please contact:

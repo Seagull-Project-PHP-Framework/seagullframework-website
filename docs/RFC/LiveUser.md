@@ -2,18 +2,20 @@
 <!-- Version: 22 -->
 <!-- Last-Modified: 2006/12/30 22:45:37 -->
 <!-- Author: demian -->
+
 # LiveUser
 
 ## Draft todo list
 1. Clean up all functionality in the Seagull Core related to user/rights implementation. 
-  * Switch to the use of abstract classes.
-  * What kind of pattern should be used:
-    * Bridge (This seems to be the correct pattern. We have template engines that are using bridge pattern. - Andrey)
-    * Template
-    * Strategy
-    * Abstract Factory
+  2. Switch to the use of abstract classes.
+  3. What kind of pattern should be used:
+
+	* Bridge (This seems to be the correct pattern. We have template engines that are using bridge pattern. - Andrey)
+	* Template
+	* Strategy
+	* Abstract Factory
 2. Create a Bridge API which will be used by the SGL Core. [[BR]]
-3. Implement the current SGL user/rights functionality for BC based on Bridge API and a feature that allows for the creation of an application/site without any users with the exeption of an admin and guest user.[[BR]]
+3. Implement the current SGL user/rights functionality for BC based on Bridge API and a feature that allows for the creation of an application/site without any users with the exception of an admin and guest user.[[BR]]
 4. Implement LU bridge [[BR]]
 5. Create Admin GUI templates for LU Managers. [[BR]]
 
@@ -42,8 +44,8 @@ A first way of doing is by assigning directly a right to a user. This is an easy
 Now we can slide from the functional point of view into the technical point of view.
 
 The following graph illustrates what are the LiveUser tables and the links that we need to build for assigning rights directly to a user.[[BR]]
-[[Image(SimpleLU_Tech.gif)]][[BR]]
-----
+[[Image(SimpleLU\_Tech.gif)]][[BR]]
+---- 
 == Medium Level: == 
 Assign rights to groups of users
 
@@ -57,9 +59,9 @@ In addition to all concepts described in the simple level, we can now also deal 
 
 Rights are assigned to groups. Users are made member of groups.
 
-On a technical point of view, 2 more tables are used to make those links: «liveuser_grouprights» and «liveuser_groupusers».[[BR]]
-[[Image(MediumLU_Tech.gif)]]
-----
+On a technical point of view, 2 more tables are used to make those links: «liveuser\_grouprights» and «liveuser\_groupusers».[[BR]]
+[[Image(MediumLU\_Tech.gif)]]
+---- 
 
 == Complex Level: == 
 Advanced Features
@@ -75,11 +77,11 @@ The difference with the medium level is that:
 
 ### The technical view
 On a technical point of view, a new table is used to define the implied rights.[[BR]]
-[[Image(ComplexLU_Tech.gif)]]
+[[Image(ComplexLU\_Tech.gif)]]
 
 # Seagull Version of the LiveUser ERD
 Includes Sequence tables.[[BR]]
-[[Image(LiveUser_SGL_ERD.png)]]
+[[Image(LiveUser\_SGL\_ERD.png)]]
 
 = LiveUser Authentication Process Sequence Diagram =[[BR]]
 [[Image(LiveUserSequence.png)]]

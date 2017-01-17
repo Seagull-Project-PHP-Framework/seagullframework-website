@@ -2,13 +2,14 @@
 <!-- Version: 5 -->
 <!-- Last-Modified: 2005/12/20 16:51:32 -->
 <!-- Author: demian -->
+
 # Seagull GUI
 
 To start I show you what it looks like on my seagull 0.4.8.
 
-http://juliencasanova.free.fr/screenshots/publisher_article.gif.
+http://juliencasanova.free.fr/screenshots/publisher\_article.gif.
 
-http://juliencasanova.free.fr/screenshots/publisher_article_edit.gif.
+http://juliencasanova.free.fr/screenshots/publisher\_article\_edit.gif.
 
 I'll continue to write on this topic later, please comment ;-)
 

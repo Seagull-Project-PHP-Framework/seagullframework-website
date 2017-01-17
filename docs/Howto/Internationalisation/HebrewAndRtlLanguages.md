@@ -8,19 +8,11 @@ permalink: /Howto/Internationalisation/HebrewAndRtlLanguages.html
 <!-- Version: 8 -->
 <!-- Last-Modified: 2009/03/04 10:53:31 -->
 <!-- Author: demian -->
-<!-- Status: Updated -->
+<!-- Status: In Progress -->
 
 # Hebrew and RTL Languages
 * TOC
 {:toc}
-
- - [Start][1]
- - [General overview][2]
- - [How to setup the environment][3]
- - [Best practices][4]
- - [How to convert your Seagull site to utf-8][5]
- - [RTL support][6]
- - [Submitting translations][7]
 
 Here's a summary of how Asaf got this working.
 
@@ -70,11 +62,21 @@ We also added just for fun to the master.html file the following when ($lang == 
 	</a>
 	</center>
 
-## Implementing RTL Texf flow
+## Implementing RTL Text flow
 This is very easy in modern browsers, simply implement a 'dir' attribute in the page's parent container div:
 
 
 	<div id="sgl-header-left" dir="rtl" style="position:absolute;top:0px;left:1px;z-index:2;">
+
+## Also In This Series
+
+ - [Start][1]
+ - [General overview][2]
+ - [How to setup the environment][3]
+ - [Best practices][4]
+ - [How to convert your Seagull site to utf-8][5]
+ - [RTL support][6]
+ - [Submitting translations][7]
 
 [1]:	/Howto/Internationalisation.html
 [2]:	/Howto/Internationalisation/General.html

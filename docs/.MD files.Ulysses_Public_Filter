@@ -7,17 +7,20 @@
 		<key>conditions</key>
 		<array>
 			<dict>
-				<key>comparison</key>
-				<integer>1</integer>
 				<key>conditionType</key>
-				<string>DateSearch</string>
-				<key>difference</key>
-				<dict>
-					<key>day</key>
-					<integer>2000</integer>
-				</dict>
-				<key>type</key>
-				<integer>1</integer>
+				<string>ContentSearch</string>
+				<key>definition</key>
+				<string>filename</string>
+				<key>expression</key>
+				<array/>
+				<key>queryString</key>
+				<string></string>
+				<key>scopeMask</key>
+				<string></string>
+				<key>searchOptions</key>
+				<integer>0</integer>
+				<key>stringOptions</key>
+				<integer>129</integer>
 			</dict>
 		</array>
 		<key>options</key>
@@ -28,9 +31,9 @@
 	<key>resolutionData</key>
 	<dict>
 		<key>query</key>
-		<real>506253464.274616</real>
+		<real>506311183.64901102</real>
 		<key>sheetOrder</key>
-		<real>506310611.40937698</real>
+		<real>506311297.72485399</real>
 	</dict>
 	<key>sheetOrder</key>
 	<string>title</string>
@@ -41,7 +44,7 @@
 		<key>query</key>
 		<dict>
 			<key>91ad7eba2f1d920f6ead8dcdec11aad6bf9ca36985a1c9ab247424095dbe2d20</key>
-			<integer>6</integer>
+			<integer>20</integer>
 		</dict>
 		<key>sheetOrder</key>
 		<dict>

@@ -12,6 +12,7 @@ permalink: /Howto/PragmaticPatterns.html
 
 # Pragmatic Patterns
 How to increase your productivity using selected design patterns.
+
 - [Front Controller][1]
 - [Intercepting Filter][2]
 - [Observers][3]
