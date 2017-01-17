@@ -57,6 +57,9 @@ Meet the community of developers, translators and maintainers, find out more abo
 - [Integration][30]
 - [Contributing][31]
 
+## Various Version of Seagull
+The current stable release of Seagull is from the [1.x branch][32], there is also a [2.x branch][33].
+
 <!-- not 100% sure about these items, seems badly organised -->
 
 [1]:	/General/FrameworkFeatures.html
@@ -90,3 +93,5 @@ Meet the community of developers, translators and maintainers, find out more abo
 [29]:	/Plugins.html
 [30]:	/Integration.html
 [31]:	/Contributing.html
+[32]:	/1_0/Overview.html
+[33]:	/2_0/Overview.html
