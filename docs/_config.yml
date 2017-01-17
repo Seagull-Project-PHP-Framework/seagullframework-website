@@ -24,7 +24,7 @@ url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: seagullphp
 github_username:  demianturner
 
-# destination:  ./../_site
+destination:  ./../_site
 
 # Build settings
 markdown: kramdown
