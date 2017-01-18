@@ -4,6 +4,8 @@ title:  "Markdown Conversions Required for Jekyll"
 date:   2017-01-11 15:34:53 +0800
 ---
 # Markdown Conversions Required for Jekyll
+* TOC
+{:toc}
 
 ## Install github-pages Gem
 You need to install the `github-pages` gem and run it instead of the `jekyll` gem.
@@ -61,7 +63,8 @@ Start with
 Local Jekyll will parse a list fine however Jekyll running on Github will not create list items unless you have a blank line before the start of your list.
 
 ## Gotchas
-The characters `three open curly braces` or `three closed curly braces` will cause a Jekyll parse error and kill the whole site, please make sure you remove these. They are used for escaping code so preferably use two single apostrophes instead.
+- The characters `three open curly braces` or `three closed curly braces` will cause a Jekyll parse error and kill the whole site, please make sure you remove these. They are used for escaping code so preferably use two single apostrophes instead.
+- you cannot use a colon (:) in the Front Matter `title` attribute
 
 ## Correctly Linking Files
 

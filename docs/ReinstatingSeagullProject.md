@@ -32,7 +32,13 @@ permalink: /ReinstatingSeagullProject.html
 - migrate tickets from [other repo][3]
 - reinstate demo
 
+## List of Files
+If you remember a file and can’t find it with search, check the [file listing][4] for the full set of documentation pages and assets.
+
+
+
 
 [1]:	http://seagullproject.org/blog/2017/01/11/updating-seagull-docs-to-jekyll.html
 [2]:	https://github.com/demianturner/seagullframework-sandbox
 [3]:	https://github.com/demianturner/sgl-docs-tickets-migration-test/issues
+[4]:	/FileListing.html

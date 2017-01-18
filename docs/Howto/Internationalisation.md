@@ -1,6 +1,6 @@
 ---
 layout: page
-title: I18N: Internationalisation
+title: I18N Internationalisation
 permalink: /Howto/Internationalisation.html
 ---
 
@@ -14,11 +14,11 @@ permalink: /Howto/Internationalisation.html
 * TOC
 {:toc}
 
-Seagull makes it easy to translate the application GUI. See also: [Howto/Internationalisation/TranslatingModules][1]. Admins can customise the presentation time/date/numerical formats based on their customer's locale, ie, geographic location.
+Seagull makes it easy to translate the application GUI. See also: [Howto/Internationalisation/TranslatingModules](). Admins can customise the presentation time/date/numerical formats based on their customer's locale, ie, geographic location.
 
 ## Supported Languages
 
-[Community/Maintainers/Translations][2]
+[Community/Maintainers/Translations]()
 
 The current language designation is held in a session variable and can be switched on a page-by-page or session basis.
 
@@ -31,7 +31,6 @@ If you want to use a Czech language pack `czech-iso-8859-2` instead of default e
 
 ## Language Files
 All translatable strings are stored in easy to manage language files, containing a simple PHP array:
-
 
 	    $words = array(
 	/*  FAQ */
@@ -63,7 +62,6 @@ The default language file is loaded on every request, so if you have common stri
 ## Switching Language with Request Params
 Either POST or GET are fine, to switch just using the URI pass the lang param like this:
 
-
 	http://example.com/about/?lang=ru-windows-1251
 
 ## Translation of strings in templates
@@ -82,8 +80,7 @@ Use
 
 	{translate(pageTitle)}
 
-for variables passed to $output and
-
+for variables passed to `$output` and
 
 	{translate(#Question#)}
 
@@ -94,10 +91,9 @@ By default Seagull will provide basic PHP locale functionality, ie, you can call
 
 To take advantage of advanced locale handling go to Config screen and choose:
 
-
 	General Site Options -> Extended locale support -> On
 
-This integrates Seagull with PEAR's [I18Nv2][3] library, an example of usage:
+This integrates Seagull with PEAR's [I18Nv2]() library, an example of usage:
 
 	$locale =& SGL_Locale::singleton();
 	
@@ -106,34 +102,23 @@ This integrates Seagull with PEAR's [I18Nv2][3] library, an example of usage:
 
 See [gitlink:/trunk/lib/SGL/Locale.php] for the implementation.
 
-In Config, 'localeCategory' is configurable, it's set to LC\_ALL by default although European users will want to change this where supplying a ',' for the decimal separator causes calculation probs (use LC\_TIME)
+In Config, `localeCategory` is configurable, it's set to `LC_ALL` by default although European users will want to change this where supplying a ',' for the decimal separator causes calculation probs (use `LC_TIME`)
 
 ## Timezone hack
 Good timezone hack info here:
 
-[http://www.geeklog.net/forum/viewtopic.php?forum=10&showtopic=21232][4]
+[http://www.geeklog.net/forum/viewtopic.php?forum=10&showtopic=21232]()
 
 ## Translating Navigation
 To get also menus and breadcrumbs translated translations have to be stored in the database.
 
 ## Also In This Series
 
- - [Start][5]
- - [General overview][6]
- - [How to setup the environment][7]
- - [Best practices][8]
- - [How to convert your Seagull site to utf-8][9]
- - [RTL support][10]
- - [Submitting translations][11]
+ - [Start]()
+ - [General overview]()
+ - [How to setup the environment]()
+ - [Best practices]()
+ - [How to convert your Seagull site to utf-8]()
+ - [RTL support]()
+ - [Submitting translations]()
 
-[1]:	/Howto/Internationalisation/TranslatingModules.html
-[2]:	/Community/Maintainers/Translations.html
-[3]:	http://pear.php.net/package/I18Nv2/
-[4]:	http://www.geeklog.net/forum/viewtopic.php?forum=10&showtopic=21232
-[5]:	/Howto/Internationalisation.html
-[6]:	/Howto/Internationalisation/General.html
-[7]:	/Howto/Internationalisation/TechSetup.html
-[8]:	/Howto/Internationalisation/TranslationBestPractices.html
-[9]:	/Howto/Internationalisation/ConvertingSeagullSitesToUtf8.html
-[10]:	/Howto/Internationalisation/HebrewAndRtlLanguages.html
-[11]:	/Howto/Internationalisation/SubmittingTranslations.html
