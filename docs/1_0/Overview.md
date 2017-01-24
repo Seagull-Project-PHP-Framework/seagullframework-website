@@ -1,9 +1,17 @@
+---
+layout: page
+title: Overview of Seagull 1.x
+permalink: /1_0/Overview.html
+---
+
 <!-- Name: 1_0/Overview -->
 <!-- Version: 6 -->
 <!-- Last-Modified: 2010/03/26 11:21:14 -->
 <!-- Author: demian -->
 
-# Overview of Seagull 1.0
+# Overview of Seagull 1.x
+
+## Seagull 1.x Design Goals
 The following are the goals for the 1.0 version of Seagull
 
  * BC with the 0.6 bugfix branch
