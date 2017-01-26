@@ -20,7 +20,7 @@ Around a year later I was freelancing in Spain and needed to get customer projec
 Today in 2006 we are one of the few framework projects that have been around for 5 years and are still going strong.  The success of the project is largely due to the enthusiastic community, and the ability of the codebase to adapt easily with changing requirements and fashions.  With the recent wave of not only framework projects but [RoR][5] clones, Seagull still delivers competitive functionality that puts it with the leaders of the pack.
 
 [1]:	http://sf.net
-[2]:	/wiki:User/DemianTurner/
+[2]:	/User/DemianTurner.html
 [3]:	http://phpnuke.org/
 [4]:	http://horde.org
 [5]:	http://www.rubyonrails.com/
